@@ -38,7 +38,6 @@ mvn compile exec:java -Dexec.mainClass="com.chatsystem.admin.AdminApp"
 
 - `chat-admin/` — Standalone Maven project containing `pom.xml`, `README.md`, and Java 21 Swing source code under `src/main/java/com/chatsystem/admin/`.
 - `screenshots/` — Captured screenshots of the running Swing application (`01_UserManagement.png`, `02_AddUserDialog.png`) and capture instructions (`screenshots/README.md`).
-- `AI-LOG.md` — Mandatory AI usage declaration log across all phases, including a student completion checklist.
 - `Swing_Assignment/` — Packaged submission directory structure:
   ```text
   Swing_Assignment/
@@ -71,3 +70,21 @@ This deliverable implements **one Java Swing screen (`Quản lý người dùng`
   - Search field, status filter dropdown, sort dropdown, `Làm mới` button, and pagination buttons (`« Trước`, `1`, `2`, `3`, `Sau »`) are static visual controls.
   - Row actions (`Xóa`, `Khóa/Mở khóa`, `Đổi mật khẩu`, `Lịch sử đăng nhập`, `Danh sách bạn bè`), `Lưu thông tin` in `UserFormDialog`, and `Đăng xuất` in the sidebar are visual-only placeholders that do not mutate or persist data.
   - No backend server, sockets, Spring Boot, or PostgreSQL/JDBC database connections are included.
+
+## Phiên bản 1 (20%) — phần Người 1
+
+Phần người dùng trên nhánh `Phúc`: `src/chat-user/` (Java 21+, Swing, FlatLaf). Chạy `mvn -f src/chat-user/pom.xml compile exec:java` hoặc `run-user.cmd` sau khi đặt JAVA_HOME tới JDK 21+.
+
+- Bàn giao, thiết kế CSDL, đối chiếu yêu cầu và ảnh: [docs/NGUOI_1_DEADLINE_1.md](docs/NGUOI_1_DEADLINE_1.md).
+- Script Người 1: [script/01_person1.sql](script/01_person1.sql), yêu cầu bảng `app_users(id BIGINT PRIMARY KEY)` của Người 2 trước khi ghép.
+- Minh chứng commit local: [git/commits-phuc.png](git/commits-phuc.png); 17 ảnh UI tại `git/screenshots/`.
+- Kiểm tra SQL: `node script/check_person1.mjs` sau khi cài dependency như tài liệu.
+
+Phạm vi deadline 1 là thiết kế UI và CSDL; dữ liệu mẫu, chưa có backend. Tài liệu bài cá nhân Admin ở phía trên là nội dung cũ. Phần đóng gói nhóm, tỷ lệ đóng góp thực tế, thông tin hai thành viên và hợp đồng CSDL cuối cùng cần nhóm xác nhận; báo cáo bàn giao đánh dấu rõ các mục đó.
+
+### Giao diện Modern Blue theo mẫu nhóm (17/11/2026)
+
+Màn chat Java Swing đã được đổi sang sidebar tối có icon, danh sách cuộc trò chuyện có avatar và tin nhắn dạng bong bóng trái/phải. Dùng đúng bảng màu Modern Blue. Nút Tìm tin mở thanh tìm nội dung; menu Chi tiết chứa LLM, xóa tin/lịch sử, báo cáo spam và quản lý nhóm. Cài đặt mở các tab tài khoản; Nhóm chat lọc danh sách nhóm.
+
+Chạy tại thư mục gốc bằng Maven đã cài: mvn -f src/chat-user/pom.xml compile exec:java.
+Ảnh giao diện hiện tại: git/screenshots/01-chat.png. Đây là bản UI dùng dữ liệu mẫu của deadline 1.
