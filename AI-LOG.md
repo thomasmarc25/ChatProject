@@ -847,15 +847,71 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
      Report files changed, commands actually run, and remaining limitations.
      Do not commit or push.
      ```
+   - **Follow-up Verification Troubleshooting Prompt (`2026-11-17 15:12:07 +07:00`) — Verbatim:**
+     ```markdown
+     The temporary PostgreSQL server is accepting connections at
+     127.0.0.1:55433, but the test database has NOT been created.
+
+     Manual checks:
+     - SELECT datname FROM pg_database
+       WHERE datname = 'chat_schema_test';
+       returned 0 rows.
+     - Connecting to chat_schema_test returned:
+       FATAL: database "chat_schema_test" does not exist.
+
+     Therefore, schema verification has not succeeded. Do not diagnose this
+     as a schema SQL error without further evidence.
+
+     Please:
+     1. Inspect the original background task and determine whether pg_ctl
+        has failed to return or createdb failed.
+     2. Read and preserve the temporary server log.
+     3. Do not launch another copy of the original script.
+        It begins by deleting a directory that may contain a running cluster.
+     4. Resolve the original task first. Be aware that cancelling it may run
+        its finally block and stop/delete the temporary cluster.
+     5. Recheck the temporary server after resolving the original task.
+     6. If the original task has ended and the verified temporary server is
+        still running, reuse it to create chat_schema_test and execute
+        script/01_schema.sql. Otherwise, use a new uniquely named temporary
+        cluster with bounded waits.
+     7. Print progress and preserve stdout/stderr for every command.
+        Check $LASTEXITCODE immediately after each executable.
+     8. Use connection timeouts and --no-password to avoid hidden prompts.
+        Execute psql with ON_ERROR_STOP=1.
+     9. List the resulting tables only after schema execution succeeds.
+     10. Stop only the verified temporary cluster after testing.
+         Never stop the normal PostgreSQL Windows service.
+         Preserve diagnostic logs if anything fails.
+
+     Report the actual cause, commands executed, and verification result
+     in Vietnamese in chat. Keep Markdown and AI-LOG.md updates in English.
+     Do not commit or push.
+     ```
 4. **Purpose:**
    - Implement the initial PostgreSQL DDL script `script/01_schema.sql` and companion documentation `script/README.md` matching `docs/database-design.md`, align FK deletion rules and `updated_at` notes in `docs/database-design.md` and `docs/version1-plan.md`, and verify execution against an isolated disposable PostgreSQL 18 instance without touching any existing user database.
 5. **AI-generated content:**
-   - *In progress — creating `script/01_schema.sql` and `script/README.md` and updating documentation.*
+   - **Created `script/01_schema.sql`:** Transactional PostgreSQL DDL (`BEGIN; ... COMMIT;`) for an empty database creating all 16 tables (`users`, `login_history`, `app_open_events`, `friend_requests`, `friendships`, `user_blocks`, `direct_messages`, `direct_message_hidden`, `chat_groups`, `group_members`, `user_public_keys`, `group_key_versions`, `group_key_envelopes`, `group_messages`, `group_message_hidden`, `spam_reports`), primary keys, restrictive foreign keys (`ON DELETE RESTRICT`), row-level `CHECK` constraints (including explicit SQL `NULL`-safe plaintext vs. ciphertext check and composite FK `(group_id, key_version)` on `group_messages`), case-insensitive `LOWER(username)` / `LOWER(email)` unique indexes, partial unique index for `PENDING` friend requests, and 32 total indexes.
+   - **Created `script/README.md`:** English documentation of database prerequisites, clean-database execution rules, script execution order, and `psql` commands without embedded credentials.
+   - **Updated `docs/database-design.md` and `docs/version1-plan.md`:** Synchronized `ON DELETE RESTRICT` across all historical tables, added `updated_at >= created_at` and `deleted_at >= created_at` constraints, documented application-maintained `updated_at`, and marked Step B as completed.
+   - **Modified `AI-LOG.md`:** Appended and completed Entry 10.
 6. **Student's independent work and edits/validation:**
    - Student specified all DDL constraints, transaction boundaries, non-destructive clean-database rules, restrictive FK requirements, and `updated_at` application-maintenance rules.
+   - Student manually inspected the temporary PostgreSQL server on `127.0.0.1:55433` (`SELECT datname FROM pg_database WHERE datname = 'chat_schema_test';` -> 0 rows) and identified that the initial verification task had hung before creating `chat_schema_test`.
    - Additional student review/validation: `STUDENT TO COMPLETE`
 7. **Screenshots or chat history:**
    - `evidence/chat_history/chatgpt.png`
    - `evidence/chat_history/antigravity_session_8a98bca0.md`
 8. **Verification and outcomes:**
-   - *In progress — will be updated after creating and verifying `script/01_schema.sql`.*
+   - **Root Cause of Initial Hung Verification Task (`task-432`):**
+     - Inspected `task-432` and `scratch/pg_test.log` (preserved at `scratch/pg_test_preserved.log`). `initdb.exe` succeeded and `pg_ctl.exe -D $scratchPg -l $pgLog -o "-p 55433 -h 127.0.0.1" -w start` started `postgres.exe` (PID 23756), which logged `database system is ready to accept connections` at `14:49:43.450 +07`.
+     - However, because `pg_ctl.exe ... start` was piped to `| Out-Null` in PowerShell, the spawned `postgres.exe` background process inherited the write handle of PowerShell's pipeline, causing `| Out-Null` to block indefinitely waiting for EOF and preventing execution from reaching `createdb.exe`.
+   - **Resolution & Live PostgreSQL 18.4 Verification (`task-453`):**
+     - Preserved `pg_test_preserved.log`, cancelled `task-432`, and verified via `pg_isready.exe -h 127.0.0.1 -p 55433 -t 5` (`exit code 2`) that cancelling the task terminated PID 23756.
+     - Initialized a fresh disposable cluster (`scratch/pg_verify_cluster_55434` on port `55434`) using `Start-Process` with file-redirected stdout/stderr so no PowerShell pipe handles were held open:
+       1. `initdb.exe -D $clusterDir -U postgres -A trust -E UTF8 --no-instructions` -> **PASS (`exit code: 0`)**.
+       2. `Start-Process postgres.exe -ArgumentList @("-D", $clusterDir, "-p", "55434", "-h", "127.0.0.1")` + `pg_isready.exe -h 127.0.0.1 -p 55434 -t 2` -> **PASS (`127.0.0.1:55434 - accepting connections`)**.
+       3. `createdb.exe -h 127.0.0.1 -p 55434 -U postgres --no-password -E UTF8 chat_schema_test` -> **PASS (`exit code: 0`)**.
+       4. `psql.exe -h 127.0.0.1 -p 55434 -U postgres -d chat_schema_test --no-password -v ON_ERROR_STOP=1 -f script/01_schema.sql` -> **PASS (`exit code: 0`; `BEGIN`, 16 `CREATE TABLE`, 32 `CREATE INDEX`, `COMMIT`)**.
+       5. `psql.exe -h 127.0.0.1 -p 55434 -U postgres -d chat_schema_test --no-password -v ON_ERROR_STOP=1 -c "\dt"` -> **PASS (`exit code: 0`; listed all 16 tables in `public` schema)**.
+       6. `pg_ctl.exe -D $clusterDir -m immediate -w -t 10 stop` -> **PASS (`exit code: 0`; temporary cluster stopped and cleaned up without touching the Windows `postgresql-x64-18` service)**.
