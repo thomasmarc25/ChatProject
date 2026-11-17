@@ -915,3 +915,112 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
        4. `psql.exe -h 127.0.0.1 -p 55434 -U postgres -d chat_schema_test --no-password -v ON_ERROR_STOP=1 -f script/01_schema.sql` -> **PASS (`exit code: 0`; `BEGIN`, 16 `CREATE TABLE`, 32 `CREATE INDEX`, `COMMIT`)**.
        5. `psql.exe -h 127.0.0.1 -p 55434 -U postgres -d chat_schema_test --no-password -v ON_ERROR_STOP=1 -c "\dt"` -> **PASS (`exit code: 0`; listed all 16 tables in `public` schema)**.
        6. `pg_ctl.exe -D $clusterDir -m immediate -w -t 10 stop` -> **PASS (`exit code: 0`; temporary cluster stopped and cleaned up without touching the Windows `postgresql-x64-18` service)**.
+
+---
+
+## Entry 11 — Step C & D: Implement Seed Data (`script/02_seed.sql`), Admin Queries (`script/03_admin_queries.sql`), and Test Cases (`docs/database-test-cases.md`)
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: Google Antigravity IDE
+   - Version/Model: Google Antigravity `2.29.0` (`ProductVersion 2.29.0.0`, Language Server `hub-2.29.0`, Electron `44.5.1`); Agent Model: `Gemini 4 Argon (High)`
+   - Platform: Desktop IDE on Microsoft Windows 11 Home Single Language 26H2 (OS Build `10.0.26300.9711`, x64) / PowerShell
+2. **Access date and time (with time zone):**
+   - Prompt received: `2026-11-17 15:21:10 UTC+07:00 (Asia/Ho_Chi_Minh)`
+   - Shell verification timestamp (`Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"`): `2026-11-17 15:21:31 +07:00`
+3. **Prompt(s) used:**
+   - Source observation: Observed directly as a chat prompt sent to the agent in the Antigravity session.
+   - **Verbatim:**
+     ```markdown
+     Implement:
+     - script/02_seed.sql
+     - script/03_admin_queries.sql
+
+     Use the approved schema and database rules.
+     Do not connect the Swing UI to PostgreSQL.
+
+     SEED DATA
+     Create deterministic synthetic data, not randomly changing data:
+     - Admin and regular accounts.
+     - Active, locked, and soft-deleted accounts.
+     - Users with no activity and no friends.
+     - Pending, accepted, rejected, and cancelled requests.
+     - Accepted friendships with overlapping friends-of-friends.
+     - Directional blocks consistent with friendship/request rules.
+     - Multiple successful logins within a single app launch.
+     - Multiple app opens by the same user in one month.
+     - Direct messages to repeated and different recipients.
+     - Multiple groups, admins, members, and a departed member.
+     - Repeated messages to the same group.
+     - Hidden messages.
+     - Pending and resolved spam reports with consistent participants.
+     - Events across several months, a zero-activity month, and year boundaries
+       interpreted in Asia/Ho_Chi_Minh.
+
+     Use valid demo password hashes generated with a standard supported
+     password-hashing implementation. Do not use plaintext in password_hash
+     or label invented hash strings as valid.
+     Document demo credentials only as synthetic local test credentials.
+     If valid hash generation is unavailable, clearly mark accounts as
+     non-login fixtures rather than pretending they support login.
+
+     Encryption fixtures, if included, must be clearly marked synthetic
+     storage fixtures, not evidence of working encryption.
+     Never seed private keys or plaintext group keys.
+
+     Avoid fixed-ID identity sequence collisions: either capture generated
+     IDs/use stable lookups or synchronize affected identity sequences.
+
+     ADMIN QUERIES
+     Include readable runnable examples for:
+     1. User list, name/username/status filters, sorting.
+     2. One user's login history and accepted friends.
+     3. System-wide login history.
+     4. Group list, current members, and current group admins.
+     5. Spam report filtering/sorting by date and reported user's username.
+        Include both reporter and reported username in results.
+     6. Newly registered users in a date range.
+     7. Registration counts for all 12 months of a selected year.
+     8. Direct-friend count and DISTINCT friends within 1 or 2 edges.
+     9. Activity per user: app opens, DISTINCT recipients, DISTINCT groups.
+     10. Annual activity chart: DISTINCT app-opening users per month.
+
+     QUERY RULES
+     - Follow the documented treatment of deleted and locked accounts.
+     - Preserve historical message counts despite per-user hidden rows.
+     - Use [start, end) time ranges and explicit Vietnam calendar boundaries.
+     - Include zero-count months.
+     - Aggregate each activity source separately before joining to users,
+       so joins do not multiply counts.
+     - Do not sum per-day distinct-user counts to obtain monthly distinct users.
+     - Use clearly editable parameter CTEs for runnable SQL examples.
+       Do not leave JDBC ? or named parameters that fail in a SQL console.
+     - Demonstrate =, <, > filters for each activity metric.
+     - Do not derive real online status from login_history.
+
+     Document expected results for key fixtures in docs/database-test-cases.md.
+     Update README.md, the plan, and AI-LOG.md.
+     Report actual verification and limitations in Vietnamese.
+     ```
+4. **Purpose:**
+   - Implement deterministic seed data in `script/02_seed.sql`, runnable administrative SQL queries in `script/03_admin_queries.sql`, and expected fixture test cases in `docs/database-test-cases.md`, then execute and verify both SQL scripts against a disposable PostgreSQL 18.4 test database.
+5. **AI-generated content:**
+   - **Created `script/02_seed.sql`:** Deterministic seed script (`BEGIN; ... COMMIT;`) populating all 16 tables with:
+     - 26 user accounts (`IDs 1..24` matching `MockUserRepository.java` including active, locked, and 3 zero-activity/zero-friend accounts; `ID 25` `admin`; and `ID 26` `deleteduser01` soft-deleted account), using standard `PBKDF2-HMAC-SHA256` (`310,000` iterations) synthetic local test password hashes (`UserDemo#2026` and `AdminDemo#2026`).
+     - `app_open_events` (`26` rows across months 1..7 and 9..12 of 2026, with Month 8 intentionally left at 0 events, multiple opens by user 1 in March 2026, and a UTC-to-Vietnam year-boundary event at `2025-12-31 23:45:00Z` = `2026-01-01 06:45:00+07`) and `login_history` (`13` rows including 3 logins within a single launch on `2026-03-05`).
+     - `friend_requests` (`19` rows covering `PENDING`, `ACCEPTED`, `REJECTED`, `CANCELLED`), `friendships` (`12` canonical rows with overlapping 1-hop and 2-hop triangles/diamonds, locked friend `4`, and soft-deleted bridge `26`), and `user_blocks` (`3` directional blocks).
+     - `direct_messages` (`11` rows), `direct_message_hidden` (`2` rows), `chat_groups` (`4` groups including encrypted Group 2), `group_members` (`17` rows including departed member `6` in Group 1), synthetic encryption storage fixtures (`user_public_keys`, `group_key_versions`, `group_key_envelopes`), `group_messages` (`8` rows: 6 plaintext + 2 encrypted), `group_message_hidden` (`2` rows), and `spam_reports` (`5` rows: 3 `RESOLVED`, 2 `PENDING`).
+     - `setval(pg_get_serial_sequence(...), MAX(id), true)` across all 9 `IDENTITY` tables.
+   - **Created `script/03_admin_queries.sql`:** Runnable administrative SQL script with editable `params` CTEs covering all 10 required query groups (`QUERY 1` through `QUERY 10`, including `QUERY 9B` demonstrating `=`, `<`, `>` across all 3 activity metrics).
+   - **Created `docs/database-test-cases.md`:** English test case specification documenting the synthetic seed fixtures and verified query results for all 10 query groups.
+   - **Updated `script/README.md`, `README.md`, `docs/version1-plan.md`, and `AI-LOG.md`.**
+6. **Student's independent work and edits/validation:**
+   - Student defined the required seed data edge cases, password hashing rules, sequence synchronization rules, and the 10 runnable admin query patterns.
+   - Additional student review/validation: `STUDENT TO COMPLETE`
+7. **Screenshots or chat history:**
+   - `evidence/chat_history/chatgpt.png`
+   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+8. **Verification and outcomes:**
+   - **Live PostgreSQL 18.4 Execution Verification (`task-480` on isolated port `55435`, database `chat_seed_test`):**
+     - Executed `psql.exe -h 127.0.0.1 -p 55435 -U postgres -d chat_seed_test --no-password -v ON_ERROR_STOP=1 -f script/01_schema.sql` -> **PASS (`exit code: 0`)**.
+     - Executed `psql.exe -h 127.0.0.1 -p 55435 -U postgres -d chat_seed_test --no-password -v ON_ERROR_STOP=1 -f script/02_seed.sql` -> **PASS (`exit code: 0`; all 16 table inserts and 9 sequence `setval` calls committed cleanly)**.
+     - Executed `psql.exe -h 127.0.0.1 -p 55435 -U postgres -d chat_seed_test --no-password -v ON_ERROR_STOP=1 -f script/03_admin_queries.sql` -> **PASS (`exit code: 0`; verified exact row counts and values for Queries 1–10, then stopped and cleaned up the temporary cluster)**.

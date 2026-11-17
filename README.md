@@ -37,6 +37,8 @@ mvn compile exec:java -Dexec.mainClass="com.chatsystem.admin.AdminApp"
 ## 3. Repository & Submission Layout
 
 - `chat-admin/` — Standalone Maven project containing `pom.xml`, `README.md`, and Java 21 Swing source code under `src/main/java/com/chatsystem/admin/`.
+- `script/` — Shared PostgreSQL 15+ database scripts (`01_schema.sql`, `02_seed.sql`, `03_admin_queries.sql`, and `script/README.md`).
+- `docs/` — Project engineering specifications and verification documentation (`version1-plan.md`, `database-design.md`, `database-test-cases.md`).
 - `screenshots/` — Captured screenshots of the running Swing application (`01_UserManagement.png`, `02_AddUserDialog.png`) and capture instructions (`screenshots/README.md`).
 - `AI-LOG.md` — Mandatory AI usage declaration log across all phases, including a student completion checklist.
 - `Swing_Assignment/` — Packaged submission directory structure:

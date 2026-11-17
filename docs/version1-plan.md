@@ -87,30 +87,20 @@ The `script/01_schema.sql` script implements all 16 tables specified in [`docs/d
 
 ---
 
-### C. Seed Data and Admin Queries (`script/02_seed_data.sql` & `script/03_admin_queries.sql`)
+### C. Seed Data and Admin Queries (COMPLETED in `script/02_seed.sql` & `script/03_admin_queries.sql`)
 
-1. **`script/02_seed_data.sql`**:
-   - Inserts the 24 deterministic sample user accounts matching `MockUserRepository.java` (distributed across months 1–12 in 2025–2026 so annual charts display rich data), plus an `admin` account and 1 soft-deleted account to verify soft-deletion filtering rules.
-   - Inserts sample records for `login_history`, `app_open_events` (with distinct `launch_id` UUIDs across months 1–12), `friend_requests`, `friendships` (multi-hop social graph to verify 1-hop and 2-hop friend counts), `user_blocks`, `chat_groups` (both standard and encrypted groups), `group_members`, `user_public_keys`, `group_key_versions`, `group_key_envelopes`, `direct_messages`, `direct_message_hidden`, `group_messages`, `group_message_hidden`, and `spam_reports`.
+1. **`script/02_seed.sql`**:
+   - Inserts 24 deterministic sample user accounts matching `MockUserRepository.java`, plus 1 `admin` account (`id = 25`) and 1 soft-deleted account (`id = 26`, `deleteduser01`), using standard `PBKDF2-HMAC-SHA256` (`310,000` iterations) synthetic local test password hashes.
+   - Inserts deterministic fixtures for `login_history` (including 3 logins inside a single app launch), `app_open_events` (including multiple opens in a single month, a UTC-to-Vietnam year-boundary event, and a zero-activity month in August 2026), `friend_requests` (`PENDING`, `ACCEPTED`, `REJECTED`, `CANCELLED`), `friendships` (overlapping 1-hop and 2-hop triangles/diamonds, locked friend, and soft-deleted bridge), `user_blocks`, `chat_groups` (standard and encrypted), `group_members` (admins, active members, and a departed member), synthetic encryption storage fixtures (`user_public_keys`, `group_key_versions`, `group_key_envelopes`), `direct_messages`, `direct_message_hidden`, `group_messages`, `group_message_hidden`, and `spam_reports`, and synchronizes all 9 identity sequences.
 2. **`script/03_admin_queries.sql`**:
-   - Reference SQL queries covering all 9 Admin requirements:
-     - User list filtering/sorting, single-user login history, and single-user direct friends list.
-     - System-wide chronological login history.
-     - Chat-group list with filtering/sorting, active group members list (`left_at IS NULL`), and active group administrators list (`role = 'ADMIN' AND left_at IS NULL`).
-     - Spam-report list with time-range and username filtering/sorting, plus account-lock resolution update.
-     - Newly registered users in `[start, end)` with name filter and name/creation-time sorting.
-     - Annual 12-month registration counts using `generate_series(1, 12)` in `Asia/Ho_Chi_Minh`.
-     - User friend statistics CTE computing `direct_friends_count` and `friends_with_fof_count` (`DISTINCT` 1-hop $\cup$ 2-hop active users excluding self).
-     - User activity statistics in `[start, end)` computing `app_opens`, `distinct_direct_recipients`, and `distinct_groups_messaged`, with metric-specific comparison filtering (`=`, `<`, `>`).
-     - Annual 12-month active user counts (`COUNT(DISTINCT user_id)` in `app_open_events`) using `generate_series(1, 12)` in `Asia/Ho_Chi_Minh`.
+   - Runnable SQL queries with editable `params` CTEs covering all 10 Admin query patterns (user list filtering/sorting, single-user login history & direct friends, system-wide login history, group list/members/admins, spam reports with reporter & reported usernames, newly registered users, 12-month registration counts, 1-hop and 2-hop friend statistics, per-user activity metrics with `=`, `<`, `>` filters across all 3 metrics, and 12-month distinct active user counts).
 
 ---
 
-### D. Database Verification
+### D. Database Verification (COMPLETED — Verified on PostgreSQL 18.4 & Documented in `docs/database-test-cases.md`)
 
-- Validate SQL syntax, foreign key dependency order, constraint enforcement, and query execution for `script/01_schema.sql`, `script/02_seed_data.sql`, and `script/03_admin_queries.sql`.
-- Run live verification against PostgreSQL if `psql` / a local PostgreSQL server or container is available; if no local PostgreSQL server is running, perform static verification of all table/column references and verify that the Java in-memory mock data produces identical results.
-- Document execution instructions in `script/README.md`.
+- Executed `script/01_schema.sql`, `script/02_seed.sql`, and `script/03_admin_queries.sql` sequentially with `psql -v ON_ERROR_STOP=1` against an isolated PostgreSQL 18.4 test database (`chat_seed_test`).
+- Documented expected and verified outputs for all 10 test cases in [`docs/database-test-cases.md`](./database-test-cases.md) and execution steps in [`script/README.md`](../script/README.md).
 
 ---
 
