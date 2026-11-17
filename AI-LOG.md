@@ -1024,3 +1024,86 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
      - Executed `psql.exe -h 127.0.0.1 -p 55435 -U postgres -d chat_seed_test --no-password -v ON_ERROR_STOP=1 -f script/01_schema.sql` -> **PASS (`exit code: 0`)**.
      - Executed `psql.exe -h 127.0.0.1 -p 55435 -U postgres -d chat_seed_test --no-password -v ON_ERROR_STOP=1 -f script/02_seed.sql` -> **PASS (`exit code: 0`; all 16 table inserts and 9 sequence `setval` calls committed cleanly)**.
      - Executed `psql.exe -h 127.0.0.1 -p 55435 -U postgres -d chat_seed_test --no-password -v ON_ERROR_STOP=1 -f script/03_admin_queries.sql` -> **PASS (`exit code: 0`; verified exact row counts and values for Queries 1–10, then stopped and cleaned up the temporary cluster)**.
+
+
+---
+
+## Entry 12 — Step D: Automated PostgreSQL Verification Script (`script/04_verify.sql`) & Member 1 Handoff Specification
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: Google Antigravity IDE
+   - Version/Model: Google Antigravity `2.29.0` (`ProductVersion 2.29.0.0`, Language Server `hub-2.29.0`, Electron `44.5.1`); Agent Model: `Gemini 4 Argon (High)`
+   - Platform: Desktop IDE on Microsoft Windows 11 Home Single Language 26H2 (OS Build `10.0.26300.9711`, x64) / PowerShell
+2. **Access date and time (with time zone):**
+   - Prompt received: `2026-11-17 23:45:19 UTC+07:00 (Asia/Ho_Chi_Minh)`
+   - Shell verification timestamp (`Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"`): `2026-11-17 23:46:22 +07:00`
+3. **Prompt(s) used:**
+   - Source observation: Observed directly as a chat prompt sent to the agent in the Antigravity session.
+   - **Verbatim:**
+     ```markdown
+     Verify the PostgreSQL deliverables against docs/database-design.md.
+
+     Create script/04_verify.sql with meaningful assertions, runnable after
+     01_schema.sql and 02_seed.sql in a disposable test database.
+
+     VERIFY
+     - Duplicate usernames/emails differing only in case are rejected.
+     - Self friendship/request/block is rejected.
+     - Reversed duplicate friendships cannot be stored.
+     - Opposite-direction simultaneous PENDING requests are rejected.
+     - Duplicate (launch_id, user_id) app-open events are rejected.
+     - Foreign keys reject invalid references.
+     - Invalid plaintext/ciphertext combinations are rejected.
+     - Group messages cannot reference another group's key version.
+     - Expected friend counts correctly eliminate overlap and self.
+     - Repeated messages to one recipient count as one chat partner.
+     - Repeated group messages count as one group.
+     - Multiple app opens count as multiple opens but one monthly user.
+     - Multiple login events do not increase app-open counts.
+     - Hidden messages do not reduce historical activity counts.
+     - Monthly charts contain 12 rows, including zero months.
+     - Vietnam-local month/year boundaries produce expected results.
+
+     Expected failures must be handled inside rollback-safe blocks or
+     savepoints. Verification must not leave fixture changes behind.
+
+     Distinguish:
+     A. Database-enforced constraints.
+     B. Future service-layer business rules.
+     Do not claim B is enforced by the current SQL.
+
+     Run schema, seed, and verification against a fresh disposable database
+     if PostgreSQL is available and it is safe to do so.
+     Never drop or reset an existing user database.
+     If execution is unavailable, state "not executed" and provide exact
+     manual commands; do not report tests as passed.
+
+     Fix actual defects found in the scripts and documentation.
+     Provide a short handoff section in docs/database-design.md for Member 1:
+     table names, relationships, conventions, and how to request schema changes.
+
+     Update AI-LOG.md and the plan.
+     Do not commit or push.
+     ```
+4. **Purpose:**
+   - Create `script/04_verify.sql` containing rollback-safe PL/pgSQL assertions verifying all database-enforced constraints (Part A) and query/fixture invariants (Part B) without leaving any fixture modifications behind, add a Member 1 handoff section to `docs/database-design.md`, and run `01_schema.sql`, `02_seed.sql`, `03_admin_queries.sql`, and `04_verify.sql` against a fresh disposable PostgreSQL 18.4 database.
+5. **AI-generated content:**
+   - **Created `script/04_verify.sql`:** Rollback-safe automated verification suite (`BEGIN; DO $$ ... $$; ROLLBACK;`) testing:
+     - **Part A (Database-Enforced Negative Assertions `A1`–`A9`):** Case-insensitive username/email uniqueness (`23505`), self-relationship checks (`23514`) on `friendships`/`friend_requests`/`user_blocks`/`direct_messages`/`spam_reports`, reversed and duplicate friendships (`23514`/`23505`), opposite-direction simultaneous `PENDING` friend requests (`23505`), duplicate `(launch_id, user_id)` app-open events (`23505`), invalid FK references (`23503`) and `ON DELETE RESTRICT` preservation of historical user records (`23001 restrict_violation`), invalid plaintext/ciphertext combinations in `group_messages` (`23514`), and cross-group `key_version` references (`23503`).
+     - **Part B (Seed Fixture & Query Invariant Assertions `B1`–`B9`):** Friend counts for User 1 (`direct=3, fof=5`), repeated DM deduplication (`4` DMs -> `2` distinct recipients), repeated group message deduplication (`5` messages -> `2` distinct groups), multiple app opens in March 2026 (`3` opens for User 1, `8` total rows, `5` distinct monthly users), multiple logins in a single launch (`3` logins on `2026-03-05` -> `1` app-open row), hidden message preservation, 12-month registration/activity chart completeness including zero-count Month 8 (`0`), `Asia/Ho_Chi_Minh` year-boundary classification, and untouched row counts across all 16 tables.
+   - **Updated `docs/database-design.md`:** Added Section `5. Handoff Guide for Member 1 (User Application Integration)` covering table relationships, enum/ordering/time-zone conventions, and schema change request workflow.
+   - **Updated `docs/database-test-cases.md`, `script/README.md`, `README.md`, `docs/version1-plan.md`, and `AI-LOG.md`.**
+6. **Student's independent work and edits/validation:**
+   - Student defined the 16 verification requirements, rollback-safety rules, the distinction between database-enforced constraints (A) and future service-layer rules (B), and the Member 1 database handoff requirements.
+   - Additional student review/validation: `STUDENT TO COMPLETE`
+7. **Screenshots or chat history:**
+   - `evidence/chat_history/chatgpt.png`
+   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+8. **Verification and outcomes:**
+   - **Initial Run (`task-525`):** Identified that PostgreSQL raises `SQLSTATE 23001` (`restrict_violation`) rather than `23503` (`foreign_key_violation`) when `DELETE FROM users WHERE id = 1` is blocked by `ON DELETE RESTRICT`. Updated assertion `A7b` in `script/04_verify.sql` to catch `restrict_violation`.
+   - **Final Full-Suite Verification (`task-532` on isolated PostgreSQL 18.4 port `55438`, database `chat_verify_test`):**
+     - `01_schema.sql` -> **PASS (`exit code: 0`)**
+     - `02_seed.sql` -> **PASS (`exit code: 0`)**
+     - `03_admin_queries.sql` -> **PASS (`exit code: 0`)**
+     - `04_verify.sql` -> **PASS (`exit code: 0`; all assertions `PASS [A1]` through `PASS [A9]` and `PASS [B1]` through `PASS [B9]` printed, followed by `DO` and `ROLLBACK`)**.
+     - Stopped and removed the temporary verification cluster (`pg_ctl stop exit code: 0`).

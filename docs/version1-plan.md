@@ -97,10 +97,11 @@ The `script/01_schema.sql` script implements all 16 tables specified in [`docs/d
 
 ---
 
-### D. Database Verification (COMPLETED — Verified on PostgreSQL 18.4 & Documented in `docs/database-test-cases.md`)
+### D. Database Verification (COMPLETED — Verified via `script/04_verify.sql` on PostgreSQL 18.4 & Documented in `docs/database-test-cases.md`)
 
-- Executed `script/01_schema.sql`, `script/02_seed.sql`, and `script/03_admin_queries.sql` sequentially with `psql -v ON_ERROR_STOP=1` against an isolated PostgreSQL 18.4 test database (`chat_seed_test`).
-- Documented expected and verified outputs for all 10 test cases in [`docs/database-test-cases.md`](./database-test-cases.md) and execution steps in [`script/README.md`](../script/README.md).
+- Executed `script/01_schema.sql`, `script/02_seed.sql`, `script/03_admin_queries.sql`, and `script/04_verify.sql` sequentially with `psql -v ON_ERROR_STOP=1` against an isolated PostgreSQL 18.4 test database.
+- `script/04_verify.sql` asserts all database-enforced constraints (Part A) and seed/query invariants (Part B) inside rollback-safe blocks (`BEGIN; ... ROLLBACK;`) without leaving fixture changes behind.
+- Documented expected and verified outputs in [`docs/database-test-cases.md`](./database-test-cases.md), Member 1 handoff instructions in [`docs/database-design.md`](./database-design.md), and execution steps in [`script/README.md`](../script/README.md).
 
 ---
 

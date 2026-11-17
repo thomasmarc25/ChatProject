@@ -169,3 +169,24 @@
   | `10` | `1` | `3` |
   | `11` | `2` | `1, 2` |
   | `12` | `1` | `1` |
+
+
+---
+
+## 3. Automated Verification Suite (`script/04_verify.sql`)
+
+Running `psql -v ON_ERROR_STOP=1 -f script/04_verify.sql` after `01_schema.sql` and `02_seed.sql` executes a rollback-safe PL/pgSQL verification block (`BEGIN; DO $$ ... $$; ROLLBACK;`) that asserts:
+
+- **Part A — Database-Enforced Constraints (`PASS [A1]` – `PASS [A9]`):**
+  - `A1`: Case-insensitive duplicate `username` (`'NguyenVanAn'`) rejected (`23505`).
+  - `A2`: Case-insensitive duplicate `email` (`'NGUYENVANAN@CHATSYSTEM.VN'`) rejected (`23505`).
+  - `A3`: Self-relationships rejected across `friendships`, `friend_requests`, `user_blocks`, `direct_messages`, and `spam_reports` (`23514`).
+  - `A4`: Reversed friendship `(2, 1)` rejected (`23514`) and duplicate canonical `(1, 2)` rejected (`23505`).
+  - `A5`: Opposite-direction simultaneous `PENDING` friend request `(10 -> 1)` rejected (`23505`).
+  - `A6`: Duplicate `(launch_id, user_id)` in `app_open_events` rejected (`23505`).
+  - `A7`: Invalid FK reference (`user_id = 999999`) rejected (`23503`) and physical deletion of `users.id = 1` blocked by `ON DELETE RESTRICT` (`23001 restrict_violation`).
+  - `A8`: Invalid plaintext/ciphertext combinations in `group_messages` (both present, all null, or missing `nonce`) rejected (`23514`).
+  - `A9`: Group 1 message referencing Group 2's `key_version = 2` rejected by composite FK `fk_group_messages_key_version` (`23503`).
+- **Part B — Seed Fixture & Query Invariants (`PASS [B1]` – `PASS [B9]`):**
+  - `B1`–`B8`: Asserts exact counts for User 1 friends (`3` direct, `5` 1-or-2-hop), March 2026 DM deduplication (`4` rows -> `2` recipients), March 2026 group message deduplication (`5` rows -> `2` groups), March 2026 app opens (`3` opens for User 1, `8` total rows, `5` distinct monthly users), `2026-03-05` single-launch multi-login (`3` logins -> `1` app open), hidden message preservation, 12-month charts including zero-count Month 8, and `Asia/Ho_Chi_Minh` year boundaries.
+  - `B9`: Verifies all 16 table row counts remain 100% unchanged after all tests complete.

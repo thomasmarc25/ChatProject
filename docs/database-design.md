@@ -617,3 +617,46 @@ Cross-table `CHECK` expressions are avoided. Integrity rules are cleanly divided
    - For unencrypted groups (`chat_groups.is_encrypted = FALSE`), the service layer rejects messages with `key_version IS NOT NULL`.
    - For encrypted groups (`chat_groups.is_encrypted = TRUE`), the service layer requires `key_version IS NOT NULL`, `ciphertext IS NOT NULL`, `nonce IS NOT NULL`, and `content IS NULL`.
    - When group encryption is enabled or group membership changes, a new `group_key_versions(group_id, key_version)` row is created and `group_key_envelopes` rows are stored for the active public keys (`user_public_keys.revoked_at IS NULL`) of all active group members (`group_members.left_at IS NULL`).
+
+
+---
+
+## 5. Handoff Guide for Member 1 (User Application Integration)
+
+This section provides a quick reference for **Member 1** (owner of the User Swing application and User-side features in Version 2):
+
+### 5.1. Summary of Tables & Key Relationships Used by the User Subsystem
+- **Authentication & Profile (`users`, `login_history`, `app_open_events`):**
+  - Register, update profile, reset/change password (`password_hash`), and authenticate against `users` (`WHERE deleted_at IS NULL AND is_locked = FALSE`).
+  - On each User-app process start, generate one `UUID` (`launch_id`). After successful authentication, insert a login row into `login_history` and insert `(launch_id, user_id)` into `app_open_events ON CONFLICT (launch_id, user_id) DO NOTHING`.
+- **Friends, Friend Requests & Blocking (`friend_requests`, `friendships`, `user_blocks`):**
+  - **Friend list:** Query `friendships` where `user_low_id = :me OR user_high_id = :me`, joining `users` (`WHERE deleted_at IS NULL`).
+  - **Friend requests:** Insert into `friend_requests(sender_id, receiver_id, status='PENDING')`. When accepted, update `friend_requests` (`status='ACCEPTED', responded_at=now()`) and insert `(LEAST(u,v), GREATEST(u,v))` into `friendships`.
+  - **Unfriend:** Delete `(LEAST(u,v), GREATEST(u,v))` from `friendships`.
+  - **Block (`user_blocks`):** Insert `(blocker_id, blocked_id)`, delete `(LEAST(u,v), GREATEST(u,v))` from `friendships`, and cancel any `PENDING` request between the pair. Filter out users who have blocked or are blocked by `:me` in user search (`users`), friend requests, and direct messaging.
+- **Direct Chat & History Deletion (`direct_messages`, `direct_message_hidden`, `spam_reports`):**
+  - Load 1-to-1 messages between `:me` and `:peer` from `direct_messages` excluding rows present in `direct_message_hidden` for `user_id = :me`.
+  - Deleting one or all messages inserts `(message_id, :me)` into `direct_message_hidden` without deleting rows from `direct_messages`.
+  - Reporting spam inserts into `spam_reports(reporter_id, reported_user_id, direct_message_id, reason, message_snapshot, status='PENDING')`.
+- **Group Chat & Encrypted Groups (`chat_groups`, `group_members`, `group_messages`, `group_message_hidden`, `user_public_keys`, `group_key_versions`, `group_key_envelopes`):**
+  - Active members of a group have `group_members.left_at IS NULL`. Removing a member sets `left_at = now()`.
+  - Standard group messages populate `content` (`key_version IS NULL`); encrypted group messages populate `ciphertext`, `nonce`, and `key_version` (`content IS NULL`).
+  - Per-user group message deletion inserts into `group_message_hidden(message_id, :me)`.
+
+### 5.2. Shared Conventions to Follow
+1. **Enum & Status Tokens:** Always use uppercase English tokens in SQL/JDBC:
+   - `users.gender`: `'MALE'`, `'FEMALE'`, `'OTHER'` (display in UI as `'Nam'`, `'Nữ'`, `'Khác'`).
+   - `users.role`: `'USER'`, `'ADMIN'`.
+   - `group_members.role`: `'MEMBER'`, `'ADMIN'`.
+   - `friend_requests.status`: `'PENDING'`, `'ACCEPTED'`, `'REJECTED'`, `'CANCELLED'`.
+   - `spam_reports.status`: `'PENDING'`, `'RESOLVED'`.
+2. **Canonical Pair Ordering:** Whenever querying or writing `friendships`, always normalize the pair as `user_low_id = LEAST(u, v)` and `user_high_id = GREATEST(u, v)`.
+3. **Timestamps & Time Zone:** Store all timestamps as `TIMESTAMPTZ` (`OffsetDateTime` / `Instant` in Java) and format/query calendar boundaries in `Asia/Ho_Chi_Minh`.
+4. **Online Presence:** Do not query or add an `is_online` column in PostgreSQL; online/offline state for the friend list will be supplied by the Version 2 Spring Boot TCP socket session registry.
+
+### 5.3. How to Request Schema Changes
+- **Member 2** is the owner of `docs/database-design.md` and `script/*.sql`.
+- If a User-application feature requires a new column, index, or constraint change:
+  1. Do **not** edit `script/01_schema.sql` or create a competing SQL file independently.
+  2. Open an issue or message Member 2 specifying the target table, column/index needed, and query pattern.
+  3. Member 2 will update `docs/database-design.md`, `script/01_schema.sql`, `script/02_seed.sql`, and `script/04_verify.sql` together and re-verify the full suite before merging.

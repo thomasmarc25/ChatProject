@@ -22,6 +22,7 @@ This directory contains the SQL scripts for the **Chat System** shared PostgreSQ
 | **1** | `01_schema.sql` | Creates all 16 tables (13 core tables + 3 group-encryption storage preparation tables), primary keys, foreign keys (`ON DELETE RESTRICT`), row-level `CHECK` constraints, and indexes. |
 | **2** | `02_seed.sql` | Inserts deterministic synthetic seed data (admin, active, locked, soft-deleted, and zero-activity/zero-friend accounts; social graph with 1-hop and 2-hop overlaps; blocks; multi-login single-launch and multi-launch events; direct & group messages including encrypted storage fixtures and hidden messages; and spam reports) and synchronizes identity sequences. |
 | **3** | `03_admin_queries.sql` | Runnable reference SQL queries with editable `params` CTEs covering all 10 Administrator subsystem query patterns. |
+| **4** | `04_verify.sql` | Automated rollback-safe verification suite (`BEGIN; ... ROLLBACK;`) asserting all database-enforced constraints (Part A) and seed/query invariants (Part B) without leaving fixture modifications behind. |
 
 ---
 
@@ -39,11 +40,12 @@ This directory contains the SQL scripts for the **Chat System** shared PostgreSQ
    psql -U <db_user> -d <db_name> -v ON_ERROR_STOP=1 -f script/01_schema.sql
    ```
 
-3. Load deterministic seed data and run the administrative verification queries:
+3. Load deterministic seed data, run the administrative queries, and execute the automated verification assertions:
 
    ```bash
    psql -U <db_user> -d <db_name> -v ON_ERROR_STOP=1 -f script/02_seed.sql
    psql -U <db_user> -d <db_name> -v ON_ERROR_STOP=1 -f script/03_admin_queries.sql
+   psql -U <db_user> -d <db_name> -v ON_ERROR_STOP=1 -f script/04_verify.sql
    ```
 
 ---
