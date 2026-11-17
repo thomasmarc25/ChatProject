@@ -13,7 +13,7 @@
 2. **Access date and time (with time zone):**
    - `2026-11-10 23:40:38 UTC+07:00 (Asia/Ho_Chi_Minh)`
 3. **Prompt(s) used:**
-   - Trước tiên tạo cho t 1 file AGENTS.md r sau đó chia nhỏ từng khúc của prompt ra để antigravity làm việc được hiệu quả
+   - First create an `AGENTS.md` file for me and then break the prompt into smaller phase prompts so that Antigravity can work effectively (translated from the original Vietnamese user prompt sent to ChatGPT).
 4. **Purpose:**
    - Prepare repository-level engineering instructions (`AGENTS.md`) and staged phase prompts (Phases 1–4) for the individual Java Swing Admin User Management UI assignment.
 5. **AI-generated content:**
@@ -21,8 +21,8 @@
 6. **Student's independent work and edits/validation:**
    - Student defined the assignment scope (one UI-only Admin User Management screen due 12 November 2026), selected the technology stack (Java 21 LTS, Java Swing, FlatLaf 3.7.2 Light, Maven), reviewed and saved `AGENTS.md` to the repository root (`c:\Users\DELL\OneDrive\Máy tính\Java\Chat\AGENTS.md`), and executed the 4-phase workflow step-by-step.
 7. **Screenshots or chat history:**
-  ![Ảnh minh chứng](./evidence/chat_history/chatgpt.png)
-1. **Verification and outcomes:**
+   ![ChatGPT planning evidence screenshot](./evidence/chat_history/chatgpt.png)
+8. **Verification and outcomes:**
    - Confirmed `AGENTS.md` matches the university assignment scope, visual design tokens (`#2563EB`, `#111827`, `#F5F7FB`, etc.), and AI usage logging rules for the 12 November 2026 individual UI deliverable.
 
 ---
@@ -435,3 +435,353 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
 - [ ] **2. Entry 0, Field 2 & 3 (`Access date/time` & `Prompt(s) used`):** Confirm the exact time on `2026-11-10` (prior to `23:44:22 +07:00`) and paste the prompt you gave ChatGPT to generate `AGENTS.md` and the 4 phase prompts.
 - [ ] **3. Entry 0, Field 7 (`Screenshots or chat history`):** Optional — if you want to include your ChatGPT browser chat history alongside the already-exported `antigravity_session_8a98bca0.md`, save a screenshot/export of that ChatGPT chat into `Swing_Assignment/evidence/chat_history/` and list its filename in Entry 0.
 - [ ] **4. Synchronize `AI-LOG.md` Copies:** If you edit `AI-LOG.md`, copy it to `Swing_Assignment/AI-LOG.md` so both copies match before zipping `Swing_Assignment/`.
+
+---
+
+## Entry 7 — Version 1 Planning: Shared PostgreSQL Database & Full Admin UI Roadmap (`docs/version1-plan.md`)
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: Google Antigravity IDE
+   - Version/Model: Google Antigravity `2.29.0` (`ProductVersion 2.29.0.0`, Language Server `hub-2.29.0`, Electron `44.5.1`); Agent Model: `Gemini 4 Argon (High)`
+   - Platform: Desktop IDE on Microsoft Windows 11 Home Single Language 26H2 (OS Build `10.0.26300.9711`, x64) / PowerShell
+2. **Access date and time (with time zone):**
+   - Prompt received: `2026-11-17 11:03:13 UTC+07:00 (Asia/Ho_Chi_Minh)`
+   - Shell verification timestamp (`Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"`): `2026-11-17 11:03:33 +07:00`
+3. **Prompt(s) used:**
+   - Source observation: Observed directly as a chat prompt sent to the agent in the Antigravity session.
+   - **Verbatim:**
+     ```markdown
+     I am Member 2 and the database design owner of a two-member Java
+     chat-system course project. Work in the currently opened repository.
+
+     The main chat screen and admin user-management screen already exist.
+     My responsibility is the administrator application and the complete
+     shared PostgreSQL database design.
+
+     Agreed technologies:
+     - Windows desktop frontend: Java Swing.
+     - Version 2 backend: Spring Boot + Java TCP Socket, NOT WebSocket.
+     - PostgreSQL + Spring JDBC / JdbcTemplate.
+     - JSON for socket messages.
+     - Maven.
+
+     CURRENT SCOPE: VERSION 1
+     Required deliverables:
+     - UI source code for both User and Admin applications.
+     - Database creation scripts.
+     - Screenshots of each member's real Git commits.
+     - Report: team information, task allocation, contribution percentages
+       totaling 100%, database design, and screenshots of designed screens.
+
+     Real backend integration and business-event implementation are not
+     required for Version 1. Use in-memory sample data for the UI.
+
+     FIRST TASK
+     1. Read applicable AGENTS.md files.
+     2. Inspect git status and the current diff. Preserve existing changes.
+     3. Inspect project modules, pom.xml files, configured Java version,
+        admin entry point, existing screens/dialogs, resources, and UI style.
+     4. Read the assignment PDF if it exists in the repository.
+     5. Identify completed, partial, and missing admin screens.
+     6. Create or update docs/version1-plan.md with this sequence:
+        A. Shared database specification.
+        B. PostgreSQL schema.
+        C. Seed data and admin queries.
+        D. Database verification.
+        E. Admin navigation and user-management dialogs.
+        F. Login history, groups, and spam reports.
+        G. Registration and activity statistics and charts.
+        H. Final verification and submission preparation.
+
+     PROJECT RULES FOR ALL FOLLOWING TASKS
+     - Preserve existing working screens and visual style.
+     - Do not modify Member 1's UI module.
+     - I own the shared database: do not stop to ask Member 1 to decide.
+     - Make routine implementation decisions and document them.
+     - Do not introduce backend or database connectivity into Swing yet.
+     - Do not upgrade Java or dependencies without a concrete need.
+     - Do not reset Git, delete unrelated work, commit, or push automatically.
+     - Do not put database credentials or private keys in tracked files.
+     - Use classpath resources, not machine-specific absolute paths.
+     - Append accurate work records to AI-LOG.md; never invent past activity.
+     - Report results and limitations in Vietnamese.
+
+     For this task, edit documentation only.
+     Do not implement SQL or UI changes yet.
+     Report the project structure, launch command, missing features,
+     and the next implementation step.
+     ```
+4. **Purpose:**
+   - Inspect the repository state, Git history, Maven/Swing architecture, and course project requirements (Version 1), then author `docs/version1-plan.md` covering steps A through H (Shared database specification, PostgreSQL schema, seed data & admin queries, database verification, admin navigation & user-management dialogs, login history/groups/spam reports, registration & activity statistics/charts, and final verification/submission preparation) without modifying any SQL or Java source files yet.
+5. **AI-generated content:**
+   - **Created `docs/version1-plan.md`:** Comprehensive Version 1 engineering specification and implementation plan structured in sequence **A–H**:
+     - `A. Shared Database Specification` — standardized entity mapping for both User and Admin subsystems, including explicit definitions for the friends-of-friends (`DISTINCT` 1-hop $\cup$ 2-hop excluding self) and user activity metrics (`open_count`, `chatted_users_count`, `chatted_groups_count`).
+     - `B. PostgreSQL Schema (script/01_schema.sql)` — tables, constraints, and indexes.
+     - `C. Seed Data and Admin Queries (script/02_seed_data.sql & script/03_admin_queries.sql)`.
+     - `D. Database Verification`.
+     - `E. Admin Navigation and User-Management Dialogs` (`PasswordUpdateDialog`, `UserLoginHistoryDialog`, `UserFriendsDialog`, confirmation dialogs, in-memory filter/sort hooks).
+     - `F. Login History, Groups, and Spam Reports` (`LoginHistoryPanel`, `ChatGroupManagementPanel`, `GroupMembersDialog`, `SpamReportPanel`).
+     - `G. Registration and Activity Statistics and Charts` (`StatisticsWorkspacePanel`, `NewUserRegistrationPanel`, `RegistrationChartPanel`, `FriendStatisticsPanel`, `UserActivityPanel`, `ActivityChartPanel`, `MonthlyBarChartPanel`).
+     - `H. Final Verification and Submission Preparation`.
+   - **Modified `AI-LOG.md`:** Appended Entry 7 recording this planning phase.
+6. **Student's independent work and edits/validation:**
+   - Student committed the initial `chat-admin` User Management screen (`b47ef10`) and completed `AI-LOG.md` Entry 0 with `evidence/chat_history/chatgpt.png` (`e8b0fb1`); student defined the Version 1 scope and assumed ownership of both the Administrator application and the shared PostgreSQL database design.
+   - Additional student review/validation of `docs/version1-plan.md`: `STUDENT TO COMPLETE`
+7. **Screenshots or chat history:**
+   - `evidence/chat_history/chatgpt.png` (committed in `e8b0fb1`)
+   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+8. **Verification and outcomes:**
+   - **Git & Workspace Inspection (`git status -u`, `git diff`, `git log -n 5 --oneline --stat`):** Confirmed clean working tree on branch `main` at commit `e8b0fb1`; verified only documentation files (`docs/version1-plan.md` and `AI-LOG.md`) were created/updated in this step, with zero changes to Java source code, `pom.xml`, or SQL scripts.
+
+---
+
+## Entry 8 — Step A: Shared Database Specification (`docs/database-design.md` & Plan Alignment)
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: Google Antigravity IDE
+   - Version/Model: Google Antigravity `2.29.0` (`ProductVersion 2.29.0.0`, Language Server `hub-2.29.0`, Electron `44.5.1`); Agent Model: `Gemini 4 Argon (High)`
+   - Platform: Desktop IDE on Microsoft Windows 11 Home Single Language 26H2 (OS Build `10.0.26300.9711`, x64) / PowerShell
+2. **Access date and time (with time zone):**
+   - Prompt received: `2026-11-17 11:39:23 UTC+07:00 (Asia/Ho_Chi_Minh)`
+   - Shell verification timestamp (`Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"`): `2026-11-17 12:00:08 +07:00`
+3. **Prompt(s) used:**
+   - Source observation: Observed directly as a chat prompt sent to the agent in the Antigravity session.
+   - **Verbatim:**
+     ```markdown
+     Continue with the shared database specification for Version 1.
+     Read docs/version1-plan.md and applicable project instructions first.
+
+     I authorize the following design decisions. Implement the specification
+     in docs/database-design.md. Do not wait for Member 1's approval.
+     Do not write schema SQL in this step.
+
+     BUSINESS RULES
+     1. Direct friends are accepted friendships only.
+     2. Friends including friends-of-friends means DISTINCT users reachable
+        in 1 or 2 accepted friendship edges, excluding the current user.
+        Pending requests do not count.
+     3. Blocking is directional and stored separately.
+        A block prevents direct messaging and friend requests in either
+        direction, hides both users from each other's search, and removes
+        their friendship and pending requests. Shared group membership remains.
+        These are team conventions where the assignment is ambiguous.
+     4. Activity filters select one metric:
+        app opens, distinct direct-message recipients, or distinct groups
+        the user sent messages to. Do not add an undefined total metric.
+     5. An active user has an app-open event or sends a message in the range.
+        The annual activity chart counts DISTINCT users with app-open events.
+     6. Count app opens separately from successful logins.
+        One User-app process launch generates a launch UUID.
+        Once authenticated, record at most one event per (launch_id, user_id).
+        Reconnection/relogin in the same launch does not add another event.
+        Unauthenticated launches cannot be attributed to a user.
+     7. Deleting messages/history hides existing messages for that user only.
+        It does not delete the underlying messages or reduce activity counts.
+     8. Account deletion is soft deletion.
+        Historical registration/activity counts retain deleted accounts.
+        Current friend lists/counts exclude deleted accounts and paths through
+        deleted accounts. Locked accounts remain unless explicitly filtered.
+     9. Time filtering uses [start, end).
+        Calendar dates/months/years use Asia/Ho_Chi_Minh.
+     10. Online presence belongs to authenticated live connections/heartbeat
+         in Version 2. Do not persist users.is_online as the source of truth.
+
+     CORE TABLES
+     - users:
+       id, username, password_hash, full_name, address, date_of_birth,
+       gender, email, role, is_locked, created_at, updated_at, deleted_at.
+     - login_history:
+       id, user_id, login_at, logout_at, ip_address.
+     - app_open_events:
+       id, launch_id, user_id, opened_at.
+     - friend_requests:
+       id, sender_id, receiver_id, status, created_at, responded_at.
+     - friendships:
+       user_low_id, user_high_id, created_at.
+     - user_blocks:
+       blocker_id, blocked_id, created_at.
+     - direct_messages:
+       id, sender_id, receiver_id, content, sent_at.
+     - direct_message_hidden:
+       message_id, user_id, hidden_at.
+     - chat_groups:
+       id, name, created_by, is_encrypted, created_at.
+     - group_members:
+       group_id, user_id, role, joined_at, left_at.
+     - group_messages:
+       id, group_id, sender_id, content, ciphertext, nonce, key_version, sent_at.
+     - group_message_hidden:
+       message_id, user_id, hidden_at.
+     - spam_reports:
+       id, reporter_id, reported_user_id, direct_message_id, reason,
+       message_snapshot, status, created_at, resolved_by, resolved_at.
+
+     ENCRYPTION STORAGE PREPARATION
+     - user_public_keys:
+       id, user_id, public_key, created_at, revoked_at.
+     - group_key_versions:
+       group_id, key_version, created_at.
+     - group_key_envelopes:
+       group_id, key_version, user_public_key_id, encrypted_group_key.
+
+     Do not store private keys or plaintext group keys.
+     This is storage preparation, not a complete encryption implementation.
+     Use a per-message plaintext/ciphertext distinction.
+     Encrypted messages reference a key version in the same group.
+     Do not claim encrypted content can be searched with server-side plaintext SQL.
+
+     SPECIFICATION DETAILS
+     - Use BIGINT identity primary keys where appropriate.
+     - Use UUID for launch_id, DATE for birth dates, TIMESTAMPTZ for events.
+     - Use TEXT + CHECK for finite statuses unless the project already has
+       a justified consistent convention.
+     - users.role: USER / ADMIN.
+     - group_members.role: MEMBER / ADMIN.
+     - friend_requests.status:
+       PENDING / ACCEPTED / REJECTED / CANCELLED.
+     - spam_reports.status: PENDING / RESOLVED.
+     - Choose and document a consistent gender vocabulary.
+     - Specify nullability, defaults, keys, indexes, and FK delete behavior.
+     - Case-insensitive uniqueness for usernames and emails.
+     - One canonical friendship row with user_low_id < user_high_id.
+     - At most one pending request per unordered user pair.
+     - No self friendship/request/block/direct message/spam report.
+     - A member row represents current/latest membership, not a complete
+       membership timeline. Document this limitation.
+     - Distinguish constraints enforceable by SQL from transactional rules
+       for the future service layer.
+     - Do not use cross-table CHECK expressions.
+     - Document that password reset replaces password_hash; no plaintext
+       password column is needed.
+
+     OUTPUT
+     Create a data dictionary, a readable Mermaid ER diagram split into
+     logical sections if needed, business-rule definitions, and a list of
+     future service-layer checks, including:
+     - Authorization.
+     - Block checks.
+     - Friendship acceptance.
+     - Active group membership.
+     - Maintaining at least one group admin.
+     - Message-hiding permissions.
+     - Spam report/message participant consistency.
+     - Group key rotation and distribution.
+
+     Update AI-LOG.md and the plan. Summarize decisions in Vietnamese.
+     ```
+4. **Purpose:**
+   - Author the complete shared PostgreSQL database design specification in `docs/database-design.md` (covering all 16 tables: 13 core tables + 3 encryption storage preparation tables, data dictionary, logical Mermaid ER diagrams, business-rule definitions, SQL-enforceable constraints vs. future service-layer transactional rules) and align `docs/version1-plan.md` with these authorized decisions, without writing SQL schema scripts yet.
+5. **AI-generated content:**
+   - **Created `docs/database-design.md`:** Complete shared PostgreSQL database specification containing:
+     - **Section 1 (10 Standardized Business Rules):** Direct friends (`friendships` with `user_low_id < user_high_id`), friends-of-friends (`DISTINCT` active users in 1 or 2 edges excluding self and paths through soft-deleted users), directional blocking (`user_blocks` preventing 2-way DMs/friend requests/search and removing existing friendship/pending requests while keeping shared groups), 3-metric activity filter (no undefined total metric), active user definition & annual activity chart (`DISTINCT user_id` in `app_open_events`), `launch_id` (`UUID`) app-open tracking separate from `login_history`, per-user message hiding (`direct_message_hidden`, `group_message_hidden`), soft deletion (`users.deleted_at`) & `password_hash` replacement without plaintext passwords, `[start, end)` time intervals in `Asia/Ho_Chi_Minh`, and live socket presence (no `users.is_online` column).
+     - **Section 2 (4 Logical Mermaid ER Diagrams):** Split into Identity/Access/App-Opens, Social Graph (Friend Requests/Friendships/Blocks), Direct Messaging & Spam Moderation, and Group Chat & E2EE Key Storage Preparation.
+     - **Section 3 (Data Dictionary for all 16 tables):** Exact columns, types (`BIGINT IDENTITY`, `UUID`, `DATE`, `TIMESTAMPTZ`, `TEXT` + `CHECK`, `BYTEA`), nullability, defaults, `ON DELETE` behaviors, case-insensitive `LOWER(username)` / `LOWER(email)` unique indexes, partial unique index for `PENDING` friend requests, composite FK `(group_id, key_version)` for encrypted group messages, and documented single-row-per-member limitation on `group_members`.
+     - **Section 4 (SQL Constraints vs. Service-Layer Transactional Checks):** Detailed specification of all 8 required service-layer checks (Authorization, Block checks, Friendship acceptance, Active group membership, Maintaining at least one group admin, Message-hiding permissions, Spam report/message participant consistency, and Group key rotation/distribution).
+   - **Updated `docs/version1-plan.md`:** Synchronized Sections A, B, and G with the 16-table schema and 10 business rules in `docs/database-design.md`.
+   - **Modified `AI-LOG.md`:** Appended Entry 8 recording this database specification step.
+6. **Student's independent work and edits/validation:**
+   - Student defined and authorized all 10 business rules, the exact 13 core tables, the 3 encryption storage preparation tables, column vocabularies, and SQL vs. service-layer constraint boundaries.
+   - Additional student review/validation of `docs/database-design.md`: `STUDENT TO COMPLETE`
+7. **Screenshots or chat history:**
+   - `evidence/chat_history/chatgpt.png`
+   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+8. **Verification and outcomes:**
+   - **Workspace & Git Verification (`git status -s`):** Confirmed only `docs/database-design.md`, `docs/version1-plan.md`, and `AI-LOG.md` were created/modified; no SQL scripts or Java source files were created or modified in this step.
+
+---
+
+## Entry 9 — Documentation Language Policy Update & English Translation of Markdown Documentation
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: Google Antigravity IDE
+   - Version/Model: Google Antigravity `2.29.0` (`ProductVersion 2.29.0.0`, Language Server `hub-2.29.0`, Electron `44.5.1`); Agent Model: `Gemini 4 Argon (High)`
+   - Platform: Desktop IDE on Microsoft Windows 11 Home Single Language 26H2 (OS Build `10.0.26300.9711`, x64) / PowerShell
+2. **Access date and time (with time zone):**
+   - Prompt received: `2026-11-17 14:15:01 UTC+07:00 (Asia/Ho_Chi_Minh)`
+   - Shell verification timestamp (`Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"`): `2026-11-17 14:15:50 +07:00`
+3. **Prompt(s) used:**
+   - Source observation: Observed directly as a chat prompt sent to the agent in the Antigravity session.
+   - **Verbatim:**
+     ```markdown
+     Update the project's language policy and correct the existing Markdown
+     documentation.
+
+     LANGUAGE POLICY
+     - All project Markdown files (.md) must be written in English.
+     - All explanations, progress updates, and final responses in the
+       Antigravity chat must be in Vietnamese.
+     - "Report in Vietnamese" in earlier prompts refers ONLY to chat output,
+       not to text written into project files.
+
+     TASKS
+     1. Read applicable AGENTS.md instructions and inspect the current Git diff.
+        Preserve existing work.
+
+     2. Review Markdown files owned by this project, especially:
+        - docs/version1-plan.md
+        - docs/database-design.md
+        - AI-LOG.md
+        - README.md
+        - AGENTS.md
+        Use their actual locations if different.
+
+     3. Translate Vietnamese prose in those Markdown files into clear English,
+        including headings, paragraphs, tables, checklists, captions,
+        Mermaid labels, and explanatory comments in documentation examples.
+
+     4. Preserve the exact meaning and technical decisions:
+        - Do not redesign the database.
+        - Do not change requirements, task status, or verification results.
+        - Preserve SQL identifiers, Java identifiers, file paths, commands,
+          URLs, and code behavior.
+        - Preserve personal names and official titles where translation
+          would change their identity.
+        - Update internal heading links if translated headings change anchors.
+
+     5. Add or update a concise language-policy section in the applicable
+        project AGENTS.md:
+        "Write all project Markdown documentation in English.
+         Communicate with the user in Vietnamese in chat only.
+         This applies to newly created and updated Markdown files,
+         including plans, database documentation, READMEs, and AI logs."
+
+        If an existing instruction conflicts with this policy, correct that
+        specific instruction without overwriting unrelated instructions.
+        If AGENTS.md does not exist, create it with this policy.
+
+     6. Preserve existing AI-LOG.md entries and their factual content.
+        Translate Vietnamese prose in place, then append an English entry
+        describing this documentation-language correction.
+        Do not invent past actions or test results.
+
+     7. Review the resulting Markdown files for remaining Vietnamese prose.
+        Do not modify third-party documentation, dependencies, generated
+        build folders, or Git internals.
+
+     SCOPE
+     - Only change project Markdown documentation.
+     - Do not modify Java, SQL, pom.xml, application resources, or UI language.
+     - Do not commit or push automatically.
+
+     Apply the changes now. In the final CHAT response, use Vietnamese to list:
+     - Files updated.
+     - The language policy added.
+     - Any intentionally preserved names or official titles.
+     - Any limitations or files that could not be checked.
+     ```
+4. **Purpose:**
+   - Establish an explicit language policy in `AGENTS.md` (English for all project `.md` files; Vietnamese for chat communication with the user) and translate all Vietnamese prose in `docs/version1-plan.md`, `docs/database-design.md`, and `AI-LOG.md` into clear English while preserving all technical decisions, identifiers, and factual history.
+5. **AI-generated content:**
+   - **Updated `AGENTS.md`:** Added Section `10. Language policy` (`Write all project Markdown documentation in English. Communicate with the user in Vietnamese in chat only. This applies to newly created and updated Markdown files, including plans, database documentation, READMEs, and AI logs.`) and added the corresponding summary rows in Section `2. Technology decisions`.
+   - **Updated `docs/version1-plan.md`:** Translated all headings, tables, and prose in the Version 1 implementation plan (Sequence A–H) from Vietnamese into English while preserving all technical identifiers, requirements, and task statuses.
+   - **Updated `docs/database-design.md`:** Translated all headings, business-rule prose, Mermaid ER descriptions, Data Dictionary tables (all 16 tables), and service-layer check specifications from Vietnamese into English without altering any schema or business rule decisions.
+   - **Updated `AI-LOG.md`:** Translated Vietnamese prose in Entry 0 (lines 16 and 24) and Entry 7 (lines 518–525) into English in place, and appended this Entry 9 in English.
+   - **Reviewed `README.md` and `chat-admin/README.md`:** Confirmed both files are already written in English (containing only quoted Vietnamese Swing UI control labels where the UI itself uses Vietnamese labels).
+6. **Student's independent work and edits/validation:**
+   - Student defined the documentation language policy separating English project `.md` files from Vietnamese chat responses.
+   - Additional student review/validation: `STUDENT TO COMPLETE`
+7. **Screenshots or chat history:**
+   - `evidence/chat_history/chatgpt.png`
+   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+8. **Verification and outcomes:**
+   - **Markdown Review & Git Status Check (`git status -s`):** Verified that all project Markdown files (`AGENTS.md`, `README.md`, `chat-admin/README.md`, `docs/version1-plan.md`, `docs/database-design.md`, and `AI-LOG.md`) contain English prose only, and confirmed that no Java source files, `pom.xml`, or SQL scripts were touched.

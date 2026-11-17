@@ -29,6 +29,8 @@ Also keep `AI-LOG.md` in the repository root for the AI usage declaration. If th
 | Encoding | UTF-8 |
 | UI labels | Vietnamese with diacritics |
 | Packages / Java identifiers | English |
+| Markdown documentation (`.md`) | English |
+| Chat responses to user | Vietnamese |
 | Default frame | 1280 x 800 px; minimum 1100 x 700 px; resizable |
 | Font | Segoe UI with SansSerif fallback |
 | Layout | BorderLayout, GridBagLayout, BoxLayout or other real layout managers; no null layout or `setBounds` |
@@ -152,3 +154,10 @@ For each phase:
 - No editing unrelated teammate code or removing prior working work.
 - No false claims about compiling, execution, screenshots, student contributions, model versions, or timestamps.
 - No fake AI evidence or backdated logs. Missing values remain clearly marked for manual completion.
+
+## 10. Language policy
+
+Write all project Markdown documentation in English.
+Communicate with the user in Vietnamese in chat only.
+This applies to newly created and updated Markdown files,
+including plans, database documentation, READMEs, and AI logs.
