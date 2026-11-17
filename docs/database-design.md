@@ -307,8 +307,8 @@ erDiagram
 | `role` | `TEXT` | `NOT NULL` | `'USER'` | `CHECK (role IN ('USER', 'ADMIN'))`. |
 | `is_locked` | `BOOLEAN` | `NOT NULL` | `FALSE` | `TRUE` if the account is locked by an administrator. |
 | `created_at` | `TIMESTAMPTZ` | `NOT NULL` | `now()` | Account registration timestamp. |
-| `updated_at` | `TIMESTAMPTZ` | `NOT NULL` | `now()` | Most recent profile update timestamp. |
-| `deleted_at` | `TIMESTAMPTZ` | `NULL` | `NULL` | Soft-deletion timestamp (`NULL` = active / not deleted). |
+| `updated_at` | `TIMESTAMPTZ` | `NOT NULL` | `now()` | Most recent profile update timestamp (`CHECK (updated_at >= created_at)`). Application-maintained on subsequent edits (`DEFAULT now()` applies only on `INSERT`). |
+| `deleted_at` | `TIMESTAMPTZ` | `NULL` | `NULL` | Soft-deletion timestamp (`NULL` = active / not deleted; `CHECK (deleted_at IS NULL OR deleted_at >= created_at)`). |
 
 - **Indexes on `users`:**
   - `uq_users_username_lower`: `UNIQUE (LOWER(username))`
@@ -414,7 +414,7 @@ erDiagram
 ### 3.8. Table `direct_message_hidden` (Per-User Hidden Direct Messages)
 | Column | Type | Null? | Default | Constraints & Description |
 |---|---|---|---|---|
-| `message_id` | `BIGINT` | `NOT NULL` | — | `FOREIGN KEY REFERENCES direct_messages(id) ON DELETE CASCADE`. |
+| `message_id` | `BIGINT` | `NOT NULL` | — | `FOREIGN KEY REFERENCES direct_messages(id) ON DELETE RESTRICT`. |
 | `user_id` | `BIGINT` | `NOT NULL` | — | User who hid the message (`FOREIGN KEY REFERENCES users(id) ON DELETE RESTRICT`). |
 | `hidden_at` | `TIMESTAMPTZ` | `NOT NULL` | `now()` | Timestamp when the message was hidden for `user_id`. |
 
@@ -436,13 +436,14 @@ erDiagram
 - **Indexes on `chat_groups`:**
   - `idx_chat_groups_name`: `(name)` — supports group name filtering and sorting (PDF Item 3a, 3b).
   - `idx_chat_groups_created_at`: `(created_at DESC)` — supports creation-time sorting (PDF Item 3a).
+  - `idx_chat_groups_created_by`: `(created_by)`.
 
 ---
 
 ### 3.10. Table `group_members` (Group Members & Administrators)
 | Column | Type | Null? | Default | Constraints & Description |
 |---|---|---|---|---|
-| `group_id` | `BIGINT` | `NOT NULL` | — | `FOREIGN KEY REFERENCES chat_groups(id) ON DELETE CASCADE`. |
+| `group_id` | `BIGINT` | `NOT NULL` | — | `FOREIGN KEY REFERENCES chat_groups(id) ON DELETE RESTRICT`. |
 | `user_id` | `BIGINT` | `NOT NULL` | — | `FOREIGN KEY REFERENCES users(id) ON DELETE RESTRICT`. |
 | `role` | `TEXT` | `NOT NULL` | `'MEMBER'` | `CHECK (role IN ('MEMBER', 'ADMIN'))`. |
 | `joined_at` | `TIMESTAMPTZ` | `NOT NULL` | `now()` | Latest join timestamp. |
@@ -460,7 +461,7 @@ erDiagram
 | Column | Type | Null? | Default | Constraints & Description |
 |---|---|---|---|---|
 | `id` | `BIGINT` | `NOT NULL` | `IDENTITY` | `PRIMARY KEY`. |
-| `group_id` | `BIGINT` | `NOT NULL` | — | `FOREIGN KEY REFERENCES chat_groups(id) ON DELETE CASCADE`. |
+| `group_id` | `BIGINT` | `NOT NULL` | — | `FOREIGN KEY REFERENCES chat_groups(id) ON DELETE RESTRICT`. |
 | `sender_id` | `BIGINT` | `NOT NULL` | — | `FOREIGN KEY REFERENCES users(id) ON DELETE RESTRICT`. |
 | `content` | `TEXT` | `NULL` | `NULL` | Plaintext message body (populated only for unencrypted messages). |
 | `ciphertext` | `BYTEA` | `NULL` | `NULL` | Encrypted message payload (populated only for encrypted messages). |
@@ -472,22 +473,36 @@ erDiagram
   - **Per-message plaintext vs. ciphertext distinction (`chk_group_messages_payload_mode`):**
     ```sql
     CHECK (
-        (key_version IS NULL AND content IS NOT NULL AND btrim(content) <> '' AND ciphertext IS NULL AND nonce IS NULL)
+        (
+            content IS NOT NULL
+            AND COALESCE(btrim(content), '') <> ''
+            AND ciphertext IS NULL
+            AND nonce IS NULL
+            AND key_version IS NULL
+        )
         OR
-        (key_version IS NOT NULL AND content IS NULL AND ciphertext IS NOT NULL AND nonce IS NOT NULL)
+        (
+            content IS NULL
+            AND ciphertext IS NOT NULL
+            AND COALESCE(octet_length(ciphertext), 0) > 0
+            AND nonce IS NOT NULL
+            AND COALESCE(octet_length(nonce), 0) > 0
+            AND key_version IS NOT NULL
+        )
     )
     ```
   - **Same-group key version foreign key (`fk_group_messages_key_version`):**
     `FOREIGN KEY (group_id, key_version) REFERENCES group_key_versions(group_id, key_version) ON DELETE RESTRICT` (Under standard PostgreSQL `MATCH SIMPLE` semantics, unencrypted rows with `key_version IS NULL` are allowed, whereas encrypted rows with `key_version IS NOT NULL` must match a `(group_id, key_version)` row belonging to the same `group_id`, without requiring any cross-table `CHECK`).
   - `idx_group_messages_group_sent_at`: `(group_id, sent_at DESC)`.
   - `idx_group_messages_sender_sent_at`: `(sender_id, sent_at, group_id)` — supports counting `DISTINCT group_id` messaged by `sender_id` in `[start, end)` (PDF Item 8).
+  - `idx_group_messages_group_key_version`: `(group_id, key_version) WHERE key_version IS NOT NULL`.
 
 ---
 
 ### 3.12. Table `group_message_hidden` (Per-User Hidden Group Messages)
 | Column | Type | Null? | Default | Constraints & Description |
 |---|---|---|---|---|
-| `message_id` | `BIGINT` | `NOT NULL` | — | `FOREIGN KEY REFERENCES group_messages(id) ON DELETE CASCADE`. |
+| `message_id` | `BIGINT` | `NOT NULL` | — | `FOREIGN KEY REFERENCES group_messages(id) ON DELETE RESTRICT`. |
 | `user_id` | `BIGINT` | `NOT NULL` | — | `FOREIGN KEY REFERENCES users(id) ON DELETE RESTRICT`. |
 | `hidden_at` | `TIMESTAMPTZ` | `NOT NULL` | `now()` | Timestamp when the group message was hidden for `user_id`. |
 
@@ -503,18 +518,19 @@ erDiagram
 | `id` | `BIGINT` | `NOT NULL` | `IDENTITY` | `PRIMARY KEY`. |
 | `reporter_id` | `BIGINT` | `NOT NULL` | — | Reporting user (`FOREIGN KEY REFERENCES users(id) ON DELETE RESTRICT`). |
 | `reported_user_id` | `BIGINT` | `NOT NULL` | — | Reported user (`FOREIGN KEY REFERENCES users(id) ON DELETE RESTRICT`). |
-| `direct_message_id` | `BIGINT` | `NULL` | `NULL` | Optional referenced direct message (`FOREIGN KEY REFERENCES direct_messages(id) ON DELETE SET NULL`). |
+| `direct_message_id` | `BIGINT` | `NULL` | `NULL` | Optional referenced direct message (`FOREIGN KEY REFERENCES direct_messages(id) ON DELETE RESTRICT`). |
 | `reason` | `TEXT` | `NOT NULL` | — | Report reason (`CHECK (btrim(reason) <> '')`). |
 | `message_snapshot` | `TEXT` | `NULL` | `NULL` | Snapshot of the reported message content at report time. |
 | `status` | `TEXT` | `NOT NULL` | `'PENDING'` | `CHECK (status IN ('PENDING', 'RESOLVED'))`. |
 | `created_at` | `TIMESTAMPTZ` | `NOT NULL` | `now()` | Report creation timestamp. |
-| `resolved_by` | `BIGINT` | `NULL` | `NULL` | Administrator who resolved the report (`FOREIGN KEY REFERENCES users(id) ON DELETE SET NULL`). |
-| `resolved_at` | `TIMESTAMPTZ` | `NULL` | `NULL` | Resolution timestamp (`CHECK ((status = 'PENDING' AND resolved_by IS NULL AND resolved_at IS NULL) OR (status = 'RESOLVED' AND resolved_at IS NOT NULL AND resolved_at >= created_at))`). |
+| `resolved_by` | `BIGINT` | `NULL` | `NULL` | Administrator who resolved the report (`FOREIGN KEY REFERENCES users(id) ON DELETE RESTRICT`). |
+| `resolved_at` | `TIMESTAMPTZ` | `NULL` | `NULL` | Resolution timestamp (`CHECK ((status = 'PENDING' AND resolved_by IS NULL AND resolved_at IS NULL) OR (status = 'RESOLVED' AND resolved_by IS NOT NULL AND resolved_at IS NOT NULL AND resolved_at >= created_at))`). |
 
 - **Constraints & Indexes on `spam_reports`:**
   - `chk_spam_reports_no_self`: `CHECK (reporter_id <> reported_user_id)`.
   - `idx_spam_reports_created_at_desc`: `(created_at DESC)` — supports sorting and filtering by report timestamp (PDF Item 4a, 4b).
   - `idx_spam_reports_reported_user`: `(reported_user_id, created_at DESC)` — supports filtering and sorting by reported username (PDF Item 4a, 4c).
+  - `idx_spam_reports_reporter_user`: `(reporter_id, created_at DESC)`.
 
 ---
 
@@ -540,7 +556,7 @@ erDiagram
 #### Table 15: `group_key_versions` (Group Symmetric Key Versions)
 | Column | Type | Null? | Default | Constraints & Description |
 |---|---|---|---|---|
-| `group_id` | `BIGINT` | `NOT NULL` | — | `FOREIGN KEY REFERENCES chat_groups(id) ON DELETE CASCADE`. |
+| `group_id` | `BIGINT` | `NOT NULL` | — | `FOREIGN KEY REFERENCES chat_groups(id) ON DELETE RESTRICT`. |
 | `key_version` | `INTEGER` | `NOT NULL` | — | Monotonically increasing version number (`CHECK (key_version >= 1)`). |
 | `created_at` | `TIMESTAMPTZ` | `NOT NULL` | `now()` | Key version creation timestamp. |
 
@@ -552,12 +568,12 @@ erDiagram
 |---|---|---|---|---|
 | `group_id` | `BIGINT` | `NOT NULL` | — | Chat group ID. |
 | `key_version` | `INTEGER` | `NOT NULL` | — | Group key version. |
-| `user_public_key_id` | `BIGINT` | `NOT NULL` | — | `FOREIGN KEY REFERENCES user_public_keys(id) ON DELETE CASCADE`. |
-| `encrypted_group_key` | `BYTEA` | `NOT NULL` | — | Group symmetric key encrypted (wrapped) under `user_public_key_id`. |
+| `user_public_key_id` | `BIGINT` | `NOT NULL` | — | `FOREIGN KEY REFERENCES user_public_keys(id) ON DELETE RESTRICT`. |
+| `encrypted_group_key` | `BYTEA` | `NOT NULL` | — | Group symmetric key encrypted (wrapped) under `user_public_key_id` (`CHECK (COALESCE(octet_length(encrypted_group_key), 0) > 0)`). |
 
 - **Constraints & Indexes on `group_key_envelopes`:**
   - `PRIMARY KEY (group_id, key_version, user_public_key_id)`.
-  - `fk_group_key_envelopes_version`: `FOREIGN KEY (group_id, key_version) REFERENCES group_key_versions(group_id, key_version) ON DELETE CASCADE`.
+  - `fk_group_key_envelopes_version`: `FOREIGN KEY (group_id, key_version) REFERENCES group_key_versions(group_id, key_version) ON DELETE RESTRICT`.
   - `idx_group_key_envelopes_pubkey`: `(user_public_key_id, group_id, key_version)`.
 
 ---

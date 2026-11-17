@@ -62,9 +62,9 @@ The authoritative shared database specification is documented in [`docs/database
 
 ---
 
-### B. PostgreSQL Schema (`script/01_schema.sql`)
+### B. PostgreSQL Schema (COMPLETED in `script/01_schema.sql` & `script/README.md`)
 
-The `script/01_schema.sql` script will implement the 16 tables specified in [`docs/database-design.md`](./database-design.md) (13 core tables + 3 group encryption storage preparation tables):
+The `script/01_schema.sql` script implements all 16 tables specified in [`docs/database-design.md`](./database-design.md) (13 core tables + 3 group encryption storage preparation tables) inside a single transaction (`BEGIN; ... COMMIT;`) for an empty PostgreSQL database, with `ON DELETE RESTRICT` across historical tables and zero optional extensions required:
 
 - **13 Core Tables:**
   1. `users` (`id`, `username`, `password_hash`, `full_name`, `address`, `date_of_birth`, `gender`, `email`, `role`, `is_locked`, `created_at`, `updated_at`, `deleted_at`)

@@ -785,3 +785,77 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
    - `evidence/chat_history/antigravity_session_8a98bca0.md`
 8. **Verification and outcomes:**
    - **Markdown Review & Git Status Check (`git status -s`):** Verified that all project Markdown files (`AGENTS.md`, `README.md`, `chat-admin/README.md`, `docs/version1-plan.md`, `docs/database-design.md`, and `AI-LOG.md`) contain English prose only, and confirmed that no Java source files, `pom.xml`, or SQL scripts were touched.
+
+---
+
+## Entry 10 — Step B: Implement PostgreSQL Schema (`script/01_schema.sql` & `script/README.md`)
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: Google Antigravity IDE
+   - Version/Model: Google Antigravity `2.29.0` (`ProductVersion 2.29.0.0`, Language Server `hub-2.29.0`, Electron `44.5.1`); Agent Model: `Gemini 4 Argon (High)`
+   - Platform: Desktop IDE on Microsoft Windows 11 Home Single Language 26H2 (OS Build `10.0.26300.9711`, x64) / PowerShell
+2. **Access date and time (with time zone):**
+   - Prompt received: `2026-11-17 14:39:41 UTC+07:00 (Asia/Ho_Chi_Minh)`
+   - Shell verification timestamp (`Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"`): `2026-11-17 14:40:24 +07:00`
+3. **Prompt(s) used:**
+   - Source observation: Observed directly as a chat prompt sent to the agent in the Antigravity session.
+   - **Verbatim:**
+     ```markdown
+     Implement script/01_schema.sql from docs/database-design.md.
+
+     First inspect existing SQL files. Preserve useful existing work and
+     avoid creating a competing schema.
+
+     REQUIREMENTS
+     - Create all documented tables, PKs, FKs, unique constraints,
+       row-level CHECK constraints, and useful indexes.
+     - Execute within an already-created, empty PostgreSQL database.
+     - Use a transaction for schema creation.
+     - Do not include DROP DATABASE, DROP SCHEMA CASCADE, TRUNCATE,
+       or automatic destructive reset operations.
+     - Document that this initial script is intended for a clean database.
+       Do not hide incompatible existing tables with IF NOT EXISTS.
+     - Do not require optional PostgreSQL extensions unless unavoidable.
+     - Use expression unique indexes for case-insensitive usernames/emails.
+     - Use a partial unique index for one PENDING request per unordered pair.
+     - Enforce canonical friendship ordering and non-self relationships.
+     - Use composite PKs for memberships, blocks, and hidden-message tables.
+     - Add UNIQUE (launch_id, user_id) to app_open_events.
+     - Ensure group message key versions belong to the message's group
+       using a composite foreign key.
+     - Enforce exactly one valid message form:
+       plaintext content with encryption fields NULL, OR ciphertext,
+       nonce, and key_version present with plaintext content NULL.
+       Explicitly handle SQL NULL semantics.
+     - Enforce sensible status/timestamp consistency where row-local.
+     - Use restrictive FK behavior for historical records.
+       Do not cascade account deletion through message/login/report history.
+     - Do not enforce cross-table business rules using CHECK constraints.
+     - Do not add backend code, triggers, or stored procedures merely
+       to implement Version 2 business behavior.
+     - If updated_at is application-maintained, document that explicitly;
+       DEFAULT now() does not update it on later edits.
+
+     Create script/README.md with database prerequisites and execution order.
+     Do not include real passwords or credentials.
+
+     If a safe local PostgreSQL test database is available, execute the script
+     there with stop-on-error enabled. Do not touch an existing user database.
+     If unavailable, report that execution verification is pending.
+
+     Update docs, plan, and AI-LOG.md as needed.
+     Report files changed, commands actually run, and remaining limitations.
+     Do not commit or push.
+     ```
+4. **Purpose:**
+   - Implement the initial PostgreSQL DDL script `script/01_schema.sql` and companion documentation `script/README.md` matching `docs/database-design.md`, align FK deletion rules and `updated_at` notes in `docs/database-design.md` and `docs/version1-plan.md`, and verify execution against an isolated disposable PostgreSQL 18 instance without touching any existing user database.
+5. **AI-generated content:**
+   - *In progress — creating `script/01_schema.sql` and `script/README.md` and updating documentation.*
+6. **Student's independent work and edits/validation:**
+   - Student specified all DDL constraints, transaction boundaries, non-destructive clean-database rules, restrictive FK requirements, and `updated_at` application-maintenance rules.
+   - Additional student review/validation: `STUDENT TO COMPLETE`
+7. **Screenshots or chat history:**
+   - `evidence/chat_history/chatgpt.png`
+   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+8. **Verification and outcomes:**
+   - *In progress — will be updated after creating and verifying `script/01_schema.sql`.*
