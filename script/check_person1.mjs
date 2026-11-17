@@ -1,0 +1,40 @@
+// npm install --prefix .tools @electric-sql/pglite@0.3.14
+// node script/check_person1.mjs (from repository root)
+import { PGlite } from '../.tools/node_modules/@electric-sql/pglite/dist/index.js';
+import fs from 'node:fs/promises';
+const db = new PGlite();
+await db.exec(await fs.readFile('script/verify_person1.sql','utf8'));
+await db.exec(await fs.readFile('script/01_person1.sql','utf8'));
+let checks=0;
+async function reject(sql){let failed=false;try{await db.exec(sql);}catch{failed=true;}if(!failed)throw Error('Expected constraint rejection: '+sql);checks++;}
+await db.exec(`INSERT INTO friendships VALUES(1,2,DEFAULT);
+INSERT INTO friend_requests(sender_id,receiver_id) VALUES(1,3);
+INSERT INTO user_blocks(blocker_id,blocked_id) VALUES(4,1);
+INSERT INTO conversations(kind,created_by,direct_low,direct_high) VALUES('direct',1,1,2);
+INSERT INTO conversations(kind,name,created_by,encryption_mode) VALUES('group','Đồ án Java',1,'e2ee');
+INSERT INTO conversation_members(conversation_id,user_id,role) VALUES(1,1,'member'),(1,2,'member'),(2,1,'admin'),(2,3,'member');
+INSERT INTO messages(conversation_id,sender_id,body) VALUES(1,1,'Chào bạn');
+INSERT INTO messages(conversation_id,sender_id,ciphertext,nonce,key_version) VALUES(2,3,decode('abcd','hex'),decode('0123','hex'),1);
+INSERT INTO message_user_states(message_id,conversation_id,user_id,hidden_at) VALUES(1,1,2,CURRENT_TIMESTAMP);
+INSERT INTO conversation_member_keys(conversation_id,user_id,key_version,wrapped_key,algorithm) VALUES(2,3,1,decode('abcd','hex'),'design-only');`);
+await reject(`INSERT INTO friendships(user_low,user_high) VALUES(2,1)`);
+await reject(`INSERT INTO friendships(user_low,user_high) VALUES(1,1)`);
+await reject(`INSERT INTO user_blocks(blocker_id,blocked_id) VALUES(1,1)`);
+await reject(`INSERT INTO friend_requests(sender_id,receiver_id) VALUES(3,1)`);
+await reject(`INSERT INTO friend_requests(sender_id,receiver_id,status) VALUES(2,3,'accepted')`);
+await reject(`INSERT INTO conversations(kind,created_by,direct_low,direct_high) VALUES('direct',1,1,2)`);
+await reject(`INSERT INTO conversations(kind,created_by) VALUES('group',1)`);
+await reject(`INSERT INTO messages(conversation_id,sender_id,body) VALUES(1,3,'Không phải thành viên')`);
+await reject(`INSERT INTO messages(conversation_id,sender_id,body) VALUES(1,1,' ')`);
+await reject(`INSERT INTO messages(conversation_id,sender_id,body,ciphertext) VALUES(1,1,'text',decode('ff','hex'))`);
+await reject(`INSERT INTO message_user_states(message_id,conversation_id,user_id) VALUES(1,2,3)`);
+await reject(`INSERT INTO conversation_member_keys(conversation_id,user_id,key_version,wrapped_key,algorithm) VALUES(1,4,1,decode('ff','hex'),'test')`);
+await reject(`INSERT INTO friendships(user_low,user_high) VALUES(1,99)`);
+await reject(`INSERT INTO messages(conversation_id,sender_id,ciphertext,nonce) VALUES(2,3,decode('abcd','hex'),decode('0123','hex'))`);
+const result=await db.query(`SELECT m.body FROM messages m JOIN conversation_members cm ON cm.conversation_id=m.conversation_id AND cm.user_id=1 LEFT JOIN message_user_states s ON s.message_id=m.id AND s.user_id=1 WHERE m.conversation_id=1 AND s.hidden_at IS NULL AND (cm.history_hidden_before IS NULL OR m.sent_at>cm.history_hidden_before)`);
+if(result.rows.length!==1)throw Error('Hidden state must not remove message for another user');
+checks++;
+await db.exec(`UPDATE friend_requests SET status='accepted',responded_at=CURRENT_TIMESTAMP WHERE sender_id=1 AND receiver_id=3; INSERT INTO friendships(user_low,user_high) VALUES(1,3)`);
+checks++;
+console.log(`PASS: PostgreSQL via PGlite; schema applied, fixtures inserted, ${checks} integrity/query checks`);
+await db.close();
