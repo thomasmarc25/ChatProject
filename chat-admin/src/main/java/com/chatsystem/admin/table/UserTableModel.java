@@ -26,7 +26,7 @@ public class UserTableModel extends AbstractTableModel {
             "Họ tên",
             "Email",
             "Ngày tạo",
-            "Trạng thái",
+            "Trạng thái (TK • Phiên)",
             "Thao tác"
     };
 
@@ -36,6 +36,14 @@ public class UserTableModel extends AbstractTableModel {
         if (initialUsers != null) {
             this.users.addAll(initialUsers);
         }
+    }
+
+    public void setUsers(List<User> updatedUsers) {
+        this.users.clear();
+        if (updatedUsers != null) {
+            this.users.addAll(updatedUsers);
+        }
+        fireTableDataChanged();
     }
 
     public User getUserAt(int rowIndex) {
@@ -74,7 +82,7 @@ public class UserTableModel extends AbstractTableModel {
             case COL_FULL_NAME -> user.getFullName();
             case COL_EMAIL -> user.getEmail();
             case COL_CREATED_AT -> user.getFormattedCreatedAt();
-            case COL_STATUS -> user.getDisplayStatus();
+            case COL_STATUS -> user;
             case COL_ACTIONS -> "Sửa | Thao tác ▾";
             default -> "";
         };

@@ -5,7 +5,8 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * Typed domain model representing a user account in the ChatSystem Admin UI.
- * Keeps {@code online} and {@code locked} as independent boolean properties.
+ * Keeps {@code online} (live session presence) and {@code locked} (account lock status)
+ * as independent boolean properties. Never stores or exposes passwords or password hashes.
  */
 public class User {
 
@@ -13,7 +14,13 @@ public class User {
     public static final String STATUS_ONLINE = "Đang hoạt động";
     public static final String STATUS_OFFLINE = "Ngoại tuyến";
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    public static final String ACCOUNT_ACTIVE = "Hoạt động";
+    public static final String ACCOUNT_LOCKED = "Đã khóa";
+
+    public static final String PRESENCE_ONLINE = "Trực tuyến";
+    public static final String PRESENCE_OFFLINE = "Ngoại tuyến";
+
+    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private final long id;
     private final String username;
@@ -99,7 +106,23 @@ public class User {
     }
 
     /**
-     * Resolves display status according to AGENTS.md precedence:
+     * Returns the persistent account status label ("Hoạt động" or "Đã khóa"),
+     * independent of live online/offline presence.
+     */
+    public String getAccountStatusLabel() {
+        return locked ? ACCOUNT_LOCKED : ACCOUNT_ACTIVE;
+    }
+
+    /**
+     * Returns the live online/offline presence label ("Trực tuyến" or "Ngoại tuyến"),
+     * independent of account lock status.
+     */
+    public String getPresenceStatusLabel() {
+        return online ? PRESENCE_ONLINE : PRESENCE_OFFLINE;
+    }
+
+    /**
+     * Resolves primary display status according to AGENTS.md precedence:
      * locked -> "Đã khóa", else online -> "Đang hoạt động", else -> "Ngoại tuyến".
      */
     public String getDisplayStatus() {
@@ -110,5 +133,42 @@ public class User {
             return STATUS_ONLINE;
         }
         return STATUS_OFFLINE;
+    }
+
+    public User withLocked(boolean newLocked) {
+        return new User(
+                id,
+                username,
+                fullName,
+                address,
+                dateOfBirth,
+                gender,
+                email,
+                createdAt,
+                online,
+                newLocked
+        );
+    }
+
+    public User withUpdatedProfile(
+            String newUsername,
+            String newFullName,
+            String newAddress,
+            LocalDate newDateOfBirth,
+            String newGender,
+            String newEmail
+    ) {
+        return new User(
+                id,
+                newUsername,
+                newFullName,
+                newAddress,
+                newDateOfBirth,
+                newGender,
+                newEmail,
+                createdAt,
+                online,
+                locked
+        );
     }
 }

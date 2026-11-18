@@ -30,16 +30,16 @@
 
 | Assignment Item | Status | Detailed Current Status & Missing Parts |
 |---|---|---|
-| **1. User Management** | **Partially Implemented (~80%)** | **Implemented:** `UserManagementPanel` (4 `StatCard` summary cards, search/status-filter/sort toolbar, 24-row mock user `JTable`, pagination bar, row action popup menu) and `UserFormDialog` (Add/Edit dialog with all 6 required profile fields: username, full name, address, date of birth, gender, email).<br>**Missing:** **Password Update Dialog** (1d), **User Login History Dialog** (1e), **User Friends Dialog** (1f), **Delete / Lock-Unlock Confirmation Dialogs** (1b, 1c), and in-memory filtering/sorting event handlers on the toolbar controls. |
-| **2. System-Wide Login History** | **Missing** | The `"Lịch sử đăng nhập"` (Login History) navigation item exists in `SidebarPanel` but currently opens the `"Tính năng đang phát triển"` (Under Development) placeholder card. |
-| **3. Chat-Group List** | **Missing** | The `"Quản lý nhóm chat"` (Chat Group Management) navigation item exists in `SidebarPanel` (currently showing the placeholder card). Needs the group list panel (filter by name, sort by name/creation time) and dialogs to view **Group Members** and **Group Administrators**. |
-| **4. Spam-Report List** | **Missing** | The `"Báo cáo spam"` (Spam Reports) navigation item exists in `SidebarPanel` (currently showing the placeholder card). Needs the spam report list panel with filtering/sorting by time and username, plus an **Account Lock** action. |
-| **5. Newly Registered Users** | **Missing** | Needs a screen with a date/time range selector (`From Date` – `To Date`), name filter, and sorting by name or creation time. |
-| **6. Annual Registration Chart** | **Missing** | Needs a year selector and a 12-month bar chart (horizontal axis: months 1–12; vertical axis: newly registered user counts). |
-| **7. User Friend Statistics** | **Missing** | Needs a table displaying **Direct Friends Count** and **Friends Including Friends-of-Friends Count**, sorting by name/creation time, filtering by name, and filtering direct-friend count using `=`, `<`, or `>`. |
-| **8. Active Users & Activity Metrics** | **Missing** | Needs a date/time range selector, table displaying 3 activity metrics (**App Opens**, **Distinct Users Chatted With**, **Distinct Groups Chatted With**), sorting by name/creation time, filtering by name, and filtering by activity count using `=`, `<`, or `>`. |
-| **9. Annual Activity Chart** | **Missing** | Needs a year selector and a 12-month bar chart (horizontal axis: months 1–12; vertical axis: number of distinct users who opened the application). |
-| **PostgreSQL Database (`script/`)** | **Missing** | Needs SQL scripts for schema creation, constraints, indexes, deterministic seed data, and administrative queries shared by both subsystems. |
+| **1. User Management** | **Completed** | **Implemented:** `UserManagementPanel` (4 `StatCard` summary cards, live search by name/username, distinct Account Status and Online Presence filter dropdowns, sorting by name/creation date, 24-row mock user `JTable` with dual status badges, pagination bar, row action popup menu), `UserFormDialog` (Add/Edit user), `ConfirmActionDialog` (Delete & Lock/Unlock confirmations), `PasswordUpdateDialog` (masked password input), `UserLoginHistoryDialog` (1e), and `UserFriendsDialog` (1f). |
+| **2. System-Wide Login History** | **Missing (Placeholder Ready)** | The `"Lịch sử đăng nhập"` (Login History) navigation item in `SidebarPanel` currently opens a clearly marked placeholder card (scheduled for Step F). |
+| **3. Chat-Group List** | **Missing (Placeholder Ready)** | The `"Quản lý nhóm chat"` (Chat Group Management) navigation item in `SidebarPanel` currently opens a clearly marked placeholder card (scheduled for Step F). |
+| **4. Spam-Report List** | **Missing (Placeholder Ready)** | The `"Báo cáo spam"` (Spam Reports) navigation item in `SidebarPanel` currently opens a clearly marked placeholder card (scheduled for Step F). |
+| **5. Newly Registered Users** | **Missing (Placeholder Ready)** | The `"Người dùng đăng ký mới"` navigation item in `SidebarPanel` currently opens a clearly marked placeholder card (scheduled for Step G). |
+| **6. Annual Registration Chart** | **Missing (Placeholder Ready)** | The `"Biểu đồ đăng ký mới"` navigation item in `SidebarPanel` currently opens a clearly marked placeholder card (scheduled for Step G). |
+| **7. User Friend Statistics** | **Missing (Placeholder Ready)** | The `"Thống kê bạn bè"` navigation item in `SidebarPanel` currently opens a clearly marked placeholder card (scheduled for Step G). |
+| **8. Active Users & Activity Metrics** | **Missing (Placeholder Ready)** | The `"Người dùng hoạt động"` navigation item in `SidebarPanel` currently opens a clearly marked placeholder card (scheduled for Step G). |
+| **9. Annual Activity Chart** | **Missing (Placeholder Ready)** | The `"Biểu đồ hoạt động"` navigation item in `SidebarPanel` currently opens a clearly marked placeholder card (scheduled for Step G). |
+| **PostgreSQL Database (`script/`)** | **Completed** | Implemented and verified in `script/01_schema.sql`, `script/02_seed.sql`, `script/03_admin_queries.sql`, and `script/04_verify.sql`. |
 
 ---
 
@@ -105,16 +105,16 @@ The `script/01_schema.sql` script implements all 16 tables specified in [`docs/d
 
 ---
 
-### E. Admin Navigation and User-Management Dialogs (`UserManagementPanel`)
+### E. Admin Navigation and User-Management Dialogs (COMPLETED in `chat-admin/`)
 
-- **Preserve 100% of the existing visual layout** of `UserManagementPanel` and `UserFormDialog`.
-- **Enhance preview navigation and dialogs on `UserManagementPanel`:**
-  1. Wire in-memory filtering and sorting on the `UserManagementPanel` toolbar (search by name/username, filter by status, sort by name `A–Z`/`Z–A` and creation date `Newest`/`Oldest`).
-  2. Create modal dialogs (`JDialog`) in `com.chatsystem.admin.ui` launched from the row action menu:
-     - `PasswordUpdateDialog.java` (Requirement 1d — Update / reset password).
-     - `UserLoginHistoryDialog.java` (Requirement 1e — View selected user's login history).
-     - `UserFriendsDialog.java` (Requirement 1f — View selected user's direct friends list).
-     - Confirmation dialogs for `Delete` (Requirement 1b) and `Lock/Unlock` (Requirement 1c).
+- **Expanded `SidebarPanel` & `AdminMainFrame` navigation to all 9 required Admin destinations:**
+  - Group 1 (`QUẢN LÝ HỆ THỐNG`): `Quản lý người dùng`, `Lịch sử đăng nhập`, `Quản lý nhóm chat`, `Báo cáo spam`.
+  - Group 2 (`THỐNG KÊ & BIỂU ĐỒ`): `Người dùng đăng ký mới`, `Biểu đồ đăng ký mới`, `Thống kê bạn bè`, `Người dùng hoạt động`, `Biểu đồ hoạt động`.
+  - Clicking `Quản lý người dùng` opens the completed `UserManagementPanel`; clicking the remaining 8 destinations displays clearly marked placeholder views until Steps F and G are implemented.
+- **Completed `UserManagementPanel` and all sub-dialogs:**
+  1. Wired live search by name/username, distinct **Account Status** (`Tài khoản: Tất cả TK / Hoạt động / Đã khóa`) and **Online Presence** (`Phiên: Tất cả phiên / Trực tuyến / Ngoại tuyến`) filter dropdowns, and Vietnamese locale-aware sorting (`Cũ nhất`, `Mới nhất`, `Tên A–Z`, `Tên Z–A`).
+  2. Rendered dual status badges in the table (`Hoạt động` / `Đã khóa` paired with `Online` / `Offline`).
+  3. Implemented `ConfirmActionDialog.java` (Delete and Lock/Unlock confirmations), `PasswordUpdateDialog.java` (masked `JPasswordField` input with immediate buffer zeroing), `UserLoginHistoryDialog.java` (Requirement 1e), and `UserFriendsDialog.java` (Requirement 1f), and wired `UserFormDialog.java` for Add/Edit user preview.
 
 ---
 

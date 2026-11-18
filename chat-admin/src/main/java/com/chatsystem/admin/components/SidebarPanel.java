@@ -26,24 +26,39 @@ import java.util.function.Consumer;
 
 /**
  * Dark 240px left sidebar navigation panel for the ChatSystem Admin dashboard.
+ * Provides navigation to all 9 required Administrator screens.
  */
 public class SidebarPanel extends JPanel {
 
+    // Group 1: Core Administration (Items 1-4)
     public static final String NAV_USERS = "Quản lý người dùng";
+    public static final String NAV_LOGIN_HISTORY = "Lịch sử đăng nhập";
     public static final String NAV_GROUPS = "Quản lý nhóm chat";
     public static final String NAV_SPAM = "Báo cáo spam";
-    public static final String NAV_LOGIN_HISTORY = "Lịch sử đăng nhập";
-    public static final String NAV_STATISTICS = "Thống kê";
-    public static final String NAV_SETTINGS = "Cài đặt";
 
-    private static final String[] NAV_ITEMS = {
+    // Group 2: Statistics & Charts (Items 5-9)
+    public static final String NAV_NEW_REGISTRATIONS = "Người dùng đăng ký mới";
+    public static final String NAV_REGISTRATION_CHART = "Biểu đồ đăng ký mới";
+    public static final String NAV_FRIEND_STATS = "Thống kê bạn bè";
+    public static final String NAV_USER_ACTIVITY = "Người dùng hoạt động";
+    public static final String NAV_ACTIVITY_CHART = "Biểu đồ hoạt động";
+
+    private static final String[] MANAGEMENT_NAV_ITEMS = {
             NAV_USERS,
-            NAV_GROUPS,
-            NAV_SPAM,
             NAV_LOGIN_HISTORY,
-            NAV_STATISTICS,
-            NAV_SETTINGS
+            NAV_GROUPS,
+            NAV_SPAM
     };
+
+    private static final String[] ANALYTICS_NAV_ITEMS = {
+            NAV_NEW_REGISTRATIONS,
+            NAV_REGISTRATION_CHART,
+            NAV_FRIEND_STATS,
+            NAV_USER_ACTIVITY,
+            NAV_ACTIVITY_CHART
+    };
+
+    private static final int NAV_BUTTON_HEIGHT = 36;
 
     private final List<NavButton> navButtons = new ArrayList<>();
     private String selectedItem = NAV_USERS;
@@ -128,35 +143,48 @@ public class SidebarPanel extends JPanel {
         navContainer.setLayout(new BoxLayout(navContainer, BoxLayout.Y_AXIS));
         navContainer.setBackground(AppTheme.SIDEBAR_BG);
         navContainer.setBorder(BorderFactory.createEmptyBorder(
-                AppTheme.SPACING_MD,
+                AppTheme.SPACING_MD - 2,
                 AppTheme.SPACING_MD - 4,
-                AppTheme.SPACING_MD,
+                AppTheme.SPACING_MD - 2,
                 AppTheme.SPACING_MD - 4
         ));
 
-        JLabel menuSectionLabel = new JLabel("ĐIỀU HƯỚNG HỆ THỐNG");
-        menuSectionLabel.setFont(AppTheme.FONT_CAPTION_BOLD);
-        menuSectionLabel.setForeground(AppTheme.SIDEBAR_TEXT_MUTED);
-        menuSectionLabel.setBorder(BorderFactory.createEmptyBorder(0, AppTheme.SPACING_SM, AppTheme.SPACING_SM, 0));
-        menuSectionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        navContainer.add(menuSectionLabel);
+        navContainer.add(createSectionGroupLabel("QUẢN LÝ HỆ THỐNG"));
+        for (String item : MANAGEMENT_NAV_ITEMS) {
+            addNavButton(navContainer, item);
+        }
 
-        for (String item : NAV_ITEMS) {
-            NavButton btn = new NavButton(item, item.equals(selectedItem));
-            btn.setAlignmentX(Component.LEFT_ALIGNMENT);
-            btn.addActionListener(e -> {
-                setSelectedItem(item);
-                if (navigationListener != null) {
-                    navigationListener.accept(item);
-                }
-            });
-            navButtons.add(btn);
-            navContainer.add(btn);
-            navContainer.add(Box.createVerticalStrut(AppTheme.SPACING_SM));
+        navContainer.add(Box.createVerticalStrut(AppTheme.SPACING_SM));
+        navContainer.add(createSectionGroupLabel("THỐNG KÊ & BIỂU ĐỒ"));
+        for (String item : ANALYTICS_NAV_ITEMS) {
+            addNavButton(navContainer, item);
         }
 
         navContainer.add(Box.createVerticalGlue());
         return navContainer;
+    }
+
+    private JLabel createSectionGroupLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(AppTheme.FONT_CAPTION_BOLD);
+        label.setForeground(AppTheme.SIDEBAR_TEXT_MUTED);
+        label.setBorder(BorderFactory.createEmptyBorder(2, AppTheme.SPACING_SM, 6, 0));
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        return label;
+    }
+
+    private void addNavButton(JPanel navContainer, String item) {
+        NavButton btn = new NavButton(item, item.equals(selectedItem));
+        btn.setAlignmentX(Component.LEFT_ALIGNMENT);
+        btn.addActionListener(e -> {
+            setSelectedItem(item);
+            if (navigationListener != null) {
+                navigationListener.accept(item);
+            }
+        });
+        navButtons.add(btn);
+        navContainer.add(btn);
+        navContainer.add(Box.createVerticalStrut(4));
     }
 
     private JPanel createProfileFooter() {
@@ -166,9 +194,9 @@ public class SidebarPanel extends JPanel {
         footerPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(1, 0, 0, 0, AppTheme.SIDEBAR_BORDER),
                 BorderFactory.createEmptyBorder(
+                        AppTheme.SPACING_MD - 4,
                         AppTheme.SPACING_MD,
-                        AppTheme.SPACING_MD,
-                        AppTheme.SPACING_MD,
+                        AppTheme.SPACING_MD - 4,
                         AppTheme.SPACING_MD
                 )
         ));
@@ -204,14 +232,14 @@ public class SidebarPanel extends JPanel {
         logoutButton.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         footerPanel.add(profileRow);
-        footerPanel.add(Box.createVerticalStrut(AppTheme.SPACING_SM + 4));
+        footerPanel.add(Box.createVerticalStrut(AppTheme.SPACING_SM + 2));
         footerPanel.add(logoutButton);
 
         return footerPanel;
     }
 
     private JButton createLogoutButton() {
-        JButton logoutBtn = new JButton("Đăng xuất") {
+        return new JButton("Đăng xuất") {
             private boolean hovered = false;
 
             {
@@ -225,11 +253,11 @@ public class SidebarPanel extends JPanel {
                 setHorizontalAlignment(SwingConstants.CENTER);
                 Dimension size = new Dimension(
                         AppTheme.SIDEBAR_WIDTH - (AppTheme.SPACING_MD * 2),
-                        AppTheme.CONTROL_HEIGHT
+                        36
                 );
                 setPreferredSize(size);
-                setMaximumSize(new Dimension(Integer.MAX_VALUE, AppTheme.CONTROL_HEIGHT));
-                setMinimumSize(new Dimension(120, AppTheme.CONTROL_HEIGHT));
+                setMaximumSize(new Dimension(Integer.MAX_VALUE, 36));
+                setMinimumSize(new Dimension(120, 36));
 
                 addMouseListener(new MouseAdapter() {
                     @Override
@@ -261,7 +289,6 @@ public class SidebarPanel extends JPanel {
                 super.paintComponent(g);
             }
         };
-        return logoutBtn;
     }
 
     /**
@@ -284,15 +311,15 @@ public class SidebarPanel extends JPanel {
             setOpaque(false);
             setHorizontalAlignment(SwingConstants.LEFT);
             setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            setBorder(BorderFactory.createEmptyBorder(0, AppTheme.SPACING_MD, 0, AppTheme.SPACING_MD));
+            setBorder(BorderFactory.createEmptyBorder(0, AppTheme.SPACING_MD - 2, 0, AppTheme.SPACING_MD - 2));
 
             Dimension targetSize = new Dimension(
                     AppTheme.SIDEBAR_WIDTH - ((AppTheme.SPACING_MD - 4) * 2),
-                    AppTheme.CONTROL_HEIGHT
+                    NAV_BUTTON_HEIGHT
             );
             setPreferredSize(targetSize);
-            setMaximumSize(new Dimension(Integer.MAX_VALUE, AppTheme.CONTROL_HEIGHT));
-            setMinimumSize(new Dimension(140, AppTheme.CONTROL_HEIGHT));
+            setMaximumSize(new Dimension(Integer.MAX_VALUE, NAV_BUTTON_HEIGHT));
+            setMinimumSize(new Dimension(140, NAV_BUTTON_HEIGHT));
 
             updateTypography();
 
@@ -337,7 +364,7 @@ public class SidebarPanel extends JPanel {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             if (selectedState) {
-                g2.setColor( hovered ? AppTheme.PRIMARY_HOVER : AppTheme.PRIMARY);
+                g2.setColor(hovered ? AppTheme.PRIMARY_HOVER : AppTheme.PRIMARY);
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), AppTheme.CORNER_RADIUS, AppTheme.CORNER_RADIUS);
             } else if (hovered) {
                 g2.setColor(AppTheme.SIDEBAR_SURFACE);

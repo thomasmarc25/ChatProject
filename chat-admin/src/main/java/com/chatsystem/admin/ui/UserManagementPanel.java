@@ -21,6 +21,8 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
@@ -45,32 +47,53 @@ import java.awt.Window;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.text.Collator;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
 
 /**
- * Main User Management screen panel (Phase 3).
- * Displays page intro, 4 summary stat cards, search/filter/sort toolbar,
- * styled 24-row Vietnamese mock user JTable with status badges and row actions,
- * and a visual pagination bar.
+ * Main User Management screen panel.
+ * Displays page intro, 4 summary stat cards, search/filter/sort toolbar with
+ * distinct Account Status and Online Presence controls, styled Vietnamese mock user JTable
+ * with dual status badges and row actions, and a pagination bar.
  */
 public class UserManagementPanel extends JPanel {
 
-    private static final String[] STATUS_FILTER_OPTIONS = {
-            "Tất cả trạng thái",
-            "Đang hoạt động",
-            "Ngoại tuyến",
+    private static final String[] ACCOUNT_STATUS_OPTIONS = {
+            "Tất cả TK",
+            "Hoạt động",
             "Đã khóa"
     };
 
+    private static final String[] PRESENCE_FILTER_OPTIONS = {
+            "Tất cả phiên",
+            "Trực tuyến",
+            "Ngoại tuyến"
+    };
+
     private static final String[] SORT_OPTIONS = {
-            "Tên A–Z",
-            "Tên Z–A",
+            "Cũ nhất",
             "Mới nhất",
-            "Cũ nhất"
+            "Tên A–Z",
+            "Tên Z–A"
     };
 
     private final MockUserRepository userRepository;
     private final UserTableModel tableModel;
     private final JTable userTable;
+
+    private StatCard totalCard;
+    private StatCard onlineCard;
+    private StatCard offlineCard;
+    private StatCard lockedCard;
+
+    private JTextField searchField;
+    private JComboBox<String> accountStatusCombo;
+    private JComboBox<String> presenceCombo;
+    private JComboBox<String> sortCombo;
+    private JLabel recordCountLabel;
 
     public UserManagementPanel(MockUserRepository userRepository) {
         super(new BorderLayout(0, AppTheme.SPACING_MD));
@@ -93,6 +116,8 @@ public class UserManagementPanel extends JPanel {
 
         add(topSection, BorderLayout.NORTH);
         add(createMainTableCard(), BorderLayout.CENTER);
+
+        applyFiltersAndSort();
     }
 
     private JPanel createPageIntroBar() {
@@ -134,7 +159,7 @@ public class UserManagementPanel extends JPanel {
         JPanel cardsGrid = new JPanel(new GridLayout(1, 4, AppTheme.SPACING_MD, 0));
         cardsGrid.setOpaque(false);
 
-        StatCard totalCard = new StatCard(
+        totalCard = new StatCard(
                 "Tổng người dùng",
                 userRepository.getTotalCount(),
                 "Tổng số tài khoản",
@@ -142,7 +167,7 @@ public class UserManagementPanel extends JPanel {
                 AppTheme.PRIMARY_SOFT_BG
         );
 
-        StatCard onlineCard = new StatCard(
+        onlineCard = new StatCard(
                 "Đang hoạt động",
                 userRepository.getActiveOnlineCount(),
                 "Đang trực tuyến",
@@ -150,7 +175,7 @@ public class UserManagementPanel extends JPanel {
                 AppTheme.SUCCESS_BG
         );
 
-        StatCard offlineCard = new StatCard(
+        offlineCard = new StatCard(
                 "Ngoại tuyến",
                 userRepository.getOfflineCount(),
                 "Tạm ngắt kết nối",
@@ -158,7 +183,7 @@ public class UserManagementPanel extends JPanel {
                 AppTheme.NEUTRAL_BG
         );
 
-        StatCard lockedCard = new StatCard(
+        lockedCard = new StatCard(
                 "Tài khoản bị khóa",
                 userRepository.getLockedCount(),
                 "Đang bị hạn chế",
@@ -199,81 +224,209 @@ public class UserManagementPanel extends JPanel {
                 )
         ));
 
-        // Search input field
-        JTextField searchField = new JTextField();
+        // Search input field (live filtering by fullName or username)
+        searchField = new JTextField();
         searchField.setFont(AppTheme.FONT_BODY);
         searchField.setForeground(AppTheme.TEXT_PRIMARY);
-        searchField.setPreferredSize(new Dimension(260, AppTheme.CONTROL_HEIGHT));
-        searchField.setMinimumSize(new Dimension(160, AppTheme.CONTROL_HEIGHT));
+        searchField.setPreferredSize(new Dimension(210, AppTheme.CONTROL_HEIGHT));
+        searchField.setMinimumSize(new Dimension(140, AppTheme.CONTROL_HEIGHT));
         searchField.putClientProperty("JTextField.placeholderText", "Tìm theo tên hoặc tên đăng nhập...");
+        searchField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                applyFiltersAndSort();
+            }
 
-        // Status filter dropdown
-        JComboBox<String> statusCombo = new JComboBox<>(STATUS_FILTER_OPTIONS);
-        statusCombo.setFont(AppTheme.FONT_BODY);
-        statusCombo.setPreferredSize(new Dimension(164, AppTheme.CONTROL_HEIGHT));
-        statusCombo.setMinimumSize(new Dimension(158, AppTheme.CONTROL_HEIGHT));
-        statusCombo.setToolTipText("Lọc theo trạng thái tài khoản");
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                applyFiltersAndSort();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                applyFiltersAndSort();
+            }
+        });
+
+        // Account status filter dropdown (Hoạt động vs Đã khóa)
+        accountStatusCombo = new JComboBox<>(ACCOUNT_STATUS_OPTIONS);
+        accountStatusCombo.setFont(AppTheme.FONT_BODY);
+        accountStatusCombo.setPreferredSize(new Dimension(118, AppTheme.CONTROL_HEIGHT));
+        accountStatusCombo.setMinimumSize(new Dimension(110, AppTheme.CONTROL_HEIGHT));
+        accountStatusCombo.setToolTipText("Lọc theo trạng thái khóa/mở của tài khoản");
+        accountStatusCombo.addActionListener(e -> applyFiltersAndSort());
+
+        // Online presence filter dropdown (Trực tuyến vs Ngoại tuyến)
+        presenceCombo = new JComboBox<>(PRESENCE_FILTER_OPTIONS);
+        presenceCombo.setFont(AppTheme.FONT_BODY);
+        presenceCombo.setPreferredSize(new Dimension(126, AppTheme.CONTROL_HEIGHT));
+        presenceCombo.setMinimumSize(new Dimension(118, AppTheme.CONTROL_HEIGHT));
+        presenceCombo.setToolTipText("Lọc theo trạng thái phiên kết nối trực tuyến/ngoại tuyến");
+        presenceCombo.addActionListener(e -> applyFiltersAndSort());
 
         // Sort dropdown
-        JComboBox<String> sortCombo = new JComboBox<>(SORT_OPTIONS);
+        sortCombo = new JComboBox<>(SORT_OPTIONS);
         sortCombo.setFont(AppTheme.FONT_BODY);
-        sortCombo.setPreferredSize(new Dimension(126, AppTheme.CONTROL_HEIGHT));
-        sortCombo.setMinimumSize(new Dimension(118, AppTheme.CONTROL_HEIGHT));
-        sortCombo.setToolTipText("Sắp xếp danh sách người dùng");
+        sortCombo.setPreferredSize(new Dimension(116, AppTheme.CONTROL_HEIGHT));
+        sortCombo.setMinimumSize(new Dimension(110, AppTheme.CONTROL_HEIGHT));
+        sortCombo.setToolTipText("Sắp xếp danh sách theo họ tên hoặc ngày tạo");
+        sortCombo.addActionListener(e -> applyFiltersAndSort());
 
-        // Refresh button
+        // Refresh / reset filters button
         JButton refreshButton = new JButton("Làm mới");
         refreshButton.setFont(AppTheme.FONT_BODY_BOLD);
         refreshButton.setForeground(AppTheme.TEXT_PRIMARY);
         refreshButton.setBackground(AppTheme.SURFACE_CARD);
         refreshButton.setFocusPainted(false);
         refreshButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        refreshButton.setMargin(new Insets(0, 10, 0, 10));
-        refreshButton.setPreferredSize(new Dimension(96, AppTheme.CONTROL_HEIGHT));
-        refreshButton.setMinimumSize(new Dimension(90, AppTheme.CONTROL_HEIGHT));
+        refreshButton.setMargin(new Insets(0, 8, 0, 8));
+        refreshButton.setPreferredSize(new Dimension(88, AppTheme.CONTROL_HEIGHT));
+        refreshButton.setMinimumSize(new Dimension(84, AppTheme.CONTROL_HEIGHT));
+        refreshButton.addActionListener(e -> resetFilters());
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridy = 0;
-        gbc.insets = new Insets(0, 0, 0, AppTheme.SPACING_SM + 2);
 
-        // Search takes available horizontal space
+        // 0: Search field takes remaining width
         gbc.gridx = 0;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(0, 0, 0, 8);
         toolbar.add(searchField, gbc);
 
-        // Status filter label + combo
-        JLabel statusLabel = new JLabel("Trạng thái:");
-        statusLabel.setFont(AppTheme.FONT_CAPTION_BOLD);
-        statusLabel.setForeground(AppTheme.TEXT_SECONDARY);
+        // 1-2: Account status label + combo
+        JLabel accountLabel = new JLabel("Tài khoản:");
+        accountLabel.setFont(AppTheme.FONT_CAPTION_BOLD);
+        accountLabel.setForeground(AppTheme.TEXT_SECONDARY);
         gbc.gridx = 1;
         gbc.weightx = 0.0;
         gbc.fill = GridBagConstraints.NONE;
-        gbc.insets = new Insets(0, AppTheme.SPACING_SM, 0, 6);
-        toolbar.add(statusLabel, gbc);
+        gbc.insets = new Insets(0, 2, 0, 4);
+        toolbar.add(accountLabel, gbc);
 
         gbc.gridx = 2;
-        gbc.insets = new Insets(0, 0, 0, AppTheme.SPACING_SM + 2);
-        toolbar.add(statusCombo, gbc);
+        gbc.insets = new Insets(0, 0, 0, 8);
+        toolbar.add(accountStatusCombo, gbc);
 
-        // Sort label + combo
+        // 3-4: Presence label + combo
+        JLabel presenceLabel = new JLabel("Phiên:");
+        presenceLabel.setFont(AppTheme.FONT_CAPTION_BOLD);
+        presenceLabel.setForeground(AppTheme.TEXT_SECONDARY);
+        gbc.gridx = 3;
+        gbc.insets = new Insets(0, 2, 0, 4);
+        toolbar.add(presenceLabel, gbc);
+
+        gbc.gridx = 4;
+        gbc.insets = new Insets(0, 0, 0, 8);
+        toolbar.add(presenceCombo, gbc);
+
+        // 5-6: Sort label + combo
         JLabel sortLabel = new JLabel("Sắp xếp:");
         sortLabel.setFont(AppTheme.FONT_CAPTION_BOLD);
         sortLabel.setForeground(AppTheme.TEXT_SECONDARY);
-        gbc.gridx = 3;
-        gbc.insets = new Insets(0, 4, 0, 6);
+        gbc.gridx = 5;
+        gbc.insets = new Insets(0, 2, 0, 4);
         toolbar.add(sortLabel, gbc);
 
-        gbc.gridx = 4;
-        gbc.insets = new Insets(0, 0, 0, AppTheme.SPACING_SM + 2);
+        gbc.gridx = 6;
+        gbc.insets = new Insets(0, 0, 0, 8);
         toolbar.add(sortCombo, gbc);
 
-        // Refresh button at right edge
-        gbc.gridx = 5;
+        // 7: Refresh button
+        gbc.gridx = 7;
         gbc.insets = new Insets(0, 0, 0, 0);
         toolbar.add(refreshButton, gbc);
 
         return toolbar;
+    }
+
+    private void resetFilters() {
+        searchField.setText("");
+        accountStatusCombo.setSelectedIndex(0);
+        presenceCombo.setSelectedIndex(0);
+        sortCombo.setSelectedIndex(0);
+        applyFiltersAndSort();
+    }
+
+    private void applyFiltersAndSort() {
+        String keyword = searchField != null ? searchField.getText().trim().toLowerCase(Locale.ROOT) : "";
+        String accountFilter = accountStatusCombo != null
+                ? (String) accountStatusCombo.getSelectedItem()
+                : ACCOUNT_STATUS_OPTIONS[0];
+        String presenceFilter = presenceCombo != null
+                ? (String) presenceCombo.getSelectedItem()
+                : PRESENCE_FILTER_OPTIONS[0];
+        String sortOption = sortCombo != null
+                ? (String) sortCombo.getSelectedItem()
+                : SORT_OPTIONS[0];
+
+        List<User> filtered = new ArrayList<>();
+        for (User u : userRepository.getUsers()) {
+            if (!keyword.isEmpty()) {
+                boolean matchesName = u.getFullName().toLowerCase(Locale.ROOT).contains(keyword);
+                boolean matchesUser = u.getUsername().toLowerCase(Locale.ROOT).contains(keyword);
+                if (!matchesName && !matchesUser) {
+                    continue;
+                }
+            }
+            if ("Hoạt động".equals(accountFilter) && u.isLocked()) {
+                continue;
+            }
+            if ("Đã khóa".equals(accountFilter) && !u.isLocked()) {
+                continue;
+            }
+            if ("Trực tuyến".equals(presenceFilter) && !u.isOnline()) {
+                continue;
+            }
+            if ("Ngoại tuyến".equals(presenceFilter) && u.isOnline()) {
+                continue;
+            }
+            filtered.add(u);
+        }
+
+        Collator viCollator = Collator.getInstance(Locale.of("vi", "VN"));
+        Comparator<User> comparator = switch (sortOption != null ? sortOption : SORT_OPTIONS[0]) {
+            case "Tên A–Z" -> (a, b) -> {
+                int cmp = viCollator.compare(a.getFullName(), b.getFullName());
+                return cmp != 0 ? cmp : Long.compare(a.getId(), b.getId());
+            };
+            case "Tên Z–A" -> (a, b) -> {
+                int cmp = viCollator.compare(b.getFullName(), a.getFullName());
+                return cmp != 0 ? cmp : Long.compare(a.getId(), b.getId());
+            };
+            case "Mới nhất" -> Comparator.comparing(User::getCreatedAt).reversed()
+                    .thenComparing(Comparator.comparingLong(User::getId).reversed());
+            case "Cũ nhất" -> Comparator.comparing(User::getCreatedAt)
+                    .thenComparingLong(User::getId);
+            default -> Comparator.comparingLong(User::getId);
+        };
+        filtered.sort(comparator);
+
+        tableModel.setUsers(filtered);
+        if (tableModel.getRowCount() > 0) {
+            userTable.setRowSelectionInterval(0, 0);
+        }
+
+        refreshSummaryCardsAndFooter(filtered.size());
+    }
+
+    private void refreshSummaryCardsAndFooter(int displayedCount) {
+        if (totalCard != null) {
+            totalCard.setCount(userRepository.getTotalCount());
+            onlineCard.setCount(userRepository.getActiveOnlineCount());
+            offlineCard.setCount(userRepository.getOfflineCount());
+            lockedCard.setCount(userRepository.getLockedCount());
+        }
+        if (recordCountLabel != null) {
+            int total = userRepository.getTotalCount();
+            if (displayedCount == 0) {
+                recordCountLabel.setText("Không tìm thấy người dùng phù hợp (Tổng hệ thống: " + total + ")");
+            } else {
+                recordCountLabel.setText(
+                        "Hiển thị 1–" + displayedCount + " trên tổng số " + total + " người dùng  •  Trang 1 / 2"
+                );
+            }
+        }
     }
 
     private JScrollPane createTableScrollPane() {
@@ -307,7 +460,6 @@ public class UserManagementPanel extends JPanel {
         header.setForeground(AppTheme.TEXT_SECONDARY);
         header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, AppTheme.BORDER));
 
-        // Custom header cell alignment
         DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(
@@ -324,7 +476,7 @@ public class UserManagementPanel extends JPanel {
                         || column == UserTableModel.COL_STATUS
                         || column == UserTableModel.COL_ACTIONS) {
                     label.setHorizontalAlignment(SwingConstants.CENTER);
-                    label.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 8));
+                    label.setBorder(BorderFactory.createEmptyBorder(0, 6, 0, 6));
                 } else {
                     label.setHorizontalAlignment(SwingConstants.LEFT);
                     label.setBorder(BorderFactory.createEmptyBorder(0, 12, 0, 8));
@@ -336,7 +488,6 @@ public class UserManagementPanel extends JPanel {
             userTable.getColumnModel().getColumn(i).setHeaderRenderer(headerRenderer);
         }
 
-        // Standard text cell renderers
         DefaultTableCellRenderer centerCellRenderer = createPaddedRenderer(SwingConstants.CENTER, AppTheme.FONT_BODY, AppTheme.TEXT_SECONDARY);
         DefaultTableCellRenderer usernameRenderer = createPaddedRenderer(SwingConstants.LEFT, AppTheme.FONT_BODY, AppTheme.TEXT_PRIMARY);
         DefaultTableCellRenderer boldNameRenderer = createPaddedRenderer(SwingConstants.LEFT, AppTheme.FONT_BODY_BOLD, AppTheme.TEXT_PRIMARY);
@@ -348,41 +499,38 @@ public class UserManagementPanel extends JPanel {
         columnModel.getColumn(UserTableModel.COL_FULL_NAME).setCellRenderer(boldNameRenderer);
         columnModel.getColumn(UserTableModel.COL_EMAIL).setCellRenderer(emailRenderer);
         columnModel.getColumn(UserTableModel.COL_CREATED_AT).setCellRenderer(centerCellRenderer);
-        columnModel.getColumn(UserTableModel.COL_STATUS).setCellRenderer(new StatusBadgeCellRenderer());
+        columnModel.getColumn(UserTableModel.COL_STATUS).setCellRenderer(new DualStatusBadgeCellRenderer());
         columnModel.getColumn(UserTableModel.COL_ACTIONS).setCellRenderer(new ActionControlCellRenderer());
 
-        // Column widths optimized for both 1280x800 and 1100x700
-        columnModel.getColumn(UserTableModel.COL_INDEX).setMinWidth(42);
-        columnModel.getColumn(UserTableModel.COL_INDEX).setPreferredWidth(46);
-        columnModel.getColumn(UserTableModel.COL_INDEX).setMaxWidth(54);
+        columnModel.getColumn(UserTableModel.COL_INDEX).setMinWidth(38);
+        columnModel.getColumn(UserTableModel.COL_INDEX).setPreferredWidth(42);
+        columnModel.getColumn(UserTableModel.COL_INDEX).setMaxWidth(48);
 
-        columnModel.getColumn(UserTableModel.COL_USERNAME).setMinWidth(110);
-        columnModel.getColumn(UserTableModel.COL_USERNAME).setPreferredWidth(128);
+        columnModel.getColumn(UserTableModel.COL_USERNAME).setMinWidth(100);
+        columnModel.getColumn(UserTableModel.COL_USERNAME).setPreferredWidth(120);
 
-        columnModel.getColumn(UserTableModel.COL_FULL_NAME).setMinWidth(144);
-        columnModel.getColumn(UserTableModel.COL_FULL_NAME).setPreferredWidth(168);
+        columnModel.getColumn(UserTableModel.COL_FULL_NAME).setMinWidth(132);
+        columnModel.getColumn(UserTableModel.COL_FULL_NAME).setPreferredWidth(158);
 
-        columnModel.getColumn(UserTableModel.COL_EMAIL).setMinWidth(130);
-        columnModel.getColumn(UserTableModel.COL_EMAIL).setPreferredWidth(205);
+        columnModel.getColumn(UserTableModel.COL_EMAIL).setMinWidth(114);
+        columnModel.getColumn(UserTableModel.COL_EMAIL).setPreferredWidth(185);
 
-        columnModel.getColumn(UserTableModel.COL_CREATED_AT).setMinWidth(92);
-        columnModel.getColumn(UserTableModel.COL_CREATED_AT).setPreferredWidth(100);
-        columnModel.getColumn(UserTableModel.COL_CREATED_AT).setMaxWidth(114);
+        columnModel.getColumn(UserTableModel.COL_CREATED_AT).setMinWidth(86);
+        columnModel.getColumn(UserTableModel.COL_CREATED_AT).setPreferredWidth(94);
+        columnModel.getColumn(UserTableModel.COL_CREATED_AT).setMaxWidth(106);
 
-        columnModel.getColumn(UserTableModel.COL_STATUS).setMinWidth(126);
-        columnModel.getColumn(UserTableModel.COL_STATUS).setPreferredWidth(134);
-        columnModel.getColumn(UserTableModel.COL_STATUS).setMaxWidth(148);
+        columnModel.getColumn(UserTableModel.COL_STATUS).setMinWidth(156);
+        columnModel.getColumn(UserTableModel.COL_STATUS).setPreferredWidth(164);
+        columnModel.getColumn(UserTableModel.COL_STATUS).setMaxWidth(180);
 
-        columnModel.getColumn(UserTableModel.COL_ACTIONS).setMinWidth(146);
+        columnModel.getColumn(UserTableModel.COL_ACTIONS).setMinWidth(148);
         columnModel.getColumn(UserTableModel.COL_ACTIONS).setPreferredWidth(152);
-        columnModel.getColumn(UserTableModel.COL_ACTIONS).setMaxWidth(166);
+        columnModel.getColumn(UserTableModel.COL_ACTIONS).setMaxWidth(164);
 
-        // Select row 0 initially for visual polish
         if (tableModel.getRowCount() > 0) {
             userTable.setRowSelectionInterval(0, 0);
         }
 
-        // Hand cursor & click handling on "Thao tác" column
         userTable.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -406,11 +554,12 @@ public class UserManagementPanel extends JPanel {
                     Rectangle cellRect = userTable.getCellRect(row, col, false);
                     int relativeX = point.x - cellRect.x;
                     User selectedUser = tableModel.getUserAt(row);
-                    // Left pill ("Sửa") opens UserFormDialog; right pill ("Thao tác ▾") opens action menu
-                    if (relativeX < cellRect.width * 0.42) {
-                        openUserFormDialog(selectedUser);
-                    } else {
-                        showRowActionMenu(userTable, cellRect.x + 8, cellRect.y + cellRect.height, selectedUser);
+                    if (selectedUser != null) {
+                        if (relativeX < cellRect.width * 0.42) {
+                            openUserFormDialog(selectedUser);
+                        } else {
+                            showRowActionMenu(userTable, cellRect.x + 8, cellRect.y + cellRect.height, selectedUser);
+                        }
                     }
                 }
             }
@@ -444,16 +593,25 @@ public class UserManagementPanel extends JPanel {
         JPopupMenu actionMenu = new JPopupMenu();
         actionMenu.setBorder(BorderFactory.createLineBorder(AppTheme.BORDER, 1));
 
-        JMenuItem editItem = createActionMenuItem("Sửa");
+        JMenuItem editItem = createActionMenuItem("Sửa thông tin");
         editItem.addActionListener(e -> openUserFormDialog(user));
 
-        JMenuItem deleteItem = createActionMenuItem("Xóa");
+        JMenuItem deleteItem = createActionMenuItem("Xóa tài khoản");
         deleteItem.setForeground(AppTheme.DANGER);
+        deleteItem.addActionListener(e -> openDeleteConfirmDialog(user));
 
-        JMenuItem lockToggleItem = createActionMenuItem("Khóa/Mở khóa");
+        String lockLabel = user.isLocked() ? "Mở khóa tài khoản" : "Khóa tài khoản";
+        JMenuItem lockToggleItem = createActionMenuItem(lockLabel);
+        lockToggleItem.addActionListener(e -> openLockToggleConfirmDialog(user));
+
         JMenuItem changePasswordItem = createActionMenuItem("Đổi mật khẩu");
+        changePasswordItem.addActionListener(e -> openPasswordUpdateDialog(user));
+
         JMenuItem loginHistoryItem = createActionMenuItem("Lịch sử đăng nhập");
+        loginHistoryItem.addActionListener(e -> openUserLoginHistoryDialog(user));
+
         JMenuItem friendListItem = createActionMenuItem("Danh sách bạn bè");
+        friendListItem.addActionListener(e -> openUserFriendsDialog(user));
 
         actionMenu.add(editItem);
         actionMenu.add(deleteItem);
@@ -489,7 +647,7 @@ public class UserManagementPanel extends JPanel {
         ));
 
         int total = userRepository.getTotalCount();
-        JLabel recordCountLabel = new JLabel(
+        recordCountLabel = new JLabel(
                 "Hiển thị 1–" + total + " trên tổng số " + total + " người dùng  •  Trang 1 / 2"
         );
         recordCountLabel.setFont(AppTheme.FONT_CAPTION);
@@ -589,22 +747,83 @@ public class UserManagementPanel extends JPanel {
         };
     }
 
-    private void openUserFormDialog(User user) {
+    private void openUserFormDialog(User existingUser) {
         Window owner = SwingUtilities.getWindowAncestor(this);
-        UserFormDialog dialog = new UserFormDialog(owner, user);
+        UserFormDialog dialog = new UserFormDialog(
+                owner,
+                existingUser,
+                (username, fullName, address, dateOfBirth, gender, email) -> {
+                    if (existingUser == null) {
+                        userRepository.addUser(username, fullName, address, dateOfBirth, gender, email);
+                    } else {
+                        userRepository.updateUser(
+                                existingUser.getId(),
+                                username,
+                                fullName,
+                                address,
+                                dateOfBirth,
+                                gender,
+                                email
+                        );
+                    }
+                    applyFiltersAndSort();
+                }
+        );
+        dialog.setVisible(true);
+    }
+
+    private void openDeleteConfirmDialog(User user) {
+        Window owner = SwingUtilities.getWindowAncestor(this);
+        if (ConfirmActionDialog.showDeleteUserConfirm(owner, user)) {
+            userRepository.deleteUser(user.getId());
+            applyFiltersAndSort();
+        }
+    }
+
+    private void openLockToggleConfirmDialog(User user) {
+        Window owner = SwingUtilities.getWindowAncestor(this);
+        if (ConfirmActionDialog.showLockToggleConfirm(owner, user)) {
+            userRepository.toggleLockUser(user.getId());
+            applyFiltersAndSort();
+        }
+    }
+
+    private void openPasswordUpdateDialog(User user) {
+        Window owner = SwingUtilities.getWindowAncestor(this);
+        PasswordUpdateDialog dialog = new PasswordUpdateDialog(owner, user);
+        dialog.setVisible(true);
+    }
+
+    private void openUserLoginHistoryDialog(User user) {
+        Window owner = SwingUtilities.getWindowAncestor(this);
+        UserLoginHistoryDialog dialog = new UserLoginHistoryDialog(
+                owner,
+                user,
+                userRepository.getLoginHistoryForUser(user.getId())
+        );
+        dialog.setVisible(true);
+    }
+
+    private void openUserFriendsDialog(User user) {
+        Window owner = SwingUtilities.getWindowAncestor(this);
+        UserFriendsDialog dialog = new UserFriendsDialog(
+                owner,
+                user,
+                userRepository.getDirectFriendsForUser(user.getId())
+        );
         dialog.setVisible(true);
     }
 
     /**
-     * Renders account status ("Đang hoạt động", "Ngoại tuyến", "Đã khóa") as a rounded badge pill.
+     * Renders both Account Status ("Hoạt động" vs "Đã khóa") and Online Presence
+     * ("Online" vs "Offline") as two distinct side-by-side badge pills.
      */
-    private static final class StatusBadgeCellRenderer extends JPanel implements TableCellRenderer {
+    private static final class DualStatusBadgeCellRenderer extends JPanel implements TableCellRenderer {
 
-        private String statusText = "";
-        private Color pillBg = AppTheme.NEUTRAL_BG;
-        private Color pillFg = AppTheme.TEXT_SECONDARY;
+        private boolean locked = false;
+        private boolean online = false;
 
-        private StatusBadgeCellRenderer() {
+        private DualStatusBadgeCellRenderer() {
             setOpaque(true);
         }
 
@@ -612,18 +831,14 @@ public class UserManagementPanel extends JPanel {
         public Component getTableCellRendererComponent(
                 JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column
         ) {
-            statusText = value != null ? value.toString() : "";
             setBackground(isSelected ? AppTheme.PRIMARY_SOFT_BG : AppTheme.SURFACE_CARD);
-
-            if (User.STATUS_LOCKED.equals(statusText)) {
-                pillBg = AppTheme.DANGER_BG;
-                pillFg = AppTheme.DANGER;
-            } else if (User.STATUS_ONLINE.equals(statusText)) {
-                pillBg = AppTheme.SUCCESS_BG;
-                pillFg = AppTheme.SUCCESS;
-            } else {
-                pillBg = AppTheme.NEUTRAL_BG;
-                pillFg = AppTheme.TEXT_SECONDARY;
+            if (value instanceof User u) {
+                this.locked = u.isLocked();
+                this.online = u.isOnline();
+                setToolTipText(
+                        "Trạng thái tài khoản: " + u.getAccountStatusLabel()
+                                + " | Phiên kết nối: " + u.getPresenceStatusLabel()
+                );
             }
             return this;
         }
@@ -634,29 +849,44 @@ public class UserManagementPanel extends JPanel {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setFont(AppTheme.FONT_CAPTION_BOLD);
-
             FontMetrics fm = g2.getFontMetrics();
-            int dotDiameter = 6;
-            int dotGap = 6;
-            int textWidth = fm.stringWidth(statusText);
-            int contentWidth = dotDiameter + dotGap + textWidth;
-            int badgeWidth = contentWidth + 20;
-            int badgeHeight = 26;
 
-            int x = (getWidth() - badgeWidth) / 2;
-            int y = (getHeight() - badgeHeight) / 2;
+            String acctText = locked ? "Đã khóa" : "Hoạt động";
+            Color acctBg = locked ? AppTheme.DANGER_BG : AppTheme.PRIMARY_SOFT_BG;
+            Color acctFg = locked ? AppTheme.DANGER : AppTheme.PRIMARY;
 
-            g2.setColor(pillBg);
-            g2.fillRoundRect(x, y, badgeWidth, badgeHeight, 13, 13);
+            String presText = online ? "Online" : "Offline";
+            Color presBg = online ? AppTheme.SUCCESS_BG : AppTheme.NEUTRAL_BG;
+            Color presFg = online ? AppTheme.SUCCESS : AppTheme.TEXT_SECONDARY;
 
-            int startX = x + 10;
-            int dotY = y + (badgeHeight - dotDiameter) / 2;
-            g2.setColor(pillFg);
-            g2.fillOval(startX, dotY, dotDiameter, dotDiameter);
+            int badgeH = 24;
+            int acctW = fm.stringWidth(acctText) + 16;
+            int dotSize = 6;
+            int dotGap = 5;
+            int presW = dotSize + dotGap + fm.stringWidth(presText) + 16;
+            int gap = 6;
+            int totalW = acctW + gap + presW;
 
-            int textX = startX + dotDiameter + dotGap;
-            int textY = y + ((badgeHeight - fm.getHeight()) / 2) + fm.getAscent();
-            g2.drawString(statusText, textX, textY);
+            int startX = (getWidth() - totalW) / 2;
+            int y = (getHeight() - badgeH) / 2;
+            int textY = y + ((badgeH - fm.getHeight()) / 2) + fm.getAscent();
+
+            // Left pill: Account Status (Hoạt động / Đã khóa)
+            g2.setColor(acctBg);
+            g2.fillRoundRect(startX, y, acctW, badgeH, 12, 12);
+            g2.setColor(acctFg);
+            g2.drawString(acctText, startX + 8, textY);
+
+            // Right pill: Online Presence (Online / Offline with status dot)
+            int presX = startX + acctW + gap;
+            g2.setColor(presBg);
+            g2.fillRoundRect(presX, y, presW, badgeH, 12, 12);
+
+            int dotX = presX + 8;
+            int dotY = y + (badgeH - dotSize) / 2;
+            g2.setColor(presFg);
+            g2.fillOval(dotX, dotY, dotSize, dotSize);
+            g2.drawString(presText, dotX + dotSize + dotGap, textY);
 
             g2.dispose();
         }
@@ -719,7 +949,6 @@ public class UserManagementPanel extends JPanel {
             int menuTextX = menuX + 9;
             g2.drawString(menuText, menuTextX, textBaseline);
 
-            // Paint a small downward chevron next to "Thao tác"
             int cx = menuTextX + fm.stringWidth(menuText) + 6;
             int cy = pillY + (pillH / 2) - 1;
             g2.drawLine(cx, cy, cx + 3, cy + 3);

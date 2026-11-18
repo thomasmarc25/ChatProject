@@ -1,24 +1,36 @@
 package com.chatsystem.admin.data;
 
+import com.chatsystem.admin.model.LoginRecord;
 import com.chatsystem.admin.model.User;
+import com.chatsystem.admin.model.UserFriendRecord;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Deterministic in-memory mock repository providing 24 representative Vietnamese user accounts
- * for the UI-only ChatSystem Admin User Management screen.
+ * Deterministic in-memory mock repository providing 24 representative Vietnamese user accounts,
+ * login history records, and accepted friendship edges aligned with {@code script/02_seed.sql}.
  */
 public class MockUserRepository {
 
+    private record FriendshipEdge(long userLowId, long userHighId, LocalDate createdAt) {
+    }
+
     private final List<User> users;
+    private final List<LoginRecord> loginRecords;
+    private final List<FriendshipEdge> friendshipEdges;
+    private long nextUserId = 27L;
 
     public MockUserRepository() {
-        this.users = List.of(
+        this.users = new ArrayList<>(List.of(
                 new User(1L, "nguyenvanan", "Nguyễn Văn An", "12 Nguyễn Huệ, Quận 1, TP.HCM",
                         LocalDate.of(2002, 3, 14), "Nam", "nguyenvanan@chatsystem.vn",
-                        LocalDate.of(2026, 1, 10), true, false),
+                        LocalDate.of(2026, 1, 1), true, false),
                 new User(2L, "tranthibich", "Trần Thị Bích Ngọc", "45 Lê Lợi, Quận Hải Châu, Đà Nẵng",
                         LocalDate.of(2003, 7, 22), "Nữ", "bichngoc.tran@chatsystem.vn",
                         LocalDate.of(2026, 1, 15), true, false),
@@ -88,11 +100,160 @@ public class MockUserRepository {
                 new User(24L, "taquocdat", "Tạ Quốc Đạt", "51 Lê Hồng Phong, TP. Vũng Tàu, Bà Rịa - Vũng Tàu",
                         LocalDate.of(2002, 9, 4), "Nam", "quocdat.ta@chatsystem.vn",
                         LocalDate.of(2026, 6, 14), false, false)
+        ));
+
+        this.loginRecords = List.of(
+                new LoginRecord(13L, 1L, "nguyenvanan", "Nguyễn Văn An",
+                        LocalDateTime.of(2026, 3, 25, 20, 15, 3), null, "10.0.0.11"),
+                new LoginRecord(12L, 10L, "ngothuyduong", "Ngô Thùy Dương",
+                        LocalDateTime.of(2026, 3, 22, 16, 45, 2), LocalDateTime.of(2026, 3, 22, 18, 0, 0), "10.0.0.20"),
+                new LoginRecord(11L, 5L, "hoangquocviet", "Hoàng Quốc Việt",
+                        LocalDateTime.of(2026, 3, 15, 11, 20, 5), LocalDateTime.of(2026, 3, 15, 13, 0, 0), "10.0.0.15"),
+                new LoginRecord(10L, 1L, "nguyenvanan", "Nguyễn Văn An",
+                        LocalDateTime.of(2026, 3, 12, 18, 30, 2), LocalDateTime.of(2026, 3, 12, 20, 0, 0), "10.0.0.11"),
+                new LoginRecord(9L, 3L, "lehoangnam", "Lê Hoàng Nam",
+                        LocalDateTime.of(2026, 3, 8, 10, 0, 4), LocalDateTime.of(2026, 3, 8, 12, 0, 0), "10.0.0.13"),
+                new LoginRecord(8L, 2L, "tranthibich", "Trần Thị Bích Ngọc",
+                        LocalDateTime.of(2026, 3, 6, 9, 10, 3), LocalDateTime.of(2026, 3, 6, 11, 0, 0), "10.0.0.12"),
+                new LoginRecord(7L, 1L, "nguyenvanan", "Nguyễn Văn An",
+                        LocalDateTime.of(2026, 3, 5, 11, 15, 0), LocalDateTime.of(2026, 3, 5, 12, 30, 0), "10.0.0.11"),
+                new LoginRecord(6L, 1L, "nguyenvanan", "Nguyễn Văn An",
+                        LocalDateTime.of(2026, 3, 5, 9, 30, 0), LocalDateTime.of(2026, 3, 5, 10, 45, 0), "10.0.0.11"),
+                new LoginRecord(5L, 1L, "nguyenvanan", "Nguyễn Văn An",
+                        LocalDateTime.of(2026, 3, 5, 8, 0, 6), LocalDateTime.of(2026, 3, 5, 9, 15, 0), "10.0.0.11"),
+                new LoginRecord(3L, 2L, "tranthibich", "Trần Thị Bích Ngọc",
+                        LocalDateTime.of(2026, 1, 16, 8, 30, 5), LocalDateTime.of(2026, 1, 16, 10, 0, 0), "10.0.0.12"),
+                new LoginRecord(2L, 1L, "nguyenvanan", "Nguyễn Văn An",
+                        LocalDateTime.of(2026, 1, 1, 6, 45, 2), LocalDateTime.of(2026, 1, 1, 7, 30, 0), "10.0.0.11"),
+                new LoginRecord(14L, 14L, "haquynhnhu", "Hà Quỳnh Như",
+                        LocalDateTime.of(2026, 4, 4, 8, 15, 0), LocalDateTime.of(2026, 4, 4, 9, 45, 0), "10.0.0.24"),
+                new LoginRecord(15L, 15L, "phanminhkhoi", "Phan Minh Khôi",
+                        LocalDateTime.of(2026, 4, 12, 13, 30, 0), LocalDateTime.of(2026, 4, 12, 15, 10, 0), "10.0.0.25"),
+                new LoginRecord(16L, 18L, "lamngocmai", "Lâm Ngọc Mai",
+                        LocalDateTime.of(2026, 5, 5, 9, 40, 0), LocalDateTime.of(2026, 5, 5, 11, 20, 0), "10.0.0.28"),
+                new LoginRecord(17L, 20L, "maiphuongvy", "Mai Phương Vy",
+                        LocalDateTime.of(2026, 5, 19, 17, 0, 0), LocalDateTime.of(2026, 5, 19, 18, 30, 0), "10.0.0.30"),
+                new LoginRecord(18L, 22L, "chuthanhhuyen", "Chu Thanh Huyền",
+                        LocalDateTime.of(2026, 6, 2, 10, 0, 0), null, "10.0.0.32")
+        );
+
+        // Canonical accepted friendships matching script/02_seed.sql (active non-deleted users)
+        this.friendshipEdges = List.of(
+                new FriendshipEdge(1L, 2L, LocalDate.of(2026, 1, 16)),
+                new FriendshipEdge(1L, 3L, LocalDate.of(2026, 1, 19)),
+                new FriendshipEdge(1L, 4L, LocalDate.of(2026, 1, 25)),
+                new FriendshipEdge(2L, 3L, LocalDate.of(2026, 1, 20)),
+                new FriendshipEdge(2L, 5L, LocalDate.of(2026, 2, 3)),
+                new FriendshipEdge(3L, 5L, LocalDate.of(2026, 2, 4)),
+                new FriendshipEdge(3L, 6L, LocalDate.of(2026, 2, 9)),
+                new FriendshipEdge(5L, 7L, LocalDate.of(2026, 2, 15)),
+                new FriendshipEdge(10L, 12L, LocalDate.of(2026, 3, 20)),
+                new FriendshipEdge(14L, 15L, LocalDate.of(2026, 4, 10))
         );
     }
 
     public List<User> getUsers() {
         return Collections.unmodifiableList(users);
+    }
+
+    public Optional<User> findUserById(long id) {
+        return users.stream().filter(u -> u.getId() == id).findFirst();
+    }
+
+    public User addUser(
+            String username,
+            String fullName,
+            String address,
+            LocalDate dateOfBirth,
+            String gender,
+            String email
+    ) {
+        User created = new User(
+                nextUserId++,
+                username,
+                fullName,
+                address,
+                dateOfBirth,
+                gender,
+                email,
+                LocalDate.now(),
+                false,
+                false
+        );
+        users.add(created);
+        return created;
+    }
+
+    public void updateUser(
+            long userId,
+            String username,
+            String fullName,
+            String address,
+            LocalDate dateOfBirth,
+            String gender,
+            String email
+    ) {
+        for (int i = 0; i < users.size(); i++) {
+            User existing = users.get(i);
+            if (existing.getId() == userId) {
+                users.set(i, existing.withUpdatedProfile(
+                        username, fullName, address, dateOfBirth, gender, email
+                ));
+                return;
+            }
+        }
+    }
+
+    public void toggleLockUser(long userId) {
+        for (int i = 0; i < users.size(); i++) {
+            User existing = users.get(i);
+            if (existing.getId() == userId) {
+                users.set(i, existing.withLocked(!existing.isLocked()));
+                return;
+            }
+        }
+    }
+
+    public void deleteUser(long userId) {
+        users.removeIf(u -> u.getId() == userId);
+    }
+
+    public List<LoginRecord> getLoginHistoryForUser(long userId) {
+        return loginRecords.stream()
+                .filter(r -> r.getUserId() == userId)
+                .sorted(Comparator.comparing(LoginRecord::getLoginAt).reversed())
+                .toList();
+    }
+
+    public List<LoginRecord> getAllLoginHistory() {
+        return loginRecords.stream()
+                .sorted(Comparator.comparing(LoginRecord::getLoginAt).reversed())
+                .toList();
+    }
+
+    public List<UserFriendRecord> getDirectFriendsForUser(long userId) {
+        List<UserFriendRecord> result = new ArrayList<>();
+        for (FriendshipEdge edge : friendshipEdges) {
+            long friendId = -1L;
+            if (edge.userLowId() == userId) {
+                friendId = edge.userHighId();
+            } else if (edge.userHighId() == userId) {
+                friendId = edge.userLowId();
+            }
+            if (friendId > 0) {
+                findUserById(friendId).ifPresent(friend -> result.add(new UserFriendRecord(
+                        friend.getId(),
+                        friend.getUsername(),
+                        friend.getFullName(),
+                        friend.getEmail(),
+                        edge.createdAt(),
+                        friend.isLocked(),
+                        friend.isOnline()
+                )));
+            }
+        }
+        result.sort(Comparator.comparing(UserFriendRecord::getFriendFullName));
+        return result;
     }
 
     public int getTotalCount() {

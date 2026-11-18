@@ -1107,3 +1107,84 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
      - `03_admin_queries.sql` -> **PASS (`exit code: 0`)**
      - `04_verify.sql` -> **PASS (`exit code: 0`; all assertions `PASS [A1]` through `PASS [A9]` and `PASS [B1]` through `PASS [B9]` printed, followed by `DO` and `ROLLBACK`)**.
      - Stopped and removed the temporary verification cluster (`pg_ctl stop exit code: 0`).
+
+
+---
+
+## Entry 13 — Step E: Admin Navigation for All 9 Screens & Complete User Management Dialogs
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: Google Antigravity IDE
+   - Version/Model: Google Antigravity `2.29.0` (`ProductVersion 2.29.0.0`, Language Server `hub-2.29.0`, Electron `44.5.1`); Agent Model: `Gemini 4 Argon (High)`
+   - Platform: Desktop IDE on Microsoft Windows 11 Home Single Language 26H2 (OS Build `10.0.26300.9711`, x64) / PowerShell
+2. **Access date and time (with time zone):**
+   - Prompt received: `2026-11-18 00:06:15 UTC+07:00 (Asia/Ho_Chi_Minh)`
+   - Shell verification timestamp (`Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"`): `2026-11-18 00:07:12 +07:00`
+3. **Prompt(s) used:**
+   - Source observation: Observed directly as a chat prompt sent to the agent in the Antigravity session.
+   - **Verbatim:**
+     ```markdown
+     Continue with the admin Swing UI for Version 1.
+     Read the current project, plan, and database specification first.
+
+     Preserve the existing user-management screen and its visual style.
+     If a requested feature already exists, inspect and reuse it.
+
+     IMPLEMENT
+     1. Navigation to:
+        User Management, Login History, Chat Groups, Spam Reports,
+        New Registrations, Registration Chart, Friend Statistics,
+        User Activity, Activity Chart.
+     2. Complete User Management:
+        - Search by name/username.
+        - Account status and online/offline controls clearly distinguished.
+        - Sort by name/creation date.
+        - Add/edit dialog with username, full name, address, birth date,
+          gender, email.
+        - Delete confirmation.
+        - Lock/unlock confirmation.
+        - Password-update dialog using masked input.
+        - Selected user's login-history dialog.
+        - Selected user's friend-list dialog.
+
+     Use deterministic in-memory mock data separated from UI components.
+     Never show password hashes or passwords in the user table.
+     UI password fields are only a prototype; do not persist their contents.
+
+     Use navigation/dialog actions needed to preview all designed screens.
+     Other unfinished destinations may temporarily show clearly marked
+     placeholders; do not count placeholders as completed features.
+
+     Follow existing language, fonts, colors, naming, Java version, and Maven
+     structure. Use layout managers, scroll panes, and classpath resources.
+     Keep Swing UI updates on the EDT.
+
+     Do not implement backend, sockets, real authentication, or JDBC access.
+     Do not modify Member 1's module.
+
+     Compile using the appropriate Maven command and launch if GUI support
+     exists. Report visual verification separately from compilation.
+     Update plan and AI-LOG.md. Do not commit or push.
+     ```
+4. **Purpose:**
+   - Implement Step E of the Version 1 plan: expand `SidebarPanel` and `AdminMainFrame` navigation to cover all 9 required Admin destinations (showing the completed `UserManagementPanel` and clearly marked placeholders for the remaining 8 destinations), distinguish account status (`Hoạt động` / `Đã khóa`) from online presence (`Đang trực tuyến` / `Ngoại tuyến`), wire in-memory search/filter/sort on `UserManagementPanel`, and implement all User Management sub-dialogs (`PasswordUpdateDialog`, `UserLoginHistoryDialog`, `UserFriendsDialog`, and Delete / Lock-Unlock confirmation dialogs) backed by deterministic mock data.
+5. **AI-generated content:**
+   - **Updated `chat-admin/src/main/java/com/chatsystem/admin/components/SidebarPanel.java` & `ui/AdminMainFrame.java`:** Expanded sidebar navigation to all 9 required Administrator destinations (`Quản lý người dùng`, `Lịch sử đăng nhập`, `Quản lý nhóm chat`, `Báo cáo spam`, `Người dùng đăng ký mới`, `Biểu đồ đăng ký mới`, `Thống kê bạn bè`, `Người dùng hoạt động`, `Biểu đồ hoạt động`), displaying the completed `UserManagementPanel` for `Quản lý người dùng` and clearly badged placeholder cards for the remaining 8 destinations.
+   - **Updated `model/User.java`, `data/MockUserRepository.java`, `table/UserTableModel.java`, and created `model/LoginRecord.java` & `model/UserFriendRecord.java`:** Added distinct account-status (`Hoạt động` / `Đã khóa`) and presence (`Trực tuyến` / `Ngoại tuyến`) labels, deterministic per-user login history and accepted direct friend datasets aligned with `script/02_seed.sql`, and in-memory add/update/delete/lock-toggle operations.
+   - **Created `ui/ConfirmActionDialog.java`, `ui/PasswordUpdateDialog.java`, `ui/UserLoginHistoryDialog.java`, `ui/UserFriendsDialog.java`, and updated `ui/UserFormDialog.java` & `ui/UserManagementPanel.java`:**
+     - Separated Account Status (`Tài khoản:`) and Online Presence (`Phiên:`) filter controls in the toolbar and rendered side-by-side dual status pills (`Hoạt động` / `Đã khóa` + `Online` / `Offline`) in the user table.
+     - Wired live search by name/username and sorting by creation date (`Cũ nhất`, `Mới nhất`) and Vietnamese collated full name (`Tên A–Z`, `Tên Z–A`).
+     - Implemented modal Delete and Lock/Unlock confirmation dialogs (`ConfirmActionDialog`), masked-input password update dialog (`PasswordUpdateDialog` using `JPasswordField` with immediate character buffer zeroing), per-user login history dialog (`UserLoginHistoryDialog`), and per-user direct friends dialog (`UserFriendsDialog`).
+   - **Updated `docs/version1-plan.md` and `AI-LOG.md`.**
+6. **Student's independent work and edits/validation:**
+   - Student specified the 9 navigation targets and the complete User Management feature set (search, separated account status and online presence controls, sorting, add/edit dialog reuse, delete confirmation, lock/unlock confirmation, masked password dialog, login-history dialog, and friend-list dialog).
+   - Additional student review/validation: `STUDENT TO COMPLETE`
+7. **Screenshots or chat history:**
+   - `evidence/chat_history/chatgpt.png`
+   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+8. **Verification and outcomes:**
+   - **Maven Compilation (`mvn -DskipTests clean package` in `chat-admin/` on JDK 21.0.13):**
+     - Outcome: **PASS (`BUILD SUCCESS` in `2.335 s`, exit code `0`)** — compiled 17 Java source files with `javac [debug release 21]` and packaged `target/chat-admin-1.0.0-SNAPSHOT.jar`.
+   - **Live Swing GUI Visual Verification (Reported Separately from Compilation):**
+     - Launched `AdminMainFrame` (`1280x800` and `1100x700`), `PasswordUpdateDialog`, `UserLoginHistoryDialog`, `UserFriendsDialog`, and `ConfirmActionDialog` on the Swing EDT under JDK 21.0.13 and inspected live root-pane renders.
+     - Verified that all 9 sidebar navigation items, the separated `Tài khoản:` and `Phiên:` filter controls, dual status pills (`Hoạt động`/`Đã khóa` + `Online`/`Offline`), and all 5 modal dialogs render cleanly without text overlap or truncation.

@@ -27,13 +27,25 @@ import java.awt.RenderingHints;
 import java.awt.Window;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 /**
- * UI-only modal dialog for adding or editing a user account.
+ * Modal dialog for adding or editing a user account in the in-memory UI preview.
  * Displays fields for username, full name, address, date of birth, gender, and email.
- * Does not persist or mutate underlying data.
  */
 public class UserFormDialog extends JDialog {
+
+    public interface UserFormSubmitListener {
+        void onSubmit(
+                String username,
+                String fullName,
+                String address,
+                LocalDate dateOfBirth,
+                String gender,
+                String email
+        );
+    }
 
     private final JTextField usernameField;
     private final JTextField fullNameField;
@@ -41,17 +53,24 @@ public class UserFormDialog extends JDialog {
     private final JTextField dateOfBirthField;
     private final JComboBox<String> genderCombo;
     private final JTextField addressField;
+    private final JLabel validationLabel;
+    private final UserFormSubmitListener submitListener;
 
     public UserFormDialog(Window owner) {
-        this(owner, null);
+        this(owner, null, null);
     }
 
     public UserFormDialog(Window owner, User existingUser) {
+        this(owner, existingUser, null);
+    }
+
+    public UserFormDialog(Window owner, User existingUser, UserFormSubmitListener submitListener) {
         super(
                 owner,
                 existingUser == null ? "Thêm người dùng mới" : "Cập nhật thông tin người dùng",
                 ModalityType.APPLICATION_MODAL
         );
+        this.submitListener = submitListener;
 
         this.usernameField = createStyledTextField("Ví dụ: nguyenvanan");
         this.fullNameField = createStyledTextField("Ví dụ: Nguyễn Văn An");
@@ -61,6 +80,9 @@ public class UserFormDialog extends JDialog {
         this.genderCombo.setFont(AppTheme.FONT_BODY);
         this.genderCombo.setPreferredSize(new Dimension(220, AppTheme.CONTROL_HEIGHT));
         this.addressField = createStyledTextField("Ví dụ: 12 Nguyễn Huệ, Quận 1, TP.HCM");
+        this.validationLabel = new JLabel(" ");
+        this.validationLabel.setFont(AppTheme.FONT_CAPTION_BOLD);
+        this.validationLabel.setForeground(AppTheme.DANGER);
 
         if (existingUser != null) {
             populateFields(existingUser);
@@ -69,7 +91,7 @@ public class UserFormDialog extends JDialog {
         initDialogLayout(existingUser != null);
         pack();
         setMinimumSize(new Dimension(560, getPreferredSize().height));
-        setSize(new Dimension(580, Math.max(500, getPreferredSize().height)));
+        setSize(new Dimension(580, Math.max(520, getPreferredSize().height)));
         setResizable(false);
         setLocationRelativeTo(owner);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -117,7 +139,7 @@ public class UserFormDialog extends JDialog {
         titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JLabel subtitleLabel = new JLabel(
-                "Điền các thông tin hồ sơ tài khoản bên dưới (Giao diện minh họa UI-only)"
+                "Điền đầy đủ các thông tin hồ sơ tài khoản bên dưới (Tên đăng nhập, Họ tên, Địa chỉ, Ngày sinh, Giới tính, Email)"
         );
         subtitleLabel.setFont(AppTheme.FONT_CAPTION);
         subtitleLabel.setForeground(AppTheme.TEXT_SECONDARY);
@@ -138,10 +160,6 @@ public class UserFormDialog extends JDialog {
                 AppTheme.SPACING_MD + 4,
                 AppTheme.CONTENT_PADDING
         ));
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.WEST;
 
         // Row 0: Labels for Username & Full Name
         addFormLabel(formPanel, "Tên đăng nhập *", 0, 0, 0.5, new Insets(0, 0, 6, 8));
@@ -169,7 +187,10 @@ public class UserFormDialog extends JDialog {
         addFormLabel(formPanel, "Địa chỉ liên hệ", 0, 6, 1.0, new Insets(0, 0, 6, 0), 2);
 
         // Row 7: Field for Address (full width)
-        addFormControl(formPanel, addressField, 0, 7, 2, 1.0, new Insets(0, 0, 4, 0));
+        addFormControl(formPanel, addressField, 0, 7, 2, 1.0, new Insets(0, 0, 8, 0));
+
+        // Row 8: Validation feedback message
+        addFormControl(formPanel, validationLabel, 0, 8, 2, 1.0, new Insets(0, 0, 0, 0));
 
         return formPanel;
     }
@@ -235,7 +256,7 @@ public class UserFormDialog extends JDialog {
                 )
         ));
 
-        JLabel noteLabel = new JLabel("Chế độ xem trước giao diện (không ghi dữ liệu)");
+        JLabel noteLabel = new JLabel("Chế độ xem trước giao diện (dữ liệu mẫu in-memory)");
         noteLabel.setFont(AppTheme.FONT_CAPTION);
         noteLabel.setForeground(AppTheme.TEXT_SECONDARY);
 
@@ -253,7 +274,7 @@ public class UserFormDialog extends JDialog {
 
         JButton saveButton = createPrimaryButton("Lưu thông tin");
         saveButton.setPreferredSize(new Dimension(140, AppTheme.CONTROL_HEIGHT));
-        saveButton.setToolTipText("Nút lưu minh họa giao diện (UI-only)");
+        saveButton.addActionListener(e -> handleSave());
 
         buttonGroup.add(cancelButton);
         buttonGroup.add(saveButton);
@@ -261,6 +282,35 @@ public class UserFormDialog extends JDialog {
         footer.add(noteLabel, BorderLayout.WEST);
         footer.add(buttonGroup, BorderLayout.EAST);
         return footer;
+    }
+
+    private void handleSave() {
+        String username = usernameField.getText().trim();
+        String fullName = fullNameField.getText().trim();
+        String email = emailField.getText().trim();
+        String dobText = dateOfBirthField.getText().trim();
+        String gender = (String) genderCombo.getSelectedItem();
+        String address = addressField.getText().trim();
+
+        if (username.isEmpty() || fullName.isEmpty() || email.isEmpty()) {
+            validationLabel.setText("Vui lòng nhập đầy đủ Tên đăng nhập, Họ và tên và Địa chỉ Email.");
+            return;
+        }
+
+        LocalDate dob = LocalDate.of(2002, 1, 1);
+        if (!dobText.isEmpty()) {
+            try {
+                dob = LocalDate.parse(dobText, User.DATE_FORMATTER);
+            } catch (DateTimeParseException ex) {
+                validationLabel.setText("Ngày sinh không đúng định dạng dd/MM/yyyy (Ví dụ: 14/03/2002).");
+                return;
+            }
+        }
+
+        if (submitListener != null) {
+            submitListener.onSubmit(username, fullName, address, dob, gender != null ? gender : "Khác", email);
+        }
+        dispose();
     }
 
     private JTextField createStyledTextField(String placeholder) {

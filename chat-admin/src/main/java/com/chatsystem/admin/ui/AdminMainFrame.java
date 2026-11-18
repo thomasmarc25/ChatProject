@@ -20,7 +20,8 @@ import java.awt.GridBagLayout;
 
 /**
  * Main application frame for ChatSystem Admin.
- * Hosts the 240px dark SidebarPanel, 64px white HeaderPanel, and the UserManagementPanel screen.
+ * Hosts the 240px dark SidebarPanel (9 navigation destinations), 64px white HeaderPanel,
+ * and the CardLayout content deck.
  */
 public class AdminMainFrame extends JFrame {
 
@@ -31,6 +32,7 @@ public class AdminMainFrame extends JFrame {
     private final HeaderPanel headerPanel;
     private final CardLayout contentCardLayout;
     private final JPanel contentDeckPanel;
+    private final JLabel placeholderBadgeLabel;
     private final JLabel placeholderTitleLabel;
     private final JLabel placeholderSubtitleLabel;
 
@@ -40,6 +42,7 @@ public class AdminMainFrame extends JFrame {
         this.headerPanel = new HeaderPanel();
         this.contentCardLayout = new CardLayout();
         this.contentDeckPanel = new JPanel(contentCardLayout);
+        this.placeholderBadgeLabel = new JLabel("MÀN HÌNH ĐANG CHỜ TRIỂN KHAI (PLACEHOLDER)", SwingConstants.CENTER);
         this.placeholderTitleLabel = new JLabel("Tính năng đang phát triển", SwingConstants.CENTER);
         this.placeholderSubtitleLabel = new JLabel("", SwingConstants.CENTER);
 
@@ -107,6 +110,13 @@ public class AdminMainFrame extends JFrame {
         textBox.setLayout(new BoxLayout(textBox, BoxLayout.Y_AXIS));
         textBox.setOpaque(false);
 
+        placeholderBadgeLabel.setFont(AppTheme.FONT_CAPTION_BOLD);
+        placeholderBadgeLabel.setForeground(AppTheme.WARNING);
+        placeholderBadgeLabel.setOpaque(true);
+        placeholderBadgeLabel.setBackground(AppTheme.WARNING_BG);
+        placeholderBadgeLabel.setBorder(BorderFactory.createEmptyBorder(6, 14, 6, 14));
+        placeholderBadgeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         placeholderTitleLabel.setFont(AppTheme.FONT_PAGE_TITLE);
         placeholderTitleLabel.setForeground(AppTheme.TEXT_PRIMARY);
         placeholderTitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -115,6 +125,8 @@ public class AdminMainFrame extends JFrame {
         placeholderSubtitleLabel.setForeground(AppTheme.TEXT_SECONDARY);
         placeholderSubtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        textBox.add(placeholderBadgeLabel);
+        textBox.add(Box.createVerticalStrut(AppTheme.SPACING_MD));
         textBox.add(placeholderTitleLabel);
         textBox.add(Box.createVerticalStrut(AppTheme.SPACING_SM));
         textBox.add(placeholderSubtitleLabel);
@@ -128,15 +140,36 @@ public class AdminMainFrame extends JFrame {
     private void bindNavigation() {
         sidebarPanel.setNavigationListener(selectedSection -> {
             headerPanel.setSection(selectedSection);
+            setTitle("ChatSystem Admin — " + selectedSection);
             if (SidebarPanel.NAV_USERS.equals(selectedSection)) {
                 contentCardLayout.show(contentDeckPanel, CARD_USER_MANAGEMENT);
             } else {
-                placeholderTitleLabel.setText("Tính năng đang phát triển");
-                placeholderSubtitleLabel.setText(
-                        "Phân hệ \"" + selectedSection + "\" hiện là mục điều hướng minh họa."
-                );
+                placeholderTitleLabel.setText(selectedSection);
+                placeholderSubtitleLabel.setText(describePlaceholderDestination(selectedSection));
                 contentCardLayout.show(contentDeckPanel, CARD_PLACEHOLDER);
             }
         });
+    }
+
+    private String describePlaceholderDestination(String section) {
+        return switch (section) {
+            case SidebarPanel.NAV_LOGIN_HISTORY ->
+                    "Màn hình xem danh sách đăng nhập toàn hệ thống theo thứ tự thời gian (Sẽ triển khai ở Bước F).";
+            case SidebarPanel.NAV_GROUPS ->
+                    "Màn hình danh sách nhóm chat, xem thành viên nhóm và quản trị viên nhóm (Sẽ triển khai ở Bước F).";
+            case SidebarPanel.NAV_SPAM ->
+                    "Màn hình danh sách báo cáo spam, lọc theo thời gian/tên đăng nhập và khóa tài khoản (Sẽ triển khai ở Bước F).";
+            case SidebarPanel.NAV_NEW_REGISTRATIONS ->
+                    "Màn hình danh sách người dùng đăng ký mới theo khoảng thời gian (Sẽ triển khai ở Bước G).";
+            case SidebarPanel.NAV_REGISTRATION_CHART ->
+                    "Màn hình biểu đồ số lượng người đăng ký mới 12 tháng theo năm (Sẽ triển khai ở Bước G).";
+            case SidebarPanel.NAV_FRIEND_STATS ->
+                    "Màn hình thống kê bạn bè trực tiếp và bạn của bạn (Sẽ triển khai ở Bước G).";
+            case SidebarPanel.NAV_USER_ACTIVITY ->
+                    "Màn hình danh sách người dùng hoạt động và số liệu mở ứng dụng / chat (Sẽ triển khai ở Bước G).";
+            case SidebarPanel.NAV_ACTIVITY_CHART ->
+                    "Màn hình biểu đồ số lượng người mở ứng dụng 12 tháng theo năm (Sẽ triển khai ở Bước G).";
+            default -> "Phân hệ \"" + section + "\" đang chờ triển khai.";
+        };
     }
 }
