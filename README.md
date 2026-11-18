@@ -1,75 +1,70 @@
-# ChatSystem Admin — User Management (Java Swing UI Assignment)
+# ChatSystem — Course Project Version 1 (Admin Swing UI & Shared PostgreSQL Database)
 
-Individual university Java Swing assignment (due **12 November 2026**): **Admin — User Management (`Quản lý người dùng`)** single-screen desktop interface.
+**Repository Scope (Member 2):**
+1. **`chat-admin/`** — Java 21 Swing desktop application implementing all **9 Administrator requirement groups** and modal dialogs for Version 1 (`Final_Project.pdf`, Page 2), backed by deterministic in-memory mock data (`MockUserRepository.java`).
+2. **`script/`** — Shared PostgreSQL 15+ database creation, seed, query, and automated verification scripts (`01_schema.sql`, `02_seed.sql`, `03_admin_queries.sql`, `04_verify.sql`) covering both the User and Administrator subsystems.
 
 ---
 
 ## 1. Technology Stack & Requirements
 
 - **Language / Runtime:** Java 21 LTS (`maven.compiler.release` = `21`)
-- **Desktop Framework:** Java Swing
-- **Look & Feel:** FlatLaf `3.7.2` (Light theme)
-- **Build System:** Apache Maven 3.6+ / 3.9+
-- **Encoding:** `UTF-8`
+- **Desktop Framework:** Java Swing + FlatLaf `3.7.2` (Light theme), pure `java.awt.Graphics2D` custom charts & badges
+- **Build System:** Apache Maven 3.6+ / 3.9+ (`UTF-8` encoding)
 - **Window Dimensions:** `1280 x 800` px default; `1100 x 700` px minimum; resizable
+- **Database Deliverables (`script/`):** PostgreSQL 15+ (verified on PostgreSQL 18.4, `Asia/Ho_Chi_Minh`)
 
 ---
 
-## 2. Build & Run Instructions
+## 2. Build & Launch Instructions (Windows PowerShell)
 
-From the `chat-admin/` directory:
+> [!TIP]
+> In Windows PowerShell, always quote Maven `-D` arguments (`"-DskipTests"`, `"-Dexec.mainClass=..."`) so PowerShell does not split on the period `.`.
 
-```bash
-cd chat-admin
-mvn -DskipTests clean package
+From the repository root in Windows PowerShell:
+
+```powershell
+Set-Location chat-admin
+mvn "-DskipTests" clean package
 mvn exec:java
 ```
 
-Or run the main class directly:
+Or specify the entry point explicitly:
 
-```bash
-cd chat-admin
-mvn compile exec:java -Dexec.mainClass="com.chatsystem.admin.AdminApp"
+```powershell
+Set-Location chat-admin
+mvn compile exec:java "-Dexec.mainClass=com.chatsystem.admin.AdminApp"
 ```
 
----
-
-## 3. Repository & Submission Layout
-
-- `chat-admin/` — Standalone Maven project containing `pom.xml`, `README.md`, and Java 21 Swing source code under `src/main/java/com/chatsystem/admin/`.
-- `script/` — Shared PostgreSQL 15+ database scripts (`01_schema.sql`, `02_seed.sql`, `03_admin_queries.sql`, `04_verify.sql`, and `script/README.md`).
-- `docs/` — Project engineering specifications and verification documentation (`version1-plan.md`, `database-design.md`, `database-test-cases.md`).
-- `screenshots/` — Captured screenshots of the running Swing application (`01_UserManagement.png`, `02_AddUserDialog.png`) and capture instructions (`screenshots/README.md`).
-- `AI-LOG.md` — Mandatory AI usage declaration log across all phases, including a student completion checklist.
-- `Swing_Assignment/` — Packaged submission directory structure:
-  ```text
-  Swing_Assignment/
-    source_code/
-      chat-admin/
-    screenshots/
-      01_UserManagement.png
-      02_AddUserDialog.png
-      README.md
-    AI-LOG.md
-    evidence/
-      chat_history/
-  ```
+See [`docs/admin-run-guide.md`](docs/admin-run-guide.md) for full PowerShell environment setup and PostgreSQL verification commands.
 
 ---
 
-## 4. Honest Disclosure of UI-Only Scope
+## 3. Repository Structure & Documentation Index
 
-This deliverable implements **one Java Swing screen (`Quản lý người dùng`)** with an optional UI-only `UserFormDialog` backed by 24 deterministic in-memory Vietnamese mock user records (`MockUserRepository`):
+- `chat-admin/` — Standalone Maven project containing `pom.xml`, `README.md`, and 21 Java classes (`34` compiled class units) under `src/main/java/com/chatsystem/admin/`.
+- `script/` — Shared PostgreSQL 15+ database scripts:
+  - [`script/01_schema.sql`](script/01_schema.sql) — Transactional DDL (`16` tables, PKs, `ON DELETE RESTRICT` FKs, row-level `CHECK`s, `32` indexes).
+  - [`script/02_seed.sql`](script/02_seed.sql) — Deterministic synthetic seed data (`PBKDF2-HMAC-SHA256` local test password hashes and sequence synchronization).
+  - [`script/03_admin_queries.sql`](script/03_admin_queries.sql) — Runnable SQL queries (`QUERY 1`..`QUERY 10`) with editable `params` CTEs.
+  - [`script/04_verify.sql`](script/04_verify.sql) — Rollback-safe automated PL/pgSQL verification suite (`PASS [A1]`–`PASS [A9]` & `PASS [B1]`–`PASS [B9]`).
+  - [`script/README.md`](script/README.md) — Clean-database prerequisites and execution order.
+- `docs/` — Version 1 engineering and submission documentation:
+  - [`docs/version1-plan.md`](docs/version1-plan.md) — Version 1 implementation plan and phase status.
+  - [`docs/database-design.md`](docs/database-design.md) — Authoritative 16-table database specification, 10 business rules, ER diagrams, and Member 1 handoff guide.
+  - [`docs/database-test-cases.md`](docs/database-test-cases.md) — Seed fixture documentation and expected query outputs.
+  - [`docs/admin-screen-checklist.md`](docs/admin-screen-checklist.md) — Mapping of all 9 Admin requirement groups to Swing classes, SQL queries, and screenshots.
+  - [`docs/admin-run-guide.md`](docs/admin-run-guide.md) — Windows PowerShell build and launch instructions.
+  - [`docs/version1-submission-checklist.md`](docs/version1-submission-checklist.md) — Course submission structure (`src/`, `script/`, `git/`, and report checklist).
+  - [`docs/admin-report-notes.md`](docs/admin-report-notes.md) — Factual descriptions of all 9 Admin screens, dialogs, and database design for the team report.
+  - `docs/screenshots/admin/` — 19 authentic PNG screenshots captured from the running Administrator Swing application.
+- [`AI-LOG.md`](AI-LOG.md) — Mandatory AI usage declaration log across all phases.
 
-- **Working UI Features:**
-  - Responsive Swing layout (`BorderLayout`, `GridBagLayout`, `GridLayout`, `BoxLayout`, `CardLayout`) tested at `1280x800` and `1100x700` without `null` layouts or `setBounds`.
-  - Four summary stat cards (`Tổng người dùng: 24`, `Đang hoạt động: 11`, `Ngoại tuyến: 10`, `Tài khoản bị khóa: 3`) computed from `MockUserRepository` with independent `online` and `locked` boolean properties.
-  - Non-editable `JTable` (`44px` row height) displaying 24 Vietnamese mock users with custom status badge pills (`Đang hoạt động`, `Ngoại tuyến`, `Đã khóa`) and row action pills (`Sửa`, `Thao tác`).
-  - Clicking `+ Thêm người dùng` or `Sửa` opens `UserFormDialog` (with fields for `Tên đăng nhập`, `Họ và tên`, `Địa chỉ Email`, `Ngày sinh`, `Giới tính`, `Địa chỉ liên hệ`); `Hủy` closes the dialog.
-  - Clicking `Thao tác` on any row opens a `JPopupMenu` showing `Sửa`, `Xóa`, `Khóa/Mở khóa`, `Đổi mật khẩu`, `Lịch sử đăng nhập`, and `Danh sách bạn bè`.
-  - Clicking other sidebar navigation items shows a `"Tính năng đang phát triển"` placeholder view.
+---
 
-- **UI-Only Placeholders (Not Implemented as Business Logic):**
-  - Search field, status filter dropdown, sort dropdown, `Làm mới` button, and pagination buttons (`« Trước`, `1`, `2`, `3`, `Sau »`) are static visual controls.
-  - Row actions (`Xóa`, `Khóa/Mở khóa`, `Đổi mật khẩu`, `Lịch sử đăng nhập`, `Danh sách bạn bè`), `Lưu thông tin` in `UserFormDialog`, and `Đăng xuất` in the sidebar are visual-only placeholders that do not mutate or persist data.
-  - No backend server, sockets, Spring Boot, or PostgreSQL/JDBC database connections are included.
+## 4. Honest Disclosure of Version 1 Scope
+
+- **Version 1 Mock-Data Preview (`chat-admin/`):**
+  - All 9 Administrator screens (`Quản lý người dùng`, `Lịch sử đăng nhập`, `Quản lý nhóm chat`, `Báo cáo spam`, `Người dùng đăng ký mới`, `Biểu đồ đăng ký mới`, `Thống kê bạn bè`, `Người dùng hoạt động`, `Biểu đồ hoạt động`) and 7 modal dialogs are implemented in Java Swing and operate on deterministic in-memory mock data (`MockUserRepository.java`).
+  - Filter, search, sort, date-range validation, 12-month bar charts, and account-lock preview mutations execute in memory so every required UI state (`populated`, `empty-result`, `no-selection`, and `empty-year`) can be inspected.
+  - No live Spring Boot server, TCP socket networking, authentication service, or JDBC/PostgreSQL connection is claimed or included in the Version 1 Swing UI.

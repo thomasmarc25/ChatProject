@@ -1373,3 +1373,109 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
    - **Live Swing GUI Visual Verification (Reported Separately from Compilation):**
      - Launched `AdminMainFrame` on the Swing EDT under JDK 21.0.13 at both `1280x800` and minimum window size `1100x700`, navigated through all 5 new screens (`NewUserRegistrationPanel`, `RegistrationChartPanel` in `2026` and `2024` empty-year state, `FriendStatisticsPanel`, `UserActivityPanel`, and `ActivityChartPanel` at `1280x800` and resized `1100x700`), and inspected live root-pane PNG renders.
      - Verified visible X/Y axes, month labels (`Tháng 1`..`Tháng 12`), integer numeric scale, zero-count months (`7..12` on Registration Chart 2026; `Tháng 8` on Activity Chart 2026), the Empty-Year State callout (`2024`), header/cell tooltips on `FriendStatisticsPanel`, strictly 3 concrete metrics in `UserActivityPanel`, clean resizing at `1100x700`, and the unobtrusive `Version 1 • Mock Data Preview` badge in `HeaderPanel`.
+
+
+---
+
+## Entry 16 — Step H: Final Version 1 Audit, Authentic Admin Screenshots (`docs/screenshots/admin/`), and Submission Documentation
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: Google Antigravity IDE
+   - Version/Model: Google Antigravity `2.29.0` (`ProductVersion 2.29.0.0`, Language Server `hub-2.29.0`, Electron `44.5.1`); Agent Model: `Gemini 4 Argon (High)`
+   - Platform: Desktop IDE on Microsoft Windows 11 Home Single Language 26H2 (OS Build `10.0.26300.9711`, x64) / PowerShell
+2. **Access date and time (with time zone):**
+   - Prompt received: `2026-11-18 21:23:43 UTC+07:00 (Asia/Ho_Chi_Minh)`
+   - Shell verification timestamp (`Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"`): `2026-11-18 21:24:00 +07:00`
+3. **Prompt(s) used:**
+   - Source observation: Observed directly as a chat prompt sent to the agent in the Antigravity session.
+   - **Verbatim:**
+     ```markdown
+     Audit my completed Version 1 work:
+     the Admin Swing application and shared PostgreSQL deliverables.
+
+     Inspect the assignment PDF if available, the implementation plan,
+     database documentation, actual source, and actual SQL.
+     Do not claim completeness based only on previous AI summaries.
+
+     CHECK
+     1. All nine admin requirement groups have real screens, not placeholders.
+     2. Required dialogs, filters, sorting controls, and both charts exist.
+     3. Navigation reaches all screens.
+     4. Resources load without machine-specific paths.
+     5. The admin application compiles and launches when GUI support exists.
+     6. Database schema, seed data, queries, and verification agree.
+     7. The database documentation matches the actual SQL.
+     8. No credentials, private keys, or real user data were introduced.
+     9. AI-LOG.md accurately reflects work performed.
+     10. The UI remains a Version 1 mock-data application; no unsupported
+         claims of working server functionality appear in documentation.
+
+     Fix defects within the existing scope.
+     Do not implement Member 1's missing screens.
+
+     CREATE OR UPDATE
+     - docs/admin-screen-checklist.md:
+       requirement-to-screen/class mapping and verification status.
+     - docs/admin-run-guide.md:
+       correct build and launch commands for Windows PowerShell,
+       including correct quoting of Maven -D arguments.
+     - docs/version1-submission-checklist.md:
+       src/, script/, git/, and report requirements.
+     - docs/admin-report-notes.md:
+       factual descriptions of completed admin screens and database work.
+
+     If screenshots can actually be captured, save real screenshots to
+     docs/screenshots/admin/.
+     Otherwise list the exact screens/dialogs I should capture manually.
+     Do not fabricate screenshots or Git commit evidence.
+
+     Do not invent team details or contribution percentages.
+     Do not describe the whole team's submission as complete unless Member 1's
+     deliverables and the required report are actually present and verified.
+
+     Inspect the Maven structure before suggesting the submission layout.
+     Preserve parent POMs, relative module paths, resources, and required files.
+     Do not move the working repository around just to match the final ZIP.
+
+     Report:
+     - Completed work.
+     - Actual build/SQL/GUI verification results.
+     - Remaining manual tasks and missing team deliverables.
+     - Suggested logical commit groups for me to review and commit myself.
+
+     Do not commit, push, overwrite an existing submission ZIP,
+     or delete source files automatically.
+     ```
+4. **Purpose:**
+   - Perform a comprehensive audit of all Version 1 deliverables owned by Member 2 (`chat-admin/` Swing application and `script/` PostgreSQL database deliverables) against the official course assignment PDF (`Final_Project.pdf`), `docs/version1-plan.md`, `docs/database-design.md`, and `docs/database-test-cases.md`; capture real screenshots of all 9 Admin screens and modal dialogs into `docs/screenshots/admin/`; and create `docs/admin-screen-checklist.md`, `docs/admin-run-guide.md`, `docs/version1-submission-checklist.md`, and `docs/admin-report-notes.md` (in English).
+5. **AI-generated content:**
+   - **Created `docs/admin-screen-checklist.md`:** Detailed mapping of all 9 Administrator requirement groups (`1a`–`1f`, `2`, `3a`–`3d`, `4a`–`4d`, `5a`–`5b`, `6`, `7a`–`7c`, `8a`–`8c`, `9`) to their Swing UI panels, dialogs, models, SQL queries (`QUERY 1`..`QUERY 10`), and captured screenshot files.
+   - **Created `docs/admin-run-guide.md`:** Windows PowerShell build and execution instructions, including proper double-quoting of Maven `-D` flags (`mvn "-DskipTests" clean package`, `mvn compile exec:java "-Dexec.mainClass=com.chatsystem.admin.AdminApp"`) and PostgreSQL `psql` verification commands.
+   - **Created `docs/version1-submission-checklist.md`:** Course submission structure checklist (`src/`, `script/`, `git/`, and the 5 mandatory Version 1 report sections) distinguishing Member 2's completed deliverables from Member 1's pending User subsystem UI and manual team tasks.
+   - **Created `docs/admin-report-notes.md`:** Factual descriptions of the 16-table PostgreSQL database design and all 9 completed Administrator screens and 7 modal dialogs for the team's Version 1 report.
+   - **Updated `README.md`, `chat-admin/README.md`, `docs/version1-plan.md`, and `chat-admin/src/main/java/com/chatsystem/admin/ui/UserFormDialog.java`:** Synchronized root and module `README.md` files with the completed 9-screen Version 1 mock-data preview scope and PowerShell-safe Maven `-D` quoting; widened `UserFormDialog` (`610x568`) and refined its footer label so no text touches button borders.
+   - **Captured 19 Authentic PNG Screenshots in `docs/screenshots/admin/`:**
+     - `01_user_management.png`, `01a_user_add_edit_dialog.png`, `01b_user_lock_confirm_dialog.png`, `01c_user_delete_confirm_dialog.png`, `01d_user_password_dialog.png`, `01e_user_login_history_dialog.png`, `01f_user_friends_dialog.png`
+     - `02_system_login_history.png`
+     - `03_chat_groups.png`, `03a_group_members_dialog.png`, `03b_group_admins_dialog.png`
+     - `04_spam_reports.png`, `04a_spam_report_detail_dialog.png`
+     - `05_new_registrations.png`
+     - `06_registration_chart_2026.png`, `06a_registration_chart_2024_empty.png`
+     - `07_friend_statistics.png`
+     - `08_user_activity.png`
+     - `09_activity_chart_2026.png`
+   - **Updated `AI-LOG.md` (`Entry 16`).**
+6. **Student's independent work and edits/validation:**
+   - Student defined the 10-point audit checklist, documentation deliverables (`docs/admin-screen-checklist.md`, `docs/admin-run-guide.md`, `docs/version1-submission-checklist.md`, `docs/admin-report-notes.md`), screenshot capture rules (`docs/screenshots/admin/`), and team boundary rules.
+   - Additional student review/validation: `STUDENT TO COMPLETE`
+7. **Screenshots or chat history:**
+   - `evidence/chat_history/chatgpt.png`
+   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+   - `docs/screenshots/admin/01_user_management.png` through `docs/screenshots/admin/09_activity_chart_2026.png` (19 authentic PNG files)
+8. **Verification and outcomes:**
+   - **Maven Compilation (`mvn "-DskipTests" clean package` in `chat-admin/` on JDK 21.0.13):**
+     - Outcome: **PASS (`BUILD SUCCESS` in `6.710 s`, exit code `0`)** — compiled all 34 Java source files with `javac [debug release 21]` and packaged `target/chat-admin-1.0.0-SNAPSHOT.jar`.
+   - **Live Swing GUI Visual Verification & Screenshot Capture (`task-895`):**
+     - Launched `AdminMainFrame` (`1280x800`) and all 7 modal dialogs on the Swing EDT under JDK 21.0.13, captured all 19 authentic PNG screenshots into `docs/screenshots/admin/`, and verified clean layout rendering across all screens and dialogs.
+   - **Live PostgreSQL 18.4 Full-Suite SQL Verification (`task-895` on isolated port `55439`, database `chat_audit_v1`):**
+     - Executed `01_schema.sql`, `02_seed.sql`, `03_admin_queries.sql`, and `04_verify.sql` sequentially with `psql -v ON_ERROR_STOP=1` -> **PASS (`exit code: 0`; all assertions `PASS [A1]`–`PASS [A9]` and `PASS [B1]`–`PASS [B9]` succeeded, followed by `DO`, `ROLLBACK`, and clean cluster shutdown)**.

@@ -152,12 +152,13 @@ Replaced the remaining 5 placeholder views with complete Swing panels and a reus
 
 ---
 
-### H. Final Verification and Submission Preparation
+### H. Final Verification and Submission Preparation (COMPLETED)
 
-1. **Build & Visual QA:**
-   - Run `mvn -DskipTests clean package` on JDK 21 LTS and verify zero compilation errors.
-   - Launch the Swing application and inspect all 9 screens and dialogs at both `1280x800` and `1100x700`.
-2. **Authentic Screenshots (`screenshots/`):**
-   - Capture live screenshots of all 9 Admin screens and modal dialogs for the Version 1 report.
-3. **Version 1 Submission Package Preparation:**
-   - Organize `src/`, `script/`, `git/` commit screenshot instructions, and the Version 1 report draft (`docs/report-version1-draft.md`), and finalize `AI-LOG.md`.
+1. **Build, SQL & Visual QA:**
+   - Ran `mvn "-DskipTests" clean package` on JDK 21.0.13 and verified zero compilation errors across all 34 Java source files (`BUILD SUCCESS`).
+   - Re-executed `script/01_schema.sql`, `script/02_seed.sql`, `script/03_admin_queries.sql`, and `script/04_verify.sql` sequentially on a fresh disposable PostgreSQL 18.4 database (`PASS [A1]`–`PASS [A9]` and `PASS [B1]`–`PASS [B9]`).
+   - Launched the Swing application on the EDT and inspected all 9 screens and 7 modal dialogs at `1280x800` and `1100x700`.
+2. **Authentic Screenshots (`docs/screenshots/admin/`):**
+   - Captured 19 real PNG screenshots of all 9 Admin screens (including populated and empty-year chart states) and all 7 modal dialogs directly from the running Swing application into `docs/screenshots/admin/`.
+3. **Version 1 Submission Documentation Package:**
+   - Created [`docs/admin-screen-checklist.md`](./admin-screen-checklist.md), [`docs/admin-run-guide.md`](./admin-run-guide.md), [`docs/version1-submission-checklist.md`](./version1-submission-checklist.md), and [`docs/admin-report-notes.md`](./admin-report-notes.md), updated [`README.md`](../README.md) and [`chat-admin/README.md`](../chat-admin/README.md), and recorded `Entry 16` in [`AI-LOG.md`](../AI-LOG.md).
