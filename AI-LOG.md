@@ -1188,3 +1188,84 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
    - **Live Swing GUI Visual Verification (Reported Separately from Compilation):**
      - Launched `AdminMainFrame` (`1280x800` and `1100x700`), `PasswordUpdateDialog`, `UserLoginHistoryDialog`, `UserFriendsDialog`, and `ConfirmActionDialog` on the Swing EDT under JDK 21.0.13 and inspected live root-pane renders.
      - Verified that all 9 sidebar navigation items, the separated `Tài khoản:` and `Phiên:` filter controls, dual status pills (`Hoạt động`/`Đã khóa` + `Online`/`Offline`), and all 5 modal dialogs render cleanly without text overlap or truncation.
+
+
+---
+
+## Entry 14 — Step F: Implement Login History, Chat Groups, and Spam Reports Screens
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: Google Antigravity IDE
+   - Version/Model: Google Antigravity `2.29.0` (`ProductVersion 2.29.0.0`, Language Server `hub-2.29.0`, Electron `44.5.1`); Agent Model: `Gemini 4 Argon (High)`
+   - Platform: Desktop IDE on Microsoft Windows 11 Home Single Language 26H2 (OS Build `10.0.26300.9711`, x64) / PowerShell
+2. **Access date and time (with time zone):**
+   - Initial Prompt 7 received: `2026-11-18 10:00:13 UTC+07:00 (Asia/Ho_Chi_Minh)` (`Get-Date`: `2026-11-18 10:01:05 +07:00`)
+   - Follow-up verification & completion prompt received: `2026-11-18 20:23:13 UTC+07:00 (Asia/Ho_Chi_Minh)` (`Get-Date`: `2026-11-18 20:23:35 +07:00`)
+3. **Prompt(s) used:**
+   - Source observation: Observed directly as chat prompts sent to the agent in the Antigravity session.
+   - **Initial Prompt 7 (`2026-11-18 10:00:13 +07:00`) — Verbatim:**
+     ```markdown
+     Implement the following Version 1 admin screens in the existing
+     navigation shell. Reuse established components and mock-data patterns.
+
+     A. LOGIN HISTORY
+     - Table: login time, username, full name.
+     - Chronological ordering.
+     - Clearly distinguish this screen from app-open statistics.
+
+     B. CHAT GROUPS
+     - Table: group name, creation time, creator, current member count,
+       encryption indicator.
+     - Filter by name; sort by name/creation time.
+     - Selected group's current-member dialog.
+     - Selected group's admin-list dialog.
+     - Show group role separately from system role.
+     - This admin requirement is read-only group inspection.
+       Do not add group editing/deletion as a required feature.
+
+     C. SPAM REPORTS
+     - Show reporter, reported user, report time, reason, and status.
+     - Filter by date range and reported username.
+     - Sort by time and reported username.
+     - Detail dialog with synthetic message snapshot.
+     - Lock-account confirmation targeting the reported user.
+     - Any resulting mutation is mock-only, not a real server operation.
+
+     Use deterministic sample data compatible with the database design.
+     Include populated, empty-result, and no-selection states.
+     Validate date ranges for preview interactions.
+
+     Remove placeholders only for the screens completed in this task.
+     Preserve all existing screens and do not introduce real database access.
+
+     Compile and visually inspect if supported.
+     Update plan and AI-LOG.md.
+     Report changed files, real checks, and remaining work in Vietnamese.
+     Do not commit or push.
+     ```
+   - **Follow-up Audit & Completion Prompt (`2026-11-18 20:23:13 +07:00`) — Summary:**
+     - Requested auditing the uncommitted implementation of Login History, Chat Groups, and Spam Reports against all requirements, applying any minimal necessary fixes without restarting from scratch, running Maven compilation and live GUI visual inspection separately, updating `docs/version1-plan.md` and `AI-LOG.md` in English, and providing a final Vietnamese chat summary.
+4. **Purpose:**
+   - Implement and verify Step F of the Version 1 plan in `chat-admin/`:
+     - **A. Login History (`LoginHistoryPanel`):** System-wide chronological login history table (`login time`, `username`, `full name`, plus session metadata) with a prominent note distinguishing authentication events (`login_history`) from client application-open statistics (`app_open_events`).
+     - **B. Chat Groups (`ChatGroupManagementPanel` & `GroupMembersDialog`):** Read-only group inspection table (`group name`, `creation time`, `creator`, `current member count`, `encryption indicator`), filtering by group name, sorting by group name / creation time, and modal dialogs for viewing the selected group's current members (`left_at IS NULL`) and current group admins (`role = 'ADMIN'`), clearly displaying group role (`ADMIN`/`MEMBER`) separately from system role (`USER`/`ADMIN`).
+     - **C. Spam Reports (`SpamReportPanel` & `SpamReportDetailDialog`):** Spam report management screen showing reporter, reported user, report time, reason, and status (`PENDING`/`RESOLVED`), filtering by validated date range and reported username, sorting by report time and reported username, a detail dialog showing the synthetic `message_snapshot`, and a lock-account confirmation action targeting the reported user (with in-memory synchronization across `MockUserRepository`).
+5. **AI-generated content:**
+   - **Created `chat-admin/src/main/java/com/chatsystem/admin/model/ChatGroupRecord.java`, `model/GroupMemberRecord.java`, and `model/SpamReportRecord.java`, and updated `model/LoginRecord.java`:** Immutable domain models for chat groups, group memberships (with `groupRole` distinct from `systemRole`), spam reports (with `messageSnapshot`), and login records (with `sessionNote`).
+   - **Updated `chat-admin/src/main/java/com/chatsystem/admin/data/MockUserRepository.java`:** Added deterministic system-wide login history records (18 sessions aligned with `script/02_seed.sql` including 3 logins inside a single launch on `2026-03-05`, the `admin` account, and the historical soft-deleted account), 4 chat groups and 17 group memberships (`getChatGroups()`, `getCurrentMembersForGroup(long)`, `getCurrentAdminsForGroup(long)`), 5 spam reports (`getSpamReports()`, `toggleLockReportedUserFromSpamReport(long)`), and in-memory data-change listeners (`addDataChangeListener(Runnable)`).
+   - **Created `chat-admin/src/main/java/com/chatsystem/admin/ui/LoginHistoryPanel.java`:** System-wide login history screen with a callout distinguishing `login_history` from `app_open_events`, 4 summary `StatCard`s, live username/full-name search, validated date-range filter, chronological sort order toggle (`Mới nhất trước` / `Cũ nhất trước`), empty-result card, and no-selection state bar.
+   - **Created `chat-admin/src/main/java/com/chatsystem/admin/ui/ChatGroupManagementPanel.java` & `ui/GroupMembersDialog.java`:** Read-only chat group inspection panel with group-name filter, sorting by creation time / group name, encryption indicator badges (`Đã bật mã hóa (E2EE)` vs `Tiêu chuẩn (Plaintext)`), empty-result and no-selection states, and modal `GroupMembersDialog` supporting both Current Members and Group Admins modes with separate columns for Group Role (`group_members.role`) and System Role (`users.role`).
+   - **Created `chat-admin/src/main/java/com/chatsystem/admin/ui/SpamReportPanel.java` & `ui/SpamReportDetailDialog.java`, and updated `ui/ConfirmActionDialog.java`, `ui/UserManagementPanel.java`, and `ui/AdminMainFrame.java`:** Spam reports screen with validated date-range and reported-username filters, sorting by report time and reported username, empty-result and no-selection states, detail dialog displaying the synthetic `message_snapshot`, and `ConfirmActionDialog.showSpamReportLockConfirm` targeting the reported user; wired `NAV_LOGIN_HISTORY`, `NAV_GROUPS`, and `NAV_SPAM` in `AdminMainFrame` while retaining placeholders for the 5 remaining Step G destinations.
+   - **Updated `docs/version1-plan.md` and `AI-LOG.md`.**
+6. **Student's independent work and edits/validation:**
+   - Student specified the exact requirements for the Login History, Chat Groups, and Spam Reports screens, read-only group inspection rules, separated group vs. system roles, date-range validation, and populated/empty-result/no-selection states.
+   - Additional student review/validation: `STUDENT TO COMPLETE`
+7. **Screenshots or chat history:**
+   - `evidence/chat_history/chatgpt.png`
+   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+8. **Verification and outcomes:**
+   - **Maven Compilation (`mvn -DskipTests clean package` in `chat-admin/` on JDK 21.0.13):**
+     - Outcome: **PASS (`BUILD SUCCESS` in `2.042 s`, exit code `0`)** — compiled all 25 Java source files with `javac [debug release 21]` and packaged `target/chat-admin-1.0.0-SNAPSHOT.jar`.
+   - **Live Swing GUI Visual Verification (Reported Separately from Compilation):**
+     - Launched `AdminMainFrame` (`1280x800`), navigated to `LoginHistoryPanel`, `ChatGroupManagementPanel`, `SpamReportPanel`, and the remaining Step G placeholder view, and rendered `GroupMembersDialog` (both Current Members and Group Admins modes) and `SpamReportDetailDialog` on the Swing EDT under JDK 21.0.13.
+     - Inspected the rendered root-pane screenshots (`01_login_history_1280x800.png`, `02_chat_groups_1280x800.png`, `03_spam_reports_1280x800.png`, `05_group_members_dialog.png`, `06_group_admins_dialog.png`, `07_spam_detail_dialog.png`), refined toolbar button minimum widths and table column widths on `SpamReportPanel` and `ChatGroupManagementPanel` plus dialog height on `SpamReportDetailDialog` (`680x535`), and re-verified that all text, timestamps, badges, and buttons render cleanly without clipping or truncation.

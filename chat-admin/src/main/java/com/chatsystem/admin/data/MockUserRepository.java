@@ -1,6 +1,9 @@
 package com.chatsystem.admin.data;
 
+import com.chatsystem.admin.model.ChatGroupRecord;
+import com.chatsystem.admin.model.GroupMemberRecord;
 import com.chatsystem.admin.model.LoginRecord;
+import com.chatsystem.admin.model.SpamReportRecord;
 import com.chatsystem.admin.model.User;
 import com.chatsystem.admin.model.UserFriendRecord;
 
@@ -14,16 +17,40 @@ import java.util.Optional;
 
 /**
  * Deterministic in-memory mock repository providing 24 representative Vietnamese user accounts,
- * login history records, and accepted friendship edges aligned with {@code script/02_seed.sql}.
+ * system-wide and per-user login history records, accepted friendship edges, chat groups with
+ * group-level vs. system-level member roles, and spam reports aligned with {@code script/02_seed.sql}.
  */
 public class MockUserRepository {
 
     private record FriendshipEdge(long userLowId, long userHighId, LocalDate createdAt) {
     }
 
+    private record GroupSeed(
+            long id,
+            String groupName,
+            long creatorUserId,
+            boolean encrypted,
+            LocalDateTime createdAt
+    ) {
+    }
+
+    private record GroupMemberSeed(
+            long groupId,
+            long userId,
+            String groupRole,
+            String systemRole,
+            LocalDateTime joinedAt,
+            LocalDateTime leftAt
+    ) {
+    }
+
     private final List<User> users;
     private final List<LoginRecord> loginRecords;
     private final List<FriendshipEdge> friendshipEdges;
+    private final List<GroupSeed> groupSeeds;
+    private final List<GroupMemberSeed> groupMemberSeeds;
+    private final List<SpamReportRecord> spamReports;
+    private final List<Runnable> dataChangeListeners = new ArrayList<>();
     private long nextUserId = 27L;
 
     public MockUserRepository() {
@@ -102,39 +129,62 @@ public class MockUserRepository {
                         LocalDate.of(2026, 6, 14), false, false)
         ));
 
+        // Login history records aligned with script/02_seed.sql (IDs 1..13) + extended sessions (14..18)
         this.loginRecords = List.of(
-                new LoginRecord(13L, 1L, "nguyenvanan", "Nguyễn Văn An",
-                        LocalDateTime.of(2026, 3, 25, 20, 15, 3), null, "10.0.0.11"),
-                new LoginRecord(12L, 10L, "ngothuyduong", "Ngô Thùy Dương",
-                        LocalDateTime.of(2026, 3, 22, 16, 45, 2), LocalDateTime.of(2026, 3, 22, 18, 0, 0), "10.0.0.20"),
-                new LoginRecord(11L, 5L, "hoangquocviet", "Hoàng Quốc Việt",
-                        LocalDateTime.of(2026, 3, 15, 11, 20, 5), LocalDateTime.of(2026, 3, 15, 13, 0, 0), "10.0.0.15"),
-                new LoginRecord(10L, 1L, "nguyenvanan", "Nguyễn Văn An",
-                        LocalDateTime.of(2026, 3, 12, 18, 30, 2), LocalDateTime.of(2026, 3, 12, 20, 0, 0), "10.0.0.11"),
-                new LoginRecord(9L, 3L, "lehoangnam", "Lê Hoàng Nam",
-                        LocalDateTime.of(2026, 3, 8, 10, 0, 4), LocalDateTime.of(2026, 3, 8, 12, 0, 0), "10.0.0.13"),
-                new LoginRecord(8L, 2L, "tranthibich", "Trần Thị Bích Ngọc",
-                        LocalDateTime.of(2026, 3, 6, 9, 10, 3), LocalDateTime.of(2026, 3, 6, 11, 0, 0), "10.0.0.12"),
-                new LoginRecord(7L, 1L, "nguyenvanan", "Nguyễn Văn An",
-                        LocalDateTime.of(2026, 3, 5, 11, 15, 0), LocalDateTime.of(2026, 3, 5, 12, 30, 0), "10.0.0.11"),
-                new LoginRecord(6L, 1L, "nguyenvanan", "Nguyễn Văn An",
-                        LocalDateTime.of(2026, 3, 5, 9, 30, 0), LocalDateTime.of(2026, 3, 5, 10, 45, 0), "10.0.0.11"),
-                new LoginRecord(5L, 1L, "nguyenvanan", "Nguyễn Văn An",
-                        LocalDateTime.of(2026, 3, 5, 8, 0, 6), LocalDateTime.of(2026, 3, 5, 9, 15, 0), "10.0.0.11"),
-                new LoginRecord(3L, 2L, "tranthibich", "Trần Thị Bích Ngọc",
-                        LocalDateTime.of(2026, 1, 16, 8, 30, 5), LocalDateTime.of(2026, 1, 16, 10, 0, 0), "10.0.0.12"),
-                new LoginRecord(2L, 1L, "nguyenvanan", "Nguyễn Văn An",
-                        LocalDateTime.of(2026, 1, 1, 6, 45, 2), LocalDateTime.of(2026, 1, 1, 7, 30, 0), "10.0.0.11"),
-                new LoginRecord(14L, 14L, "haquynhnhu", "Hà Quỳnh Như",
-                        LocalDateTime.of(2026, 4, 4, 8, 15, 0), LocalDateTime.of(2026, 4, 4, 9, 45, 0), "10.0.0.24"),
-                new LoginRecord(15L, 15L, "phanminhkhoi", "Phan Minh Khôi",
-                        LocalDateTime.of(2026, 4, 12, 13, 30, 0), LocalDateTime.of(2026, 4, 12, 15, 10, 0), "10.0.0.25"),
-                new LoginRecord(16L, 18L, "lamngocmai", "Lâm Ngọc Mai",
-                        LocalDateTime.of(2026, 5, 5, 9, 40, 0), LocalDateTime.of(2026, 5, 5, 11, 20, 0), "10.0.0.28"),
-                new LoginRecord(17L, 20L, "maiphuongvy", "Mai Phương Vy",
-                        LocalDateTime.of(2026, 5, 19, 17, 0, 0), LocalDateTime.of(2026, 5, 19, 18, 30, 0), "10.0.0.30"),
                 new LoginRecord(18L, 22L, "chuthanhhuyen", "Chu Thanh Huyền",
-                        LocalDateTime.of(2026, 6, 2, 10, 0, 0), null, "10.0.0.32")
+                        LocalDateTime.of(2026, 6, 2, 10, 0, 0), null, "10.0.0.32",
+                        "Phiên xác thực đang mở"),
+                new LoginRecord(17L, 20L, "maiphuongvy", "Mai Phương Vy",
+                        LocalDateTime.of(2026, 5, 19, 17, 0, 0), LocalDateTime.of(2026, 5, 19, 18, 30, 0), "10.0.0.30",
+                        "Phiên tiêu chuẩn"),
+                new LoginRecord(16L, 18L, "lamngocmai", "Lâm Ngọc Mai",
+                        LocalDateTime.of(2026, 5, 5, 9, 40, 0), LocalDateTime.of(2026, 5, 5, 11, 20, 0), "10.0.0.28",
+                        "Phiên tiêu chuẩn"),
+                new LoginRecord(15L, 15L, "phanminhkhoi", "Phan Minh Khôi",
+                        LocalDateTime.of(2026, 4, 12, 13, 30, 0), LocalDateTime.of(2026, 4, 12, 15, 10, 0), "10.0.0.25",
+                        "Phiên tiêu chuẩn"),
+                new LoginRecord(14L, 14L, "haquynhnhu", "Hà Quỳnh Như",
+                        LocalDateTime.of(2026, 4, 4, 8, 15, 0), LocalDateTime.of(2026, 4, 4, 9, 45, 0), "10.0.0.24",
+                        "Phiên tiêu chuẩn"),
+                new LoginRecord(13L, 1L, "nguyenvanan", "Nguyễn Văn An",
+                        LocalDateTime.of(2026, 3, 25, 20, 15, 3), null, "10.0.0.11",
+                        "Phiên xác thực đang mở"),
+                new LoginRecord(12L, 10L, "ngothuyduong", "Ngô Thùy Dương",
+                        LocalDateTime.of(2026, 3, 22, 16, 45, 2), LocalDateTime.of(2026, 3, 22, 18, 0, 0), "10.0.0.20",
+                        "Phiên tiêu chuẩn"),
+                new LoginRecord(11L, 5L, "hoangquocviet", "Hoàng Quốc Việt",
+                        LocalDateTime.of(2026, 3, 15, 11, 20, 5), LocalDateTime.of(2026, 3, 15, 13, 0, 0), "10.0.0.15",
+                        "Phiên tiêu chuẩn"),
+                new LoginRecord(10L, 1L, "nguyenvanan", "Nguyễn Văn An",
+                        LocalDateTime.of(2026, 3, 12, 18, 30, 2), LocalDateTime.of(2026, 3, 12, 20, 0, 0), "10.0.0.11",
+                        "Phiên tiêu chuẩn"),
+                new LoginRecord(9L, 3L, "lehoangnam", "Lê Hoàng Nam",
+                        LocalDateTime.of(2026, 3, 8, 10, 0, 4), LocalDateTime.of(2026, 3, 8, 12, 0, 0), "10.0.0.13",
+                        "Phiên tiêu chuẩn"),
+                new LoginRecord(8L, 2L, "tranthibich", "Trần Thị Bích Ngọc",
+                        LocalDateTime.of(2026, 3, 6, 9, 10, 3), LocalDateTime.of(2026, 3, 6, 11, 0, 0), "10.0.0.12",
+                        "Phiên tiêu chuẩn"),
+                new LoginRecord(7L, 1L, "nguyenvanan", "Nguyễn Văn An",
+                        LocalDateTime.of(2026, 3, 5, 11, 15, 0), LocalDateTime.of(2026, 3, 5, 12, 30, 0), "10.0.0.11",
+                        "Đăng nhập lần 3 trong cùng 1 lần mở app (launch #104)"),
+                new LoginRecord(6L, 1L, "nguyenvanan", "Nguyễn Văn An",
+                        LocalDateTime.of(2026, 3, 5, 9, 30, 0), LocalDateTime.of(2026, 3, 5, 10, 45, 0), "10.0.0.11",
+                        "Đăng nhập lần 2 trong cùng 1 lần mở app (launch #104)"),
+                new LoginRecord(5L, 1L, "nguyenvanan", "Nguyễn Văn An",
+                        LocalDateTime.of(2026, 3, 5, 8, 0, 6), LocalDateTime.of(2026, 3, 5, 9, 15, 0), "10.0.0.11",
+                        "Đăng nhập lần 1 trong cùng 1 lần mở app (launch #104)"),
+                new LoginRecord(4L, 26L, "deleteduser01", "Người Dùng Đã Xóa (Lưu lịch sử)",
+                        LocalDateTime.of(2026, 2, 12, 14, 0, 5), LocalDateTime.of(2026, 2, 12, 15, 10, 0), "10.0.0.26",
+                        "Tài khoản đã xóa mềm (giữ nguyên lịch sử)"),
+                new LoginRecord(3L, 2L, "tranthibich", "Trần Thị Bích Ngọc",
+                        LocalDateTime.of(2026, 1, 16, 8, 30, 5), LocalDateTime.of(2026, 1, 16, 10, 0, 0), "10.0.0.12",
+                        "Phiên tiêu chuẩn"),
+                new LoginRecord(2L, 1L, "nguyenvanan", "Nguyễn Văn An",
+                        LocalDateTime.of(2026, 1, 1, 6, 45, 2), LocalDateTime.of(2026, 1, 1, 7, 30, 0), "10.0.0.11",
+                        "Ranh giới năm theo múi giờ Asia/Ho_Chi_Minh"),
+                new LoginRecord(1L, 25L, "admin", "Quản Trị Hệ Thống",
+                        LocalDateTime.of(2025, 12, 31, 23, 10, 2), LocalDateTime.of(2025, 12, 31, 23, 55, 0), "192.168.1.10",
+                        "Tài khoản Quản trị hệ thống (ADMIN)")
         );
 
         // Canonical accepted friendships matching script/02_seed.sql (active non-deleted users)
@@ -150,6 +200,116 @@ public class MockUserRepository {
                 new FriendshipEdge(10L, 12L, LocalDate.of(2026, 3, 20)),
                 new FriendshipEdge(14L, 15L, LocalDate.of(2026, 4, 10))
         );
+
+        // Chat groups matching script/02_seed.sql
+        this.groupSeeds = List.of(
+                new GroupSeed(1L, "Cộng đồng Java Việt Nam", 1L, false, LocalDateTime.of(2026, 1, 20, 9, 0, 0)),
+                new GroupSeed(2L, "Nhóm Đồ Án Hệ Thống Chat", 1L, true, LocalDateTime.of(2026, 2, 10, 14, 0, 0)),
+                new GroupSeed(3L, "CLB Thuật Toán & AI", 3L, false, LocalDateTime.of(2026, 3, 5, 10, 0, 0)),
+                new GroupSeed(4L, "Nhóm Học Tập KHTN", 5L, false, LocalDateTime.of(2026, 4, 12, 8, 30, 0))
+        );
+
+        // Group memberships matching script/02_seed.sql (with groupRole separate from systemRole)
+        this.groupMemberSeeds = List.of(
+                // Group 1: 2 active admins (1, 2), 2 active members (3, 5), 1 departed member (6)
+                new GroupMemberSeed(1L, 1L, "ADMIN", "USER", LocalDateTime.of(2026, 1, 20, 9, 0, 0), null),
+                new GroupMemberSeed(1L, 2L, "ADMIN", "USER", LocalDateTime.of(2026, 1, 20, 9, 5, 0), null),
+                new GroupMemberSeed(1L, 3L, "MEMBER", "USER", LocalDateTime.of(2026, 1, 20, 9, 10, 0), null),
+                new GroupMemberSeed(1L, 5L, "MEMBER", "USER", LocalDateTime.of(2026, 2, 3, 11, 0, 0), null),
+                new GroupMemberSeed(1L, 6L, "MEMBER", "USER", LocalDateTime.of(2026, 2, 10, 8, 0, 0),
+                        LocalDateTime.of(2026, 3, 20, 18, 0, 0)),
+                // Group 2 (Encrypted): 1 active admin (1), 2 active members (2, 7)
+                new GroupMemberSeed(2L, 1L, "ADMIN", "USER", LocalDateTime.of(2026, 2, 10, 14, 0, 0), null),
+                new GroupMemberSeed(2L, 2L, "MEMBER", "USER", LocalDateTime.of(2026, 2, 10, 14, 2, 0), null),
+                new GroupMemberSeed(2L, 7L, "MEMBER", "USER", LocalDateTime.of(2026, 2, 15, 10, 0, 0), null),
+                // Group 3: 2 active admins (3, 10), 3 active members (1, 12, 14)
+                new GroupMemberSeed(3L, 3L, "ADMIN", "USER", LocalDateTime.of(2026, 3, 5, 10, 0, 0), null),
+                new GroupMemberSeed(3L, 10L, "ADMIN", "USER", LocalDateTime.of(2026, 3, 6, 14, 0, 0), null),
+                new GroupMemberSeed(3L, 1L, "MEMBER", "USER", LocalDateTime.of(2026, 3, 6, 14, 5, 0), null),
+                new GroupMemberSeed(3L, 12L, "MEMBER", "USER", LocalDateTime.of(2026, 3, 20, 11, 0, 0), null),
+                new GroupMemberSeed(3L, 14L, "MEMBER", "USER", LocalDateTime.of(2026, 4, 3, 9, 0, 0), null),
+                // Group 4: 1 active admin (5), 3 active members (9, 11, 15)
+                new GroupMemberSeed(4L, 5L, "ADMIN", "USER", LocalDateTime.of(2026, 4, 12, 8, 30, 0), null),
+                new GroupMemberSeed(4L, 9L, "MEMBER", "USER", LocalDateTime.of(2026, 4, 12, 8, 35, 0), null),
+                new GroupMemberSeed(4L, 11L, "MEMBER", "USER", LocalDateTime.of(2026, 4, 12, 8, 40, 0), null),
+                new GroupMemberSeed(4L, 15L, "MEMBER", "USER", LocalDateTime.of(2026, 4, 12, 8, 45, 0), null)
+        );
+
+        // Spam reports matching script/02_seed.sql (IDs 1..5)
+        this.spamReports = new ArrayList<>(List.of(
+                new SpamReportRecord(
+                        1L,
+                        1L, "nguyenvanan", "Nguyễn Văn An",
+                        4L, "phamminhchau", "Phạm Minh Châu", true,
+                        7L, LocalDateTime.of(2026, 3, 9, 22, 0, 0),
+                        "Phát tán đường dẫn lừa đảo trúng thưởng",
+                        "Nhận ngay khuyến mãi trúng thưởng 50 triệu tại link lạ!",
+                        "RESOLVED",
+                        LocalDateTime.of(2026, 3, 10, 8, 0, 0),
+                        "admin",
+                        LocalDateTime.of(2026, 3, 10, 11, 0, 0)
+                ),
+                new SpamReportRecord(
+                        2L,
+                        2L, "tranthibich", "Trần Thị Bích Ngọc",
+                        8L, "buithanhha", "Bùi Thanh Hà", true,
+                        8L, LocalDateTime.of(2026, 2, 21, 20, 0, 0),
+                        "Gửi tin nhắn rác mời gọi đầu tư tài chính trái phép",
+                        "Cơ hội đầu tư lợi nhuận 300% mỗi tuần, tham gia ngay!",
+                        "RESOLVED",
+                        LocalDateTime.of(2026, 3, 15, 9, 30, 0),
+                        "admin",
+                        LocalDateTime.of(2026, 3, 15, 15, 0, 0)
+                ),
+                new SpamReportRecord(
+                        3L,
+                        6L, "vuthithao", "Vũ Thị Phương Thảo",
+                        13L, "truongducthang", "Trương Đức Thắng", true,
+                        9L, LocalDateTime.of(2026, 3, 27, 11, 0, 0),
+                        "Spam quảng cáo bán hàng liên tục",
+                        "Tin nhắn quảng cáo bán hàng tự động gửi hàng loạt.",
+                        "RESOLVED",
+                        LocalDateTime.of(2026, 3, 28, 14, 0, 0),
+                        "admin",
+                        LocalDateTime.of(2026, 4, 1, 9, 0, 0)
+                ),
+                new SpamReportRecord(
+                        4L,
+                        10L, "ngothuyduong", "Ngô Thùy Dương",
+                        17L, "doanduckien", "Đoàn Trung Kiên", false,
+                        10L, LocalDateTime.of(2026, 4, 24, 19, 30, 0),
+                        "Gửi liên kết lạ nghi ngờ mã độc",
+                        "Click vào đường dẫn nhận quà tặng miễn phí ngay hôm nay!",
+                        "PENDING",
+                        LocalDateTime.of(2026, 4, 25, 8, 15, 0),
+                        null,
+                        null
+                ),
+                new SpamReportRecord(
+                        5L,
+                        3L, "lehoangnam", "Lê Hoàng Nam",
+                        19L, "trinhhoanglong", "Trịnh Hoàng Long", false,
+                        11L, LocalDateTime.of(2026, 5, 14, 8, 20, 0),
+                        "Tin nhắn rác tuyển cộng tác viên không rõ nguồn gốc",
+                        "Tuyển cộng tác viên việc nhẹ lương cao không cần kinh nghiệm.",
+                        "PENDING",
+                        LocalDateTime.of(2026, 5, 15, 10, 0, 0),
+                        null,
+                        null
+                )
+        ));
+    }
+
+    public void addDataChangeListener(Runnable listener) {
+        if (listener != null) {
+            dataChangeListeners.add(listener);
+        }
+    }
+
+    private void notifyDataChanged() {
+        for (Runnable listener : dataChangeListeners) {
+            listener.run();
+        }
     }
 
     public List<User> getUsers() {
@@ -181,6 +341,7 @@ public class MockUserRepository {
                 false
         );
         users.add(created);
+        notifyDataChanged();
         return created;
     }
 
@@ -199,23 +360,73 @@ public class MockUserRepository {
                 users.set(i, existing.withUpdatedProfile(
                         username, fullName, address, dateOfBirth, gender, email
                 ));
+                notifyDataChanged();
                 return;
             }
         }
     }
 
     public void toggleLockUser(long userId) {
+        boolean newLockedState = false;
+        boolean found = false;
         for (int i = 0; i < users.size(); i++) {
             User existing = users.get(i);
             if (existing.getId() == userId) {
-                users.set(i, existing.withLocked(!existing.isLocked()));
+                newLockedState = !existing.isLocked();
+                users.set(i, existing.withLocked(newLockedState));
+                found = true;
+                break;
+            }
+        }
+        if (found) {
+            syncSpamReportLockState(userId, newLockedState, false);
+            notifyDataChanged();
+        }
+    }
+
+    public void toggleLockReportedUserFromSpamReport(long reportId) {
+        for (int i = 0; i < spamReports.size(); i++) {
+            SpamReportRecord report = spamReports.get(i);
+            if (report.getId() == reportId) {
+                long targetUserId = report.getReportedUserId();
+                Optional<User> userOpt = findUserById(targetUserId);
+                if (userOpt.isPresent()) {
+                    boolean newLockState = !userOpt.get().isLocked();
+                    for (int uIdx = 0; uIdx < users.size(); uIdx++) {
+                        if (users.get(uIdx).getId() == targetUserId) {
+                            users.set(uIdx, users.get(uIdx).withLocked(newLockState));
+                            break;
+                        }
+                    }
+                    syncSpamReportLockState(targetUserId, newLockState, newLockState);
+                    notifyDataChanged();
+                }
                 return;
             }
         }
     }
 
+    private void syncSpamReportLockState(long reportedUserId, boolean locked, boolean resolvePendingIfLocked) {
+        for (int i = 0; i < spamReports.size(); i++) {
+            SpamReportRecord r = spamReports.get(i);
+            if (r.getReportedUserId() == reportedUserId) {
+                String newStatus = r.getStatus();
+                String resolvedBy = r.getResolvedByUsername().equals("—") ? null : r.getResolvedByUsername();
+                LocalDateTime resolvedTime = r.getResolvedAt();
+                if (resolvePendingIfLocked && locked && r.isPending()) {
+                    newStatus = "RESOLVED";
+                    resolvedBy = "admin";
+                    resolvedTime = LocalDateTime.of(2026, 6, 15, 9, 0, 0);
+                }
+                spamReports.set(i, r.withResolutionAndLockState(locked, newStatus, resolvedBy, resolvedTime));
+            }
+        }
+    }
+
     public void deleteUser(long userId) {
-        users.removeIf(u -> u.getId() == userId);
+        if (users.removeIf(u -> u.getId() == userId)) {
+            notifyDataChanged();
+        }
     }
 
     public List<LoginRecord> getLoginHistoryForUser(long userId) {
@@ -254,6 +465,96 @@ public class MockUserRepository {
         }
         result.sort(Comparator.comparing(UserFriendRecord::getFriendFullName));
         return result;
+    }
+
+    public List<ChatGroupRecord> getChatGroups() {
+        List<ChatGroupRecord> result = new ArrayList<>();
+        for (GroupSeed seed : groupSeeds) {
+            User creator = findUserById(seed.creatorUserId()).orElse(null);
+            String creatorUsername = creator != null ? creator.getUsername() : "unknown";
+            String creatorFullName = creator != null ? creator.getFullName() : "Không xác định";
+
+            int currentMembers = 0;
+            int currentAdmins = 0;
+            int departedMembers = 0;
+            for (GroupMemberSeed ms : groupMemberSeeds) {
+                if (ms.groupId() == seed.id()) {
+                    if (ms.leftAt() == null) {
+                        currentMembers++;
+                        if ("ADMIN".equalsIgnoreCase(ms.groupRole())) {
+                            currentAdmins++;
+                        }
+                    } else {
+                        departedMembers++;
+                    }
+                }
+            }
+
+            result.add(new ChatGroupRecord(
+                    seed.id(),
+                    seed.groupName(),
+                    seed.createdAt(),
+                    seed.creatorUserId(),
+                    creatorUsername,
+                    creatorFullName,
+                    seed.encrypted(),
+                    currentMembers,
+                    currentAdmins,
+                    departedMembers
+            ));
+        }
+        return result;
+    }
+
+    public List<GroupMemberRecord> getCurrentMembersForGroup(long groupId) {
+        List<GroupMemberRecord> result = new ArrayList<>();
+        for (GroupMemberSeed ms : groupMemberSeeds) {
+            if (ms.groupId() == groupId && ms.leftAt() == null) {
+                User u = findUserById(ms.userId()).orElse(null);
+                String username = u != null ? u.getUsername() : "user" + ms.userId();
+                String fullName = u != null ? u.getFullName() : "Người dùng #" + ms.userId();
+                String email = u != null ? u.getEmail() : "";
+                boolean locked = u != null && u.isLocked();
+                boolean online = u != null && u.isOnline();
+
+                result.add(new GroupMemberRecord(
+                        ms.groupId(),
+                        ms.userId(),
+                        username,
+                        fullName,
+                        email,
+                        ms.groupRole(),
+                        ms.systemRole(),
+                        locked,
+                        online,
+                        ms.joinedAt(),
+                        null
+                ));
+            }
+        }
+        return result;
+    }
+
+    public List<GroupMemberRecord> getCurrentAdminsForGroup(long groupId) {
+        return getCurrentMembersForGroup(groupId).stream()
+                .filter(GroupMemberRecord::isGroupAdmin)
+                .toList();
+    }
+
+    public List<SpamReportRecord> getSpamReports() {
+        List<SpamReportRecord> synced = new ArrayList<>();
+        for (SpamReportRecord r : spamReports) {
+            boolean currentlyLocked = findUserById(r.getReportedUserId())
+                    .map(User::isLocked)
+                    .orElse(r.isReportedUserLocked());
+            synced.add(r.withResolutionAndLockState(
+                    currentlyLocked,
+                    r.getStatus(),
+                    r.getResolvedByUsername().equals("—") ? null : r.getResolvedByUsername(),
+                    r.getResolvedAt()
+            ));
+        }
+        return synced;
     }
 
     public int getTotalCount() {

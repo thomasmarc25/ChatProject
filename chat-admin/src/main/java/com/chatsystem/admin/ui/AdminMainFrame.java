@@ -26,6 +26,9 @@ import java.awt.GridBagLayout;
 public class AdminMainFrame extends JFrame {
 
     private static final String CARD_USER_MANAGEMENT = "USER_MANAGEMENT";
+    private static final String CARD_LOGIN_HISTORY = "LOGIN_HISTORY";
+    private static final String CARD_CHAT_GROUPS = "CHAT_GROUPS";
+    private static final String CARD_SPAM_REPORTS = "SPAM_REPORTS";
     private static final String CARD_PLACEHOLDER = "PLACEHOLDER";
 
     private final SidebarPanel sidebarPanel;
@@ -68,10 +71,16 @@ public class AdminMainFrame extends JFrame {
 
         MockUserRepository userRepository = new MockUserRepository();
         UserManagementPanel userManagementPanel = new UserManagementPanel(userRepository);
+        LoginHistoryPanel loginHistoryPanel = new LoginHistoryPanel(userRepository);
+        ChatGroupManagementPanel chatGroupManagementPanel = new ChatGroupManagementPanel(userRepository);
+        SpamReportPanel spamReportPanel = new SpamReportPanel(userRepository);
         JPanel placeholderPanel = createSectionPlaceholderPanel();
 
         contentDeckPanel.setBackground(AppTheme.PAGE_BG);
         contentDeckPanel.add(userManagementPanel, CARD_USER_MANAGEMENT);
+        contentDeckPanel.add(loginHistoryPanel, CARD_LOGIN_HISTORY);
+        contentDeckPanel.add(chatGroupManagementPanel, CARD_CHAT_GROUPS);
+        contentDeckPanel.add(spamReportPanel, CARD_SPAM_REPORTS);
         contentDeckPanel.add(placeholderPanel, CARD_PLACEHOLDER);
         contentCardLayout.show(contentDeckPanel, CARD_USER_MANAGEMENT);
 
@@ -138,27 +147,28 @@ public class AdminMainFrame extends JFrame {
     }
 
     private void bindNavigation() {
-        sidebarPanel.setNavigationListener(selectedSection -> {
-            headerPanel.setSection(selectedSection);
-            setTitle("ChatSystem Admin — " + selectedSection);
-            if (SidebarPanel.NAV_USERS.equals(selectedSection)) {
-                contentCardLayout.show(contentDeckPanel, CARD_USER_MANAGEMENT);
-            } else {
+        sidebarPanel.setNavigationListener(this::navigateTo);
+    }
+
+    public void navigateTo(String selectedSection) {
+        sidebarPanel.setSelectedItem(selectedSection);
+        headerPanel.setSection(selectedSection);
+        setTitle("ChatSystem Admin — " + selectedSection);
+        switch (selectedSection) {
+            case SidebarPanel.NAV_USERS -> contentCardLayout.show(contentDeckPanel, CARD_USER_MANAGEMENT);
+            case SidebarPanel.NAV_LOGIN_HISTORY -> contentCardLayout.show(contentDeckPanel, CARD_LOGIN_HISTORY);
+            case SidebarPanel.NAV_GROUPS -> contentCardLayout.show(contentDeckPanel, CARD_CHAT_GROUPS);
+            case SidebarPanel.NAV_SPAM -> contentCardLayout.show(contentDeckPanel, CARD_SPAM_REPORTS);
+            default -> {
                 placeholderTitleLabel.setText(selectedSection);
                 placeholderSubtitleLabel.setText(describePlaceholderDestination(selectedSection));
                 contentCardLayout.show(contentDeckPanel, CARD_PLACEHOLDER);
             }
-        });
+        }
     }
 
     private String describePlaceholderDestination(String section) {
         return switch (section) {
-            case SidebarPanel.NAV_LOGIN_HISTORY ->
-                    "Màn hình xem danh sách đăng nhập toàn hệ thống theo thứ tự thời gian (Sẽ triển khai ở Bước F).";
-            case SidebarPanel.NAV_GROUPS ->
-                    "Màn hình danh sách nhóm chat, xem thành viên nhóm và quản trị viên nhóm (Sẽ triển khai ở Bước F).";
-            case SidebarPanel.NAV_SPAM ->
-                    "Màn hình danh sách báo cáo spam, lọc theo thời gian/tên đăng nhập và khóa tài khoản (Sẽ triển khai ở Bước F).";
             case SidebarPanel.NAV_NEW_REGISTRATIONS ->
                     "Màn hình danh sách người dùng đăng ký mới theo khoảng thời gian (Sẽ triển khai ở Bước G).";
             case SidebarPanel.NAV_REGISTRATION_CHART ->

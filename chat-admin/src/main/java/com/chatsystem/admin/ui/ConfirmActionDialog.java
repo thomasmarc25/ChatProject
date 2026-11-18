@@ -1,5 +1,6 @@
 package com.chatsystem.admin.ui;
 
+import com.chatsystem.admin.model.SpamReportRecord;
 import com.chatsystem.admin.model.User;
 import com.chatsystem.admin.theme.AppTheme;
 
@@ -93,6 +94,39 @@ public class ConfirmActionDialog extends JDialog {
                 heading,
                 desc,
                 user,
+                actionText,
+                accent
+        );
+        dialog.setVisible(true);
+        return dialog.isConfirmed();
+    }
+
+    public static boolean showSpamReportLockConfirm(
+            Window owner,
+            User reportedUser,
+            SpamReportRecord report
+    ) {
+        boolean willLock = !reportedUser.isLocked();
+        String title = willLock
+                ? "Xác nhận khóa tài khoản bị báo cáo spam"
+                : "Xác nhận mở khóa tài khoản bị báo cáo";
+        String heading = willLock
+                ? "Khóa tài khoản @" + reportedUser.getUsername() + " từ báo cáo #" + report.getId() + "?"
+                : "Mở khóa tài khoản @" + reportedUser.getUsername() + "?";
+        String desc = willLock
+                ? "Báo cáo #" + report.getId() + " (" + report.getReason() + "): Tài khoản @"
+                + reportedUser.getUsername() + " sẽ bị chuyển sang trạng thái Đã khóa và báo cáo được đánh dấu Đã xử lý (chỉ áp dụng in-memory)."
+                : "Tài khoản @" + reportedUser.getUsername()
+                + " sẽ được khôi phục trạng thái Hoạt động trong bộ nhớ xem trước (mock-only).";
+        String actionText = willLock ? "Khóa tài khoản" : "Mở khóa TK";
+        Color accent = willLock ? AppTheme.DANGER : AppTheme.SUCCESS;
+
+        ConfirmActionDialog dialog = new ConfirmActionDialog(
+                owner,
+                title,
+                heading,
+                desc,
+                reportedUser,
                 actionText,
                 accent
         );

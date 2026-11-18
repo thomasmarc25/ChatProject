@@ -117,6 +117,7 @@ public class UserManagementPanel extends JPanel {
         add(topSection, BorderLayout.NORTH);
         add(createMainTableCard(), BorderLayout.CENTER);
 
+        this.userRepository.addDataChangeListener(this::applyFiltersAndSort);
         applyFiltersAndSort();
     }
 

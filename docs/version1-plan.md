@@ -31,9 +31,9 @@
 | Assignment Item | Status | Detailed Current Status & Missing Parts |
 |---|---|---|
 | **1. User Management** | **Completed** | **Implemented:** `UserManagementPanel` (4 `StatCard` summary cards, live search by name/username, distinct Account Status and Online Presence filter dropdowns, sorting by name/creation date, 24-row mock user `JTable` with dual status badges, pagination bar, row action popup menu), `UserFormDialog` (Add/Edit user), `ConfirmActionDialog` (Delete & Lock/Unlock confirmations), `PasswordUpdateDialog` (masked password input), `UserLoginHistoryDialog` (1e), and `UserFriendsDialog` (1f). |
-| **2. System-Wide Login History** | **Missing (Placeholder Ready)** | The `"Lịch sử đăng nhập"` (Login History) navigation item in `SidebarPanel` currently opens a clearly marked placeholder card (scheduled for Step F). |
-| **3. Chat-Group List** | **Missing (Placeholder Ready)** | The `"Quản lý nhóm chat"` (Chat Group Management) navigation item in `SidebarPanel` currently opens a clearly marked placeholder card (scheduled for Step F). |
-| **4. Spam-Report List** | **Missing (Placeholder Ready)** | The `"Báo cáo spam"` (Spam Reports) navigation item in `SidebarPanel` currently opens a clearly marked placeholder card (scheduled for Step F). |
+| **2. System-Wide Login History** | **Completed** | **Implemented:** `LoginHistoryPanel` (4 `StatCard` summary cards, distinction banner explaining `login_history` vs `app_open_events`, live search by username/full name, validated date-range filter, chronological sort order toggle, 18-row `JTable` with session status pills and business notes, empty-result card, and no-selection state bar). |
+| **3. Chat-Group List** | **Completed** | **Implemented:** `ChatGroupManagementPanel` (read-only inspection badge, 4 `StatCard` summary cards, group-name filter, sorting by group name and creation time, 4-row `JTable` with encryption indicator pills and action controls, empty-result card, and no-selection state bar) and `GroupMembersDialog` (both Current Members `left_at IS NULL` and Group Admins `role = 'ADMIN'` modes, showing `group_members.role` separately from `users.role`). |
+| **4. Spam-Report List** | **Completed** | **Implemented:** `SpamReportPanel` (4 `StatCard` summary cards, reported-username filter, validated date-range filter, sorting by report time and reported username, 5-row `JTable` with status & account-lock pills, empty-result card, and no-selection state bar), `SpamReportDetailDialog` (synthetic `message_snapshot` preview), and `ConfirmActionDialog.showSpamReportLockConfirm` targeting the reported user (in-memory mock mutation synchronized across screens). |
 | **5. Newly Registered Users** | **Missing (Placeholder Ready)** | The `"Người dùng đăng ký mới"` navigation item in `SidebarPanel` currently opens a clearly marked placeholder card (scheduled for Step G). |
 | **6. Annual Registration Chart** | **Missing (Placeholder Ready)** | The `"Biểu đồ đăng ký mới"` navigation item in `SidebarPanel` currently opens a clearly marked placeholder card (scheduled for Step G). |
 | **7. User Friend Statistics** | **Missing (Placeholder Ready)** | The `"Thống kê bạn bè"` navigation item in `SidebarPanel` currently opens a clearly marked placeholder card (scheduled for Step G). |
@@ -118,18 +118,18 @@ The `script/01_schema.sql` script implements all 16 tables specified in [`docs/d
 
 ---
 
-### F. Login History, Groups, and Spam Reports
+### F. Login History, Groups, and Spam Reports (COMPLETED in `chat-admin/`)
 
-Replace the placeholder views for the 3 sidebar items with complete Swing panels:
+Replaced the placeholder views for the 3 operational administration destinations (`Lịch sử đăng nhập`, `Quản lý nhóm chat`, `Báo cáo spam`) with complete Swing panels while keeping the remaining 5 statistics/chart destinations (`Người dùng đăng ký mới`, `Biểu đồ đăng ký mới`, `Thống kê bạn bè`, `Người dùng hoạt động`, `Biểu đồ hoạt động`) as clearly marked placeholders for Step G:
 
 1. **`LoginHistoryPanel.java` (Requirement 2 — bound to `SidebarPanel.NAV_LOGIN_HISTORY`):**
-   - Displays system-wide login history ordered chronologically (login timestamp, username, full name, IP address), with search and sort controls.
+   - Displays system-wide login history (`login_history`: login timestamp, username, full name, logout timestamp, IP address, session status badge, and business note) ordered chronologically (`Mới nhất trước` / `Cũ nhất trước`), with live username/name search, validated date-range filtering (`Từ ngày` – `Đến ngày`), a prominent banner distinguishing authentication events (`login_history`) from client application-open statistics (`app_open_events`), and populated, empty-result, and no-selection states.
 2. **`ChatGroupManagementPanel.java` & `GroupMembersDialog.java` (Requirement 3 — bound to `SidebarPanel.NAV_GROUPS`):**
-   - Toolbar: Filter by group name, sort by group name (`A–Z`, `Z–A`) and creation time (`Newest`, `Oldest`).
-   - Group `JTable`: index, group name, creator, creation date, active member count, active admin count, encryption badge, and row actions to open `GroupMembersDialog` in **View Members** mode (3c) or **View Admins** mode (3d).
-3. **`SpamReportPanel.java` (Requirement 4 — bound to `SidebarPanel.NAV_SPAM`):**
-   - Toolbar: Filter by time range (`From Date` – `To Date`) and reported username; sort by report timestamp or username.
-   - Spam report `JTable`: index, report timestamp, reported username & full name, reporter username, reason, message snapshot, status badge, and an **Account Lock** action button (4d).
+   - Read-only group inspection screen (no group edit/delete mutations): displays group name, creation time, creator, current member count (`left_at IS NULL`), and encryption indicator badge (`Đã bật mã hóa (E2EE)` vs `Tiêu chuẩn (Plaintext)`).
+   - Supports filtering by group name, sorting by creation time (`Cũ nhất`, `Mới nhất`) and Vietnamese collated group name (`A–Z`, `Z–A`), populated/empty-result/no-selection states, and opens `GroupMembersDialog` in **Current Members** mode (3c) or **Group Admins** mode (3d) showing **Group Role** (`group_members.role`) in a separate column from **System Role** (`users.role`).
+3. **`SpamReportPanel.java` & `SpamReportDetailDialog.java` (Requirement 4 — bound to `SidebarPanel.NAV_SPAM`):**
+   - Displays reporter, reported user, report timestamp, reason, resolution status badge (`PENDING` / `RESOLVED`), and reported account lock badge.
+   - Supports filtering by validated date range (`Từ ngày` – `Đến ngày`) and reported username, sorting by report time (`Mới nhất`, `Cũ nhất`) and reported username (`A–Z`, `Z–A`), populated/empty-result/no-selection states, `SpamReportDetailDialog` showing the synthetic direct-message snapshot (`message_snapshot`), and `ConfirmActionDialog.showSpamReportLockConfirm` targeting the reported user (mock-only in-memory mutation synchronized with `UserManagementPanel`).
 
 ---
 

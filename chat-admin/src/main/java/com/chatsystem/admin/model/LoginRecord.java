@@ -5,7 +5,8 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * Immutable model representing a single authentication session record
- * for per-user and system-wide login history views.
+ * in {@code login_history} for per-user and system-wide login history views.
+ * Distinct from client application launch events ({@code app_open_events}).
  */
 public class LoginRecord {
 
@@ -19,6 +20,7 @@ public class LoginRecord {
     private final LocalDateTime loginAt;
     private final LocalDateTime logoutAt;
     private final String ipAddress;
+    private final String sessionNote;
 
     public LoginRecord(
             long id,
@@ -29,6 +31,19 @@ public class LoginRecord {
             LocalDateTime logoutAt,
             String ipAddress
     ) {
+        this(id, userId, username, fullName, loginAt, logoutAt, ipAddress, "");
+    }
+
+    public LoginRecord(
+            long id,
+            long userId,
+            String username,
+            String fullName,
+            LocalDateTime loginAt,
+            LocalDateTime logoutAt,
+            String ipAddress,
+            String sessionNote
+    ) {
         this.id = id;
         this.userId = userId;
         this.username = username;
@@ -36,6 +51,7 @@ public class LoginRecord {
         this.loginAt = loginAt;
         this.logoutAt = logoutAt;
         this.ipAddress = ipAddress;
+        this.sessionNote = sessionNote != null ? sessionNote : "";
     }
 
     public long getId() {
@@ -72,5 +88,9 @@ public class LoginRecord {
 
     public String getIpAddress() {
         return ipAddress != null ? ipAddress : "—";
+    }
+
+    public String getSessionNote() {
+        return sessionNote;
     }
 }
