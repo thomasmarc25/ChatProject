@@ -1479,3 +1479,135 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
      - Launched `AdminMainFrame` (`1280x800`) and all 7 modal dialogs on the Swing EDT under JDK 21.0.13, captured all 19 authentic PNG screenshots into `docs/screenshots/admin/`, and verified clean layout rendering across all screens and dialogs.
    - **Live PostgreSQL 18.4 Full-Suite SQL Verification (`task-895` on isolated port `55439`, database `chat_audit_v1`):**
      - Executed `01_schema.sql`, `02_seed.sql`, `03_admin_queries.sql`, and `04_verify.sql` sequentially with `psql -v ON_ERROR_STOP=1` -> **PASS (`exit code: 0`; all assertions `PASS [A1]`–`PASS [A9]` and `PASS [B1]`–`PASS [B9]` succeeded, followed by `DO`, `ROLLBACK`, and clean cluster shutdown)**.
+
+
+---
+
+## Entry 17 — Branch Integration (`integration/version1`): Merge `origin/Phuc` (`src/chat-user/`) with `main` (`chat-admin/` & `script/`)
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: Google Antigravity IDE
+   - Version/Model: Google Antigravity `2.29.0` (`ProductVersion 2.29.0.0`, Language Server `hub-2.29.0`, Electron `44.5.1`); Agent Model: `Gemini 4 Argon (High)`
+   - Platform: Desktop IDE on Microsoft Windows 11 Home Single Language 26H2 (OS Build `10.0.26300.9711`, x64) / PowerShell
+2. **Access date and time (with time zone):**
+   - Initial integration prompt received: `2026-11-18 22:15:39 UTC+07:00 (Asia/Ho_Chi_Minh)` (`Get-Date`: `2026-11-18 22:16:18 +07:00`)
+   - Follow-up `PreviewCapture` direct JDK 21 verification prompt received: `2026-11-18 22:36:59 UTC+07:00 (Asia/Ho_Chi_Minh)` (`Get-Date`: `2026-11-18 22:37:56 +07:00`)
+3. **Prompt(s) used:**
+   - Source observation: Observed directly as chat prompts sent to the agent in the Antigravity session.
+   - **Initial Branch Integration Prompt (`2026-11-18 22:15:39 +07:00`) — Verbatim:**
+     ```markdown
+     I am on integration/version1, created from my main branch. I have run
+     git merge --no-ff --no-commit origin/Phuc. Inspect the current merge
+     state, Git index, and working tree before editing. Read AGENTS.md.
+
+     Resolve and complete the integration using these ownership decisions:
+
+     1. main owns the finished Admin application and the shared PostgreSQL
+        schema. Preserve all nine Admin feature groups, dialogs, charts,
+        resources, and SQL verification work from main. Compare against main
+        even for files Git merged automatically.
+
+     2. origin/Phuc owns the User application under src/chat-user/.
+        Preserve its screens, navigation, mock data, resources, and UserApp
+        entry point. Keep both User and Admin independently launchable.
+        Preserve real Git evidence from both contributors.
+
+     3. Use main's actual schema SQL and database-design.md as the database
+        contract. Inspect Phuc's 01_person1.sql, verify_person1.sql, and
+        check_person1.mjs. Reconcile their references in documentation and
+        launch instructions so the final project has one database setup path.
+        Do not execute Phuc's competing schema on top of main's schema.
+
+     4. Inspect actual usages of Phuc's conversations, conversation_members,
+        messages, and message_user_states model. Adapt any real SQL or
+        data-access code to main's tables. UI-only classes such as ChatData
+        may still present a unified conversation list. Keep Version 1
+        runnable with mock data. Do not introduce JDBC into Swing.
+
+     5. Check java -version and mvn -version. Phuc's User POM requests release
+        21. Inspect main's configured Java version. If main uses 17, try to
+        build User at release 17 and fix small compatibility issues if needed.
+        Align the POM and run-user.cmd with the version actually verified.
+        Report any genuine Java 21 dependency before changing the project's
+        required JDK.
+
+     6. Inspect the actual Maven layout and build both modules from source.
+        Exclude generated target/ files from the integration changes.
+        Preserve existing module paths unless a build fix requires a change.
+
+     Keep the visual redesign for the next step. Resolve conflicts file by
+     file and stage the resolutions. Do not commit or push.
+     Write project Markdown in English. Finish with a Vietnamese chat summary
+     of the SQL decision, Java version, build results, and unresolved items.
+     ```
+   - **Follow-up User UI Smoke Verification Prompt (`2026-11-18 22:36:59 +07:00`) — Verbatim:**
+     ```markdown
+     The expected user_smoke_renders directory does not exist. The Maven log
+     shows chat-user compiled 14 Java files with release 21, then stopped
+     showing progress while downloading dependencies for exec-maven-plugin.
+
+     Finish the existing User UI verification from the Chat repository root:
+
+     1. Confirm the previous Maven task has stopped.
+     2. Check whether src/chat-user/target/classes still contains
+        com/chatsystem/user/PreviewCapture.class. The previous script had a
+        cleanup step that may have removed target/. If the class is missing,
+        run only: mvn -f src/chat-user/pom.xml compile
+     3. Locate the FlatLaf JAR used by chat-user in the local Maven repository.
+        Use JDK 21's java.exe directly with target/classes and that JAR on the
+        Windows classpath to launch com.chatsystem.user.PreviewCapture.
+        Pass the absolute user_smoke_renders path as its single argument.
+        This avoids the stalled exec-maven-plugin download and explicitly
+        selects PreviewCapture.
+     4. Keep stdout, stderr, target/, and the generated PNG files so they can
+        be inspected.
+     5. Report the process exit code, the number of new PNGs, the output
+        directory, and whether the final PASS line appeared.
+
+     Do not touch Git history, commit, push, or restart earlier work.
+     Respond in Vietnamese.
+     ```
+4. **Purpose:**
+   - Resolve the `git merge --no-ff --no-commit origin/Phuc` state on `integration/version1`: preserve all Admin UI (`chat-admin/`), shared PostgreSQL schema (`script/01_schema.sql`..`04_verify.sql`), `AGENTS.md`, `AI-LOG.md`, and `evidence/` from `main`; preserve the User Swing application (`src/chat-user/`), `run-user.cmd`, and `git/` evidence from `origin/Phuc`; reconcile `script/01_person1.sql`, `script/verify_person1.sql`, and `script/check_person1.mjs` against `main`'s authoritative 16-table schema so there is a single unified database setup path; verify Java 21 alignment across both modules; exclude generated `target/` files from the Git index; build both `chat-admin/` and `src/chat-user/` from source; and execute `com.chatsystem.user.PreviewCapture` directly with JDK 21's `java.exe` to verify all 17 User Swing windows/dialogs.
+5. **AI-generated content:**
+   - **Restored `main`-owned files that `origin/Phuc` had deleted or modified during merge:**
+     - Restored `AGENTS.md`, `evidence/chat_history/antigravity_session_8a98bca0.md`, and `evidence/chat_history/chatgpt.png` from `main` (`git checkout main -- ...`).
+     - Preserved `main`'s `AI-LOG.md` and appended `Entry 17`.
+     - Reset `chat-admin/target` in the Git index to `HEAD` (`git checkout HEAD -- chat-admin/target`) so zero compiled `.class` or `target/` artifacts are included in the merge diff.
+   - **Preserved `origin/Phuc`-owned User Application (`src/chat-user/`) and Git Evidence (`git/`):**
+     - Kept all 13 Java source files under `src/chat-user/src/main/java/com/chatsystem/user/` (`AccountPanel`, `AvatarIcon`, `ChatData`, `ChatPanel`, `ConversationListPanel`, `GitEvidence`, `MessageBubble`, `MessageListPanel`, `MockData`, `NavigationIcon`, `PeoplePanel`, `PreviewCapture`, `Ui`, `UserApp`), `src/chat-user/pom.xml`, `git/commits-phuc.png`, and `git/screenshots/01-chat.png`..`14-message-search.png` intact.
+     - Verified that `ChatData.java` and `MockData.java` are pure in-memory Swing model/fixture classes with zero JDBC or SQL code.
+   - **Reconciled `script/01_person1.sql`, `script/verify_person1.sql`, and `script/check_person1.mjs` to `main`'s Authoritative 16-Table Schema:**
+     - `script/01_person1.sql`: Replaced competing `CREATE TABLE` DDL (`app_users`, `conversations`, `conversation_members`, `messages`, `message_user_states`, `conversation_member_keys`) with schema-mapping documentation and 4 runnable read-only User-subsystem reference queries (`USER QUERY 1` unified direct + group conversation list, `USER QUERY 2` visible direct message transcript respecting `direct_message_hidden`, `USER QUERY 3` visible group message transcript respecting `group_message_hidden`, and `USER QUERY 4` people directory search excluding directional `user_blocks`) that execute directly on `01_schema.sql` + `02_seed.sql`.
+     - `script/verify_person1.sql`: Reconciled into a rollback-safe `BEGIN; DO $$ ... $$; ROLLBACK;` PL/pgSQL verification script runnable after `01_schema.sql` and `02_seed.sql`, testing canonical friendship ordering, self-friendship/self-block rejection, opposite-direction simultaneous `PENDING` friend request rejection, group message plaintext/ciphertext payload check, and per-user message hiding isolation (`direct_message_hidden`).
+     - `script/check_person1.mjs`: Updated the optional Node/PGlite smoke runner to load `script/01_schema.sql` + `script/02_seed.sql` + `script/verify_person1.sql` and test User-subsystem constraints against `main`'s authoritative tables.
+   - **Resolved `README.md` Conflict & Updated Documentation (in English):**
+     - Resolved `UU README.md` to document both `src/chat-user/` (`com.chatsystem.user.UserApp`) and `chat-admin/` (`com.chatsystem.admin.AdminApp`), the single authoritative PostgreSQL setup path (`01_schema.sql` -> `02_seed.sql` -> `03_admin_queries.sql` -> `04_verify.sql` -> `01_person1.sql` -> `verify_person1.sql`), and PowerShell-safe Maven commands.
+     - Updated `run-user.cmd`, `script/README.md`, `docs/admin-run-guide.md`, and `docs/version1-submission-checklist.md`.
+6. **Student's independent work and edits/validation:**
+   - Student created the `integration/version1` branch from `main`, initiated `git merge --no-ff --no-commit origin/Phuc`, specified the 6 ownership and integration rules, identified the stalled `exec-maven-plugin` download during User UI verification, and directed the direct JDK 21 `java.exe -cp` execution of `com.chatsystem.user.PreviewCapture`.
+   - Additional student review/validation: `STUDENT TO COMPLETE`
+7. **Screenshots or chat history:**
+   - `evidence/chat_history/chatgpt.png`
+   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+   - `git/commits-phuc.png`
+   - `git/screenshots/01-chat.png` through `14-message-search.png`
+   - `docs/screenshots/admin/01_user_management.png` through `09_activity_chart_2026.png`
+8. **Verification and outcomes:**
+   - **Java & Maven Environment Verification:**
+     - `java -version`: `openjdk version "21.0.13" 2026-10-20 LTS (Temurin-21.0.13+9)`
+     - `mvn -version`: `Apache Maven 3.6.3` running on Java `21.0.13`
+     - Confirmed both `chat-admin/pom.xml` (`<maven.compiler.release>21</maven.compiler.release>`) and `src/chat-user/pom.xml` (`<maven.compiler.release>21</maven.compiler.release>`) target Java 21 LTS.
+   - **Maven Build of Both Modules from Source (`task-961`):**
+     - `mvn -f chat-admin/pom.xml "-DskipTests" clean package` -> **PASS (`BUILD SUCCESS` in `5.676 s`, 34 Java source files compiled with `release 21`, packaged `chat-admin/target/chat-admin-1.0.0-SNAPSHOT.jar`)**.
+     - `mvn -f src/chat-user/pom.xml "-DskipTests" clean package` -> **PASS (`BUILD SUCCESS` in `11.118 s`, 13 Java source files compiled with `release 21`, packaged `src/chat-user/target/chat-user-1.0-SNAPSHOT.jar`)**.
+   - **Live PostgreSQL 18.4 Unified SQL Suite Verification (`task-961` on isolated port `55440`, database `chat_merge_v1`):**
+     - Executed `01_schema.sql`, `02_seed.sql`, `03_admin_queries.sql`, `04_verify.sql` (`PASS [A1]`–`PASS [A9]` & `PASS [B1]`–`PASS [B9]`), `01_person1.sql` (`USER QUERY 1`..`4`), and `verify_person1.sql` (`PASS [verify_person1.sql]: All User-subsystem constraints and visibility checks passed on authoritative schema.`) sequentially with `psql -v ON_ERROR_STOP=1` -> **PASS (`ALL_UNIFIED_SQL_SCRIPTS_PASSED`, exit code `0`)**.
+   - **Direct JDK 21 Execution of `com.chatsystem.user.PreviewCapture` (User UI Smoke Verification):**
+     - Stopped stalled `exec-maven-plugin` background download (`task-965`) and confirmed zero background tasks running.
+     - Executed:
+       `& "C:\Program Files\Eclipse Adoptium\jdk-21.0.13.9-hotspot\bin\java.exe" -cp "src\chat-user\target\classes;C:\Users\DELL\.m2\repository\com\formdev\flatlaf\3.7.2\flatlaf-3.7.2.jar" com.chatsystem.user.PreviewCapture "C:\Users\DELL\.gemini\antigravity\brain\8a98bca0-4a35-400e-87ac-7f2b692989d0\scratch\user_smoke_renders"`
+     - Outcome: **PASS (`JAVA_EXIT_CODE: 0`)**
+       - Stdout printed: `PASS: rendered 17 windows; friend filters, local/global/empty message search, conversation search and group filter verified`
+       - Generated `17` PNG files (`01-chat.png` through `14-message-search.png`, including all 4 dialogs `12-dialog-create.png`, `12-dialog-group.png`, `12-dialog-llm.png`, `12-dialog-spam.png`) in `C:\Users\DELL\.gemini\antigravity\brain\8a98bca0-4a35-400e-87ac-7f2b692989d0\scratch\user_smoke_renders`.
+       - Preserved `src/chat-user/target/` and `user_smoke_renders/` on disk for inspection while keeping `target/` excluded from the Git merge index.

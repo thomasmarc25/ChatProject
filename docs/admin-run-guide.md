@@ -57,7 +57,22 @@ Set-Location chat-admin
 mvn compile exec:java "-Dexec.mainClass=com.chatsystem.admin.AdminApp"
 ```
 
-### 3.3. If `JAVA_HOME` or `mvn` Is Not on Your Default PowerShell `PATH`
+### 3.3. Build and Launch the User Application (`src/chat-user/` — Member 1)
+
+From the repository root in Windows PowerShell:
+
+```powershell
+mvn -f src/chat-user/pom.xml "-DskipTests" clean package
+mvn -f src/chat-user/pom.xml exec:java
+```
+
+Or run the Windows launcher script directly from the repository root:
+
+```powershell
+.\run-user.cmd
+```
+
+### 3.4. If `JAVA_HOME` or `mvn` Is Not on Your Default PowerShell `PATH`
 
 If you use a local JDK 21 installation and the Maven Wrapper distribution cached under `$HOME\.m2\wrapper\dists`, run:
 
@@ -81,6 +96,8 @@ psql -h 127.0.0.1 -p 5432 -U postgres -d chat_system_v1_test -v ON_ERROR_STOP=1 
 psql -h 127.0.0.1 -p 5432 -U postgres -d chat_system_v1_test -v ON_ERROR_STOP=1 -f script/02_seed.sql
 psql -h 127.0.0.1 -p 5432 -U postgres -d chat_system_v1_test -v ON_ERROR_STOP=1 -f script/03_admin_queries.sql
 psql -h 127.0.0.1 -p 5432 -U postgres -d chat_system_v1_test -v ON_ERROR_STOP=1 -f script/04_verify.sql
+psql -h 127.0.0.1 -p 5432 -U postgres -d chat_system_v1_test -v ON_ERROR_STOP=1 -f script/01_person1.sql
+psql -h 127.0.0.1 -p 5432 -U postgres -d chat_system_v1_test -v ON_ERROR_STOP=1 -f script/verify_person1.sql
 ```
 
 ---
