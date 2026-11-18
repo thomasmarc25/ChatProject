@@ -90,8 +90,8 @@ public class UserFormDialog extends JDialog {
 
         initDialogLayout(existingUser != null);
         pack();
-        setMinimumSize(new Dimension(560, getPreferredSize().height));
-        setSize(new Dimension(580, Math.max(520, getPreferredSize().height)));
+        setMinimumSize(new Dimension(580, getPreferredSize().height));
+        setSize(new Dimension(610, Math.max(520, getPreferredSize().height)));
         setResizable(false);
         setLocationRelativeTo(owner);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -256,7 +256,7 @@ public class UserFormDialog extends JDialog {
                 )
         ));
 
-        JLabel noteLabel = new JLabel("Chế độ xem trước giao diện (dữ liệu mẫu in-memory)");
+        JLabel noteLabel = new JLabel("Chế độ xem trước (in-memory)");
         noteLabel.setFont(AppTheme.FONT_CAPTION);
         noteLabel.setForeground(AppTheme.TEXT_SECONDARY);
 
