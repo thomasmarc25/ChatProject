@@ -102,6 +102,20 @@ public class HeaderPanel extends JPanel {
         AvatarIndicator avatar = new AvatarIndicator("AD", 36);
         avatar.setAlignmentY(Component.CENTER_ALIGNMENT);
 
+        JLabel mockPreviewBadge = new JLabel("Version 1 • Mock Data Preview");
+        mockPreviewBadge.setFont(AppTheme.FONT_CAPTION_BOLD);
+        mockPreviewBadge.setForeground(AppTheme.TEXT_SECONDARY);
+        mockPreviewBadge.setOpaque(true);
+        mockPreviewBadge.setBackground(AppTheme.NEUTRAL_BG);
+        mockPreviewBadge.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(AppTheme.BORDER, 1, true),
+                BorderFactory.createEmptyBorder(4, 10, 4, 10)
+        ));
+        mockPreviewBadge.setToolTipText("Phiên bản 1: Ứng dụng giao diện quản trị sử dụng dữ liệu mẫu cố định trong bộ nhớ (In-memory mock fixtures)");
+        mockPreviewBadge.setAlignmentY(Component.CENTER_ALIGNMENT);
+
+        container.add(mockPreviewBadge);
+        container.add(Box.createHorizontalStrut(AppTheme.SPACING_MD));
         container.add(textColumn);
         container.add(Box.createHorizontalStrut(AppTheme.SPACING_SM + 4));
         container.add(avatar);

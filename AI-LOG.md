@@ -1269,3 +1269,107 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
    - **Live Swing GUI Visual Verification (Reported Separately from Compilation):**
      - Launched `AdminMainFrame` (`1280x800`), navigated to `LoginHistoryPanel`, `ChatGroupManagementPanel`, `SpamReportPanel`, and the remaining Step G placeholder view, and rendered `GroupMembersDialog` (both Current Members and Group Admins modes) and `SpamReportDetailDialog` on the Swing EDT under JDK 21.0.13.
      - Inspected the rendered root-pane screenshots (`01_login_history_1280x800.png`, `02_chat_groups_1280x800.png`, `03_spam_reports_1280x800.png`, `05_group_members_dialog.png`, `06_group_admins_dialog.png`, `07_spam_detail_dialog.png`), refined toolbar button minimum widths and table column widths on `SpamReportPanel` and `ChatGroupManagementPanel` plus dialog height on `SpamReportDetailDialog` (`680x535`), and re-verified that all text, timestamps, badges, and buttons render cleanly without clipping or truncation.
+
+
+---
+
+## Entry 15 — Step G: Implement New Registrations, Registration Chart, Friend Statistics, User Activity, and Activity Chart Screens
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: Google Antigravity IDE
+   - Version/Model: Google Antigravity `2.29.0` (`ProductVersion 2.29.0.0`, Language Server `hub-2.29.0`, Electron `44.5.1`); Agent Model: `Gemini 4 Argon (High)`
+   - Platform: Desktop IDE on Microsoft Windows 11 Home Single Language 26H2 (OS Build `10.0.26300.9711`, x64) / PowerShell
+2. **Access date and time (with time zone):**
+   - Prompt received: `2026-11-18 20:44:02 UTC+07:00 (Asia/Ho_Chi_Minh)`
+   - Shell verification timestamp (`Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"`): `2026-11-18 20:44:17 +07:00`
+3. **Prompt(s) used:**
+   - Source observation: Observed directly as a chat prompt sent to the agent in the Antigravity session.
+   - **Verbatim:**
+     ```markdown
+     Complete these Version 1 admin screens using in-memory sample data.
+
+     A. NEW REGISTRATIONS
+     - Start/end date controls.
+     - Table containing name, username, and account creation time.
+     - Name filter and sorting by name/creation time.
+
+     B. REGISTRATION CHART
+     - Year selector.
+     - A chart with 12 months on the horizontal axis.
+     - Registration count on the vertical axis.
+     - Include zero-count months and an empty-year state.
+
+     C. FRIEND STATISTICS
+     - Name, username, account creation time.
+     - Direct-friend count.
+     - Distinct-friend count including 1-hop and 2-hop friends.
+     - Name filter; sort by name/creation time.
+     - Direct-friend count filter with =, <, > and numeric input.
+     - Include a tooltip explaining that the second count excludes self
+       and duplicates.
+
+     D. USER ACTIVITY
+     - Date-range controls.
+     - Name, username, account creation time, app-open count,
+       distinct direct-message recipients, distinct groups messaged.
+     - Name filter and sorting by name/creation time.
+     - Metric selector with exactly:
+       app opens / people chatted with / groups chatted with.
+     - Operator selector =, <, > and numeric input.
+     - Do not add an undefined "total activity" metric.
+
+     E. ACTIVITY CHART
+     - Year selector.
+     - All 12 months.
+     - Monthly DISTINCT users who opened the User app.
+     - Do not use login count, message count, or total app-open count.
+
+     Use consistent mock fixtures and clearly label the application as a
+     Version 1 mock-data preview in an appropriate unobtrusive location.
+     UI samples and SQL examples must use the same metric definitions.
+
+     Reuse an existing chart library if present.
+     If no chart library exists, prefer simple readable custom Swing charts
+     for these two bar charts rather than introducing a large dependency.
+     Charts need visible axes, month labels, numeric scale, and clear titles.
+
+     Keep UI actions lightweight and in-memory.
+     No Spring Boot, TCP, JDBC, or backend integration.
+
+     Compile and inspect layout if GUI support exists.
+     Check chart labels, resizing, scrolling, and empty results.
+     Update docs/version1-plan.md and AI-LOG.md.
+     Do not commit or push.
+     ```
+4. **Purpose:**
+   - Implement Step G of the Version 1 plan in `chat-admin/`:
+     - **A. New Registrations (`NewUserRegistrationPanel`):** Start/end date controls with validation, name filter, sorting by name/creation time, and table displaying name, username, and account creation time (retaining historical soft-deleted accounts per Rule 8).
+     - **B. Registration Chart (`RegistrationChartPanel` & `MonthlyBarChartPanel`):** Year selector (`2026`, `2025`, `2024`), custom Swing `Graphics2D` 12-month bar chart with visible axes, month labels (`Tháng 1`..`Tháng 12`), numeric vertical scale, zero-count months (`7..12` in 2026), and an empty-year state (`2024`).
+     - **C. Friend Statistics (`FriendStatisticsPanel`):** Table displaying name, username, account creation time, direct-friend count, and distinct 1-hop/2-hop friend count (with explicit header/cell tooltips explaining that the second count excludes self, duplicates, and soft-deleted paths), name filter, sorting by name/creation time, and direct-friend count filter (`=`, `<`, `>` with validated numeric input).
+     - **D. User Activity (`UserActivityPanel`):** Date-range controls, name, username, account creation time, app-open count, distinct direct-message recipients, distinct groups messaged, name filter, sorting by name/creation time, and activity metric filter with selector containing **only** the 3 concrete metrics (`Số lần mở ứng dụng`, `Số người đã chat trực tiếp`, `Số nhóm đã gửi tin nhắn`) plus `=`, `<`, `>` and numeric input (no undefined "total activity" metric).
+     - **E. Activity Chart (`ActivityChartPanel` & `MonthlyBarChartPanel`):** Year selector (`2026`, `2025`, `2024`), custom Swing `Graphics2D` 12-month bar chart plotting monthly **DISTINCT users who opened the User app** (`COUNT(DISTINCT user_id)` from `app_open_events`), including zero-count Month 8 in 2026 and an empty-year state (`2024`), and clearly stating it does not use login count, message count, or total app-open count.
+     - Unobtrusive Version 1 mock-data preview label in the application header/sidebar shell.
+5. **AI-generated content:**
+   - **Created `chat-admin/src/main/java/com/chatsystem/admin/model/RegistrationRecord.java`, `model/FriendStatRecord.java`, and `model/UserActivityRecord.java`:** Immutable domain models for historical registration rows, 1-hop and 1-or-2-hop friend statistics, and per-user 3-metric activity rows.
+   - **Updated `chat-admin/src/main/java/com/chatsystem/admin/data/MockUserRepository.java`:** Added exact `Asia/Ho_Chi_Minh` registration timestamps (`exactRegistrationTimestamps`), `appOpenSeeds` (26 rows), `directMessageSeeds` (11 rows), and `groupMessageSeeds` (8 rows) aligned 1:1 with `script/02_seed.sql`, along with `getRegistrationRecords()` (`QUERY 6`), `getMonthlyRegistrationCounts(int)` (`QUERY 7`), `getFriendStatistics()` (`QUERY 8`), `getUserActivityRecords(LocalDate, LocalDate)` (`QUERY 9A/9B`), and `getMonthlyDistinctAppOpeningUsers(int)` (`QUERY 10`).
+   - **Created `chat-admin/src/main/java/com/chatsystem/admin/components/MonthlyBarChartPanel.java`:** Custom anti-aliased `Graphics2D` 12-month bar chart component with visible X/Y axes, month labels (`Tháng 1`..`Tháng 12`), integer numeric scale, value badges above all 12 bars (including zero-count months), mouse hover tooltips, and an explicit centered **Empty-Year State** callout box when all 12 months equal `0`.
+   - **Created `chat-admin/src/main/java/com/chatsystem/admin/ui/NewUserRegistrationPanel.java` (Screen A), `ui/RegistrationChartPanel.java` (Screen B), `ui/FriendStatisticsPanel.java` (Screen C), `ui/UserActivityPanel.java` (Screen D), and `ui/ActivityChartPanel.java` (Screen E):**
+     - `NewUserRegistrationPanel`: Start/end date controls with validation, name filter, sorting by name/creation time, and table retaining historical soft-deleted account `#26`.
+     - `RegistrationChartPanel`: Year selector (`2026`, `2025`, `2024`), 12-month registration count bar chart with zero-count months (`7..12` in 2026) and Empty-Year State (`2024`), plus 12-month breakdown strip.
+     - `FriendStatisticsPanel`: Table with direct-friend count (`1-hop`) and distinct 1-or-2-hop friend count (`COUNT(DISTINCT ...)`), header/cell/banner tooltips explaining exclusion of self, duplicates, and soft-deleted paths, name filter, sorting by name/creation time, and direct-friend count filter (`=`, `<`, `>` with numeric validation).
+     - `UserActivityPanel`: Date-range controls defaulting to March 2026 (`QUERY 9A/9B`), name filter, sorting by name/creation time, and metric filter selector containing strictly the 3 concrete metrics (`Số lần mở ứng dụng`, `Số người đã chat`, `Số nhóm đã chat`) with `=`, `<`, `>` and numeric input.
+     - `ActivityChartPanel`: Year selector (`2026`, `2025`, `2024`) and 12-month bar chart plotting monthly **DISTINCT users who opened the User app** (`COUNT(DISTINCT aoe.user_id)` from `app_open_events`, never login count, message count, or total app-open count), including zero-count Month 8 in 2026 and Empty-Year State in 2024.
+   - **Updated `components/HeaderPanel.java` & `ui/AdminMainFrame.java`:** Added an unobtrusive `"Version 1 • Mock Data Preview"` pill badge in `HeaderPanel` and replaced the remaining 5 placeholders in `AdminMainFrame` so all 9 Administrator screens are live.
+   - **Updated `docs/version1-plan.md` and `AI-LOG.md`.**
+6. **Student's independent work and edits/validation:**
+   - Student specified all requirements for New Registrations, Registration Chart, Friend Statistics, User Activity, Activity Chart, exact metric definitions matching SQL examples, custom Swing bar chart requirements, and unobtrusive Version 1 mock-data preview labeling.
+   - Additional student review/validation: `STUDENT TO COMPLETE`
+7. **Screenshots or chat history:**
+   - `evidence/chat_history/chatgpt.png`
+   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+8. **Verification and outcomes:**
+   - **Maven Compilation (`mvn -DskipTests clean package` in `chat-admin/` on JDK 21.0.13):**
+     - Outcome: **PASS (`BUILD SUCCESS` in `3.329 s`, exit code `0`)** — compiled all 34 Java source files with `javac [debug release 21]` and packaged `target/chat-admin-1.0.0-SNAPSHOT.jar`.
+   - **Live Swing GUI Visual Verification (Reported Separately from Compilation):**
+     - Launched `AdminMainFrame` on the Swing EDT under JDK 21.0.13 at both `1280x800` and minimum window size `1100x700`, navigated through all 5 new screens (`NewUserRegistrationPanel`, `RegistrationChartPanel` in `2026` and `2024` empty-year state, `FriendStatisticsPanel`, `UserActivityPanel`, and `ActivityChartPanel` at `1280x800` and resized `1100x700`), and inspected live root-pane PNG renders.
+     - Verified visible X/Y axes, month labels (`Tháng 1`..`Tháng 12`), integer numeric scale, zero-count months (`7..12` on Registration Chart 2026; `Tháng 8` on Activity Chart 2026), the Empty-Year State callout (`2024`), header/cell tooltips on `FriendStatisticsPanel`, strictly 3 concrete metrics in `UserActivityPanel`, clean resizing at `1100x700`, and the unobtrusive `Version 1 • Mock Data Preview` badge in `HeaderPanel`.

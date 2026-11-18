@@ -34,11 +34,11 @@
 | **2. System-Wide Login History** | **Completed** | **Implemented:** `LoginHistoryPanel` (4 `StatCard` summary cards, distinction banner explaining `login_history` vs `app_open_events`, live search by username/full name, validated date-range filter, chronological sort order toggle, 18-row `JTable` with session status pills and business notes, empty-result card, and no-selection state bar). |
 | **3. Chat-Group List** | **Completed** | **Implemented:** `ChatGroupManagementPanel` (read-only inspection badge, 4 `StatCard` summary cards, group-name filter, sorting by group name and creation time, 4-row `JTable` with encryption indicator pills and action controls, empty-result card, and no-selection state bar) and `GroupMembersDialog` (both Current Members `left_at IS NULL` and Group Admins `role = 'ADMIN'` modes, showing `group_members.role` separately from `users.role`). |
 | **4. Spam-Report List** | **Completed** | **Implemented:** `SpamReportPanel` (4 `StatCard` summary cards, reported-username filter, validated date-range filter, sorting by report time and reported username, 5-row `JTable` with status & account-lock pills, empty-result card, and no-selection state bar), `SpamReportDetailDialog` (synthetic `message_snapshot` preview), and `ConfirmActionDialog.showSpamReportLockConfirm` targeting the reported user (in-memory mock mutation synchronized across screens). |
-| **5. Newly Registered Users** | **Missing (Placeholder Ready)** | The `"Người dùng đăng ký mới"` navigation item in `SidebarPanel` currently opens a clearly marked placeholder card (scheduled for Step G). |
-| **6. Annual Registration Chart** | **Missing (Placeholder Ready)** | The `"Biểu đồ đăng ký mới"` navigation item in `SidebarPanel` currently opens a clearly marked placeholder card (scheduled for Step G). |
-| **7. User Friend Statistics** | **Missing (Placeholder Ready)** | The `"Thống kê bạn bè"` navigation item in `SidebarPanel` currently opens a clearly marked placeholder card (scheduled for Step G). |
-| **8. Active Users & Activity Metrics** | **Missing (Placeholder Ready)** | The `"Người dùng hoạt động"` navigation item in `SidebarPanel` currently opens a clearly marked placeholder card (scheduled for Step G). |
-| **9. Annual Activity Chart** | **Missing (Placeholder Ready)** | The `"Biểu đồ hoạt động"` navigation item in `SidebarPanel` currently opens a clearly marked placeholder card (scheduled for Step G). |
+| **5. Newly Registered Users** | **Completed** | **Implemented:** `NewUserRegistrationPanel` (start/end date controls with validation, quick preset for Feb 2026 Test Case 6, name filter, sorting by name/creation time, 25-row `JTable` retaining historical soft-deleted account `#26`, empty-result card, and no-selection state bar). |
+| **6. Annual Registration Chart** | **Completed** | **Implemented:** `RegistrationChartPanel` and custom `MonthlyBarChartPanel` (`Graphics2D` 12-month bar chart with year selector `2026`/`2025`/`2024`, visible X/Y axes, month labels `Tháng 1`..`Tháng 12`, integer numeric scale, zero-count months `7..12` in 2026, Empty-Year State in 2024, and 12-month breakdown strip). |
+| **7. User Friend Statistics** | **Completed** | **Implemented:** `FriendStatisticsPanel` (table with name, username, account creation time, 1-hop direct-friend count, and 1-or-2-hop DISTINCT friend count with header/cell/banner tooltips explaining exclusion of self, duplicates, and soft-deleted paths; name filter; sorting by name/creation time; and direct-friend count filter with `=`, `<`, `>` and numeric input). |
+| **8. Active Users & Activity Metrics** | **Completed** | **Implemented:** `UserActivityPanel` (start/end date controls defaulting to March 2026 Test Case 9, name filter, sorting by name/creation time, table with app opens, distinct DM recipients, and distinct groups messaged, and metric filter selector containing strictly the 3 concrete metrics plus `=`, `<`, `>` and numeric input). |
+| **9. Annual Activity Chart** | **Completed** | **Implemented:** `ActivityChartPanel` and `MonthlyBarChartPanel` (`Graphics2D` 12-month bar chart with year selector `2026`/`2025`/`2024` plotting monthly DISTINCT users who opened the User app `COUNT(DISTINCT user_id)` from `app_open_events`, including zero-count Month 8 in 2026 and Empty-Year State in 2024). |
 | **PostgreSQL Database (`script/`)** | **Completed** | Implemented and verified in `script/01_schema.sql`, `script/02_seed.sql`, `script/03_admin_queries.sql`, and `script/04_verify.sql`. |
 
 ---
@@ -133,22 +133,22 @@ Replaced the placeholder views for the 3 operational administration destinations
 
 ---
 
-### G. Registration and Activity Statistics and Charts
+### G. Registration and Activity Statistics and Charts (COMPLETED in `chat-admin/`)
 
-Bind `SidebarPanel.NAV_STATISTICS` to `StatisticsWorkspacePanel.java` containing 5 sub-tabs corresponding to Requirements 5, 6, 7, 8, and 9:
+Replaced the remaining 5 placeholder views with complete Swing panels and a reusable custom `Graphics2D` 12-month bar chart (`MonthlyBarChartPanel.java`), and added an unobtrusive `"Version 1 • Mock Data Preview"` indicator badge in `HeaderPanel.java`:
 
-1. **Tab 1 — `NewUserRegistrationPanel.java` (Requirement 5: Newly Registered Users):**
-   - Select a time range (`From Date` – `To Date`), filter by name, sort by name or creation time, and display matching users.
-2. **Tab 2 — `RegistrationChartPanel.java` (Requirement 6: Annual Registration Chart):**
-   - Select a year (`JComboBox`: `2026`, `2025`, `2024`) and render a 12-month bar chart via `MonthlyBarChartPanel.java` (`Graphics2D`: horizontal axis = Months 1..12, vertical axis = newly registered user count).
-3. **Tab 3 — `FriendStatisticsPanel.java` (Requirement 7: User Friend Statistics):**
-   - Display each active user with **Direct Friends Count** and **Friends Including Friends-of-Friends Count**.
-   - Filter by name, sort by name or creation time, and filter direct-friend count using `=`, `<`, or `>` with a numeric input.
-4. **Tab 4 — `UserActivityPanel.java` (Requirement 8: Active Users & Activity Statistics):**
-   - Select a time range (`From Date` – `To Date`) and display active users with 3 metric columns: **App Opens**, **Distinct Users Chatted With**, and **Distinct Groups Chatted With**.
-   - Sort by name or creation time, filter by name, and filter by activity count using `=`, `<`, or `>` after selecting **1 of the 3 concrete metrics** (`App Opens`, `Distinct Users Chatted With`, or `Distinct Groups Chatted With`; no undefined aggregate total metric).
-5. **Tab 5 — `ActivityChartPanel.java` (Requirement 9: Annual Activity Chart):**
-   - Select a year (`JComboBox`: `2026`, `2025`, `2024`) and render a 12-month bar chart via `MonthlyBarChartPanel.java` (`Graphics2D`: horizontal axis = Months 1..12, vertical axis = distinct users who opened the application).
+1. **`NewUserRegistrationPanel.java` (Requirement 5 — bound to `SidebarPanel.NAV_NEW_REGISTRATIONS`):**
+   - Start/end date controls (`Từ ngày` – `Đến ngày`) with `YYYY-MM-DD` and range validation, name filter, sorting by name (`A–Z`, `Z–A`) or creation time (`Cũ nhất`, `Mới nhất`), and table displaying full name, username, and account creation timestamp (retaining historical soft-deleted account `#26` aligned with `QUERY 6`).
+2. **`RegistrationChartPanel.java` & `MonthlyBarChartPanel.java` (Requirement 6 — bound to `SidebarPanel.NAV_REGISTRATION_CHART`):**
+   - Year selector (`JComboBox`: `2026`, `2025`, `2024`), 4 summary `StatCard`s, custom `Graphics2D` 12-month bar chart (`Tháng 1`..`Tháng 12` on horizontal axis, registration count on vertical axis with integer numeric scale), zero-count months (`7..12` in 2026), and an explicit **Empty-Year State** (`2024`), aligned with `QUERY 7`.
+3. **`FriendStatisticsPanel.java` (Requirement 7 — bound to `SidebarPanel.NAV_FRIEND_STATS`):**
+   - Displays each active user with full name, username, creation time, **Direct Friends Count** (`1-hop`), and **Friends Including Friends-of-Friends Count** (`1-or-2-hop DISTINCT`), with header/cell/banner tooltips explaining that the second count excludes self, duplicates, and soft-deleted accounts (aligned with `QUERY 8`).
+   - Supports name filter, sorting by name or creation time, and direct-friend count filtering using `=`, `<`, or `>` with validated numeric input.
+4. **`UserActivityPanel.java` (Requirement 8 — bound to `SidebarPanel.NAV_USER_ACTIVITY`):**
+   - Start/end date controls (`Từ ngày` – `Đến ngày`, defaulting to March 2026 `QUERY 9A/9B`) and table displaying active users with 3 metric columns: **Số lần mở ứng dụng** (`app_opens`), **Số người đã chat** (`distinct_direct_recipients`), and **Số nhóm đã chat** (`distinct_groups_messaged`).
+   - Supports sorting by name or creation time, filtering by name, and filtering by activity count using `=`, `<`, or `>` after selecting **strictly 1 of the 3 concrete metrics** (no undefined "total activity" metric).
+5. **`ActivityChartPanel.java` & `MonthlyBarChartPanel.java` (Requirement 9 — bound to `SidebarPanel.NAV_ACTIVITY_CHART`):**
+   - Year selector (`JComboBox`: `2026`, `2025`, `2024`), 4 summary `StatCard`s, and custom `Graphics2D` 12-month bar chart plotting monthly **DISTINCT users who opened the User app** (`COUNT(DISTINCT aoe.user_id)` from `app_open_events`, never login count, message count, or total app-open count), including zero-count Month 8 in 2026 and an **Empty-Year State** in 2024 (aligned with `QUERY 10`).
 
 ---
 

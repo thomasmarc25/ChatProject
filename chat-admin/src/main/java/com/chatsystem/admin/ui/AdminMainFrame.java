@@ -5,23 +5,16 @@ import com.chatsystem.admin.components.SidebarPanel;
 import com.chatsystem.admin.data.MockUserRepository;
 import com.chatsystem.admin.theme.AppTheme;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.GridBagLayout;
 
 /**
- * Main application frame for ChatSystem Admin.
- * Hosts the 240px dark SidebarPanel (9 navigation destinations), 64px white HeaderPanel,
- * and the CardLayout content deck.
+ * Main application frame for ChatSystem Admin (Version 1 Mock-Data Preview).
+ * Hosts the 240px dark SidebarPanel (all 9 navigation destinations), 64px white HeaderPanel,
+ * and the CardLayout content deck containing all 9 completed Administrator screens.
  */
 public class AdminMainFrame extends JFrame {
 
@@ -29,25 +22,26 @@ public class AdminMainFrame extends JFrame {
     private static final String CARD_LOGIN_HISTORY = "LOGIN_HISTORY";
     private static final String CARD_CHAT_GROUPS = "CHAT_GROUPS";
     private static final String CARD_SPAM_REPORTS = "SPAM_REPORTS";
-    private static final String CARD_PLACEHOLDER = "PLACEHOLDER";
+    private static final String CARD_NEW_REGISTRATIONS = "NEW_REGISTRATIONS";
+    private static final String CARD_REGISTRATION_CHART = "REGISTRATION_CHART";
+    private static final String CARD_FRIEND_STATS = "FRIEND_STATS";
+    private static final String CARD_USER_ACTIVITY = "USER_ACTIVITY";
+    private static final String CARD_ACTIVITY_CHART = "ACTIVITY_CHART";
 
     private final SidebarPanel sidebarPanel;
     private final HeaderPanel headerPanel;
     private final CardLayout contentCardLayout;
     private final JPanel contentDeckPanel;
-    private final JLabel placeholderBadgeLabel;
-    private final JLabel placeholderTitleLabel;
-    private final JLabel placeholderSubtitleLabel;
+
+    private RegistrationChartPanel registrationChartPanel;
+    private ActivityChartPanel activityChartPanel;
 
     public AdminMainFrame() {
-        super("ChatSystem Admin — Quản lý người dùng");
+        super("ChatSystem Admin (Version 1 Mock Preview) — Quản lý người dùng");
         this.sidebarPanel = new SidebarPanel();
         this.headerPanel = new HeaderPanel();
         this.contentCardLayout = new CardLayout();
         this.contentDeckPanel = new JPanel(contentCardLayout);
-        this.placeholderBadgeLabel = new JLabel("MÀN HÌNH ĐANG CHỜ TRIỂN KHAI (PLACEHOLDER)", SwingConstants.CENTER);
-        this.placeholderTitleLabel = new JLabel("Tính năng đang phát triển", SwingConstants.CENTER);
-        this.placeholderSubtitleLabel = new JLabel("", SwingConstants.CENTER);
 
         initWindow();
         initShellLayout();
@@ -74,14 +68,22 @@ public class AdminMainFrame extends JFrame {
         LoginHistoryPanel loginHistoryPanel = new LoginHistoryPanel(userRepository);
         ChatGroupManagementPanel chatGroupManagementPanel = new ChatGroupManagementPanel(userRepository);
         SpamReportPanel spamReportPanel = new SpamReportPanel(userRepository);
-        JPanel placeholderPanel = createSectionPlaceholderPanel();
+        NewUserRegistrationPanel newUserRegistrationPanel = new NewUserRegistrationPanel(userRepository);
+        this.registrationChartPanel = new RegistrationChartPanel(userRepository);
+        FriendStatisticsPanel friendStatisticsPanel = new FriendStatisticsPanel(userRepository);
+        UserActivityPanel userActivityPanel = new UserActivityPanel(userRepository);
+        this.activityChartPanel = new ActivityChartPanel(userRepository);
 
         contentDeckPanel.setBackground(AppTheme.PAGE_BG);
         contentDeckPanel.add(userManagementPanel, CARD_USER_MANAGEMENT);
         contentDeckPanel.add(loginHistoryPanel, CARD_LOGIN_HISTORY);
         contentDeckPanel.add(chatGroupManagementPanel, CARD_CHAT_GROUPS);
         contentDeckPanel.add(spamReportPanel, CARD_SPAM_REPORTS);
-        contentDeckPanel.add(placeholderPanel, CARD_PLACEHOLDER);
+        contentDeckPanel.add(newUserRegistrationPanel, CARD_NEW_REGISTRATIONS);
+        contentDeckPanel.add(registrationChartPanel, CARD_REGISTRATION_CHART);
+        contentDeckPanel.add(friendStatisticsPanel, CARD_FRIEND_STATS);
+        contentDeckPanel.add(userActivityPanel, CARD_USER_ACTIVITY);
+        contentDeckPanel.add(activityChartPanel, CARD_ACTIVITY_CHART);
         contentCardLayout.show(contentDeckPanel, CARD_USER_MANAGEMENT);
 
         mainColumn.add(headerPanel, BorderLayout.NORTH);
@@ -93,59 +95,6 @@ public class AdminMainFrame extends JFrame {
         setContentPane(rootPanel);
     }
 
-    private JPanel createSectionPlaceholderPanel() {
-        JPanel contentSurface = new JPanel(new BorderLayout());
-        contentSurface.setBackground(AppTheme.PAGE_BG);
-        contentSurface.setBorder(BorderFactory.createEmptyBorder(
-                AppTheme.CONTENT_PADDING,
-                AppTheme.CONTENT_PADDING,
-                AppTheme.CONTENT_PADDING,
-                AppTheme.CONTENT_PADDING
-        ));
-
-        JPanel cardSurface = new JPanel(new GridBagLayout());
-        cardSurface.setBackground(AppTheme.SURFACE_CARD);
-        cardSurface.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(AppTheme.BORDER, 1, true),
-                BorderFactory.createEmptyBorder(
-                        AppTheme.SPACING_LG * 2,
-                        AppTheme.SPACING_LG * 2,
-                        AppTheme.SPACING_LG * 2,
-                        AppTheme.SPACING_LG * 2
-                )
-        ));
-
-        JPanel textBox = new JPanel();
-        textBox.setLayout(new BoxLayout(textBox, BoxLayout.Y_AXIS));
-        textBox.setOpaque(false);
-
-        placeholderBadgeLabel.setFont(AppTheme.FONT_CAPTION_BOLD);
-        placeholderBadgeLabel.setForeground(AppTheme.WARNING);
-        placeholderBadgeLabel.setOpaque(true);
-        placeholderBadgeLabel.setBackground(AppTheme.WARNING_BG);
-        placeholderBadgeLabel.setBorder(BorderFactory.createEmptyBorder(6, 14, 6, 14));
-        placeholderBadgeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        placeholderTitleLabel.setFont(AppTheme.FONT_PAGE_TITLE);
-        placeholderTitleLabel.setForeground(AppTheme.TEXT_PRIMARY);
-        placeholderTitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        placeholderSubtitleLabel.setFont(AppTheme.FONT_BODY);
-        placeholderSubtitleLabel.setForeground(AppTheme.TEXT_SECONDARY);
-        placeholderSubtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        textBox.add(placeholderBadgeLabel);
-        textBox.add(Box.createVerticalStrut(AppTheme.SPACING_MD));
-        textBox.add(placeholderTitleLabel);
-        textBox.add(Box.createVerticalStrut(AppTheme.SPACING_SM));
-        textBox.add(placeholderSubtitleLabel);
-
-        cardSurface.add(textBox);
-        contentSurface.add(cardSurface, BorderLayout.CENTER);
-
-        return contentSurface;
-    }
-
     private void bindNavigation() {
         sidebarPanel.setNavigationListener(this::navigateTo);
     }
@@ -153,33 +102,26 @@ public class AdminMainFrame extends JFrame {
     public void navigateTo(String selectedSection) {
         sidebarPanel.setSelectedItem(selectedSection);
         headerPanel.setSection(selectedSection);
-        setTitle("ChatSystem Admin — " + selectedSection);
+        setTitle("ChatSystem Admin (Version 1 Mock Preview) — " + selectedSection);
         switch (selectedSection) {
             case SidebarPanel.NAV_USERS -> contentCardLayout.show(contentDeckPanel, CARD_USER_MANAGEMENT);
             case SidebarPanel.NAV_LOGIN_HISTORY -> contentCardLayout.show(contentDeckPanel, CARD_LOGIN_HISTORY);
             case SidebarPanel.NAV_GROUPS -> contentCardLayout.show(contentDeckPanel, CARD_CHAT_GROUPS);
             case SidebarPanel.NAV_SPAM -> contentCardLayout.show(contentDeckPanel, CARD_SPAM_REPORTS);
-            default -> {
-                placeholderTitleLabel.setText(selectedSection);
-                placeholderSubtitleLabel.setText(describePlaceholderDestination(selectedSection));
-                contentCardLayout.show(contentDeckPanel, CARD_PLACEHOLDER);
-            }
+            case SidebarPanel.NAV_NEW_REGISTRATIONS -> contentCardLayout.show(contentDeckPanel, CARD_NEW_REGISTRATIONS);
+            case SidebarPanel.NAV_REGISTRATION_CHART -> contentCardLayout.show(contentDeckPanel, CARD_REGISTRATION_CHART);
+            case SidebarPanel.NAV_FRIEND_STATS -> contentCardLayout.show(contentDeckPanel, CARD_FRIEND_STATS);
+            case SidebarPanel.NAV_USER_ACTIVITY -> contentCardLayout.show(contentDeckPanel, CARD_USER_ACTIVITY);
+            case SidebarPanel.NAV_ACTIVITY_CHART -> contentCardLayout.show(contentDeckPanel, CARD_ACTIVITY_CHART);
+            default -> contentCardLayout.show(contentDeckPanel, CARD_USER_MANAGEMENT);
         }
     }
 
-    private String describePlaceholderDestination(String section) {
-        return switch (section) {
-            case SidebarPanel.NAV_NEW_REGISTRATIONS ->
-                    "Màn hình danh sách người dùng đăng ký mới theo khoảng thời gian (Sẽ triển khai ở Bước G).";
-            case SidebarPanel.NAV_REGISTRATION_CHART ->
-                    "Màn hình biểu đồ số lượng người đăng ký mới 12 tháng theo năm (Sẽ triển khai ở Bước G).";
-            case SidebarPanel.NAV_FRIEND_STATS ->
-                    "Màn hình thống kê bạn bè trực tiếp và bạn của bạn (Sẽ triển khai ở Bước G).";
-            case SidebarPanel.NAV_USER_ACTIVITY ->
-                    "Màn hình danh sách người dùng hoạt động và số liệu mở ứng dụng / chat (Sẽ triển khai ở Bước G).";
-            case SidebarPanel.NAV_ACTIVITY_CHART ->
-                    "Màn hình biểu đồ số lượng người mở ứng dụng 12 tháng theo năm (Sẽ triển khai ở Bước G).";
-            default -> "Phân hệ \"" + section + "\" đang chờ triển khai.";
-        };
+    public RegistrationChartPanel getRegistrationChartPanel() {
+        return registrationChartPanel;
+    }
+
+    public ActivityChartPanel getActivityChartPanel() {
+        return activityChartPanel;
     }
 }
