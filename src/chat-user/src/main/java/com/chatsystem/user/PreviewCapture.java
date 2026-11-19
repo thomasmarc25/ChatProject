@@ -31,7 +31,7 @@ public final class PreviewCapture {
             for(String type:new String[]{"llm","spam","create","group"}){JDialog d=app.chat.createDialog(type);d.setModalityType(Dialog.ModalityType.MODELESS);d.setVisible(true);save(d,"12-dialog-"+type);d.dispose();}
             app.setSize(1100,700);save(app,"13-minimum-size");
             // Meaningful UI smoke checks: filters, navigation and dialog construction.
-            app.friends.search.setText("minhan");if(app.friends.table.getRowCount()!=1)throw new AssertionError("friend name filter");
+            app.friends.search.setText("tranthibich");if(app.friends.table.getRowCount()!=1)throw new AssertionError("friend name filter");
             app.friends.status.setSelectedItem("Ngoại tuyến");if(app.friends.table.getRowCount()!=0)throw new AssertionError("friend status filter");
             app.chat.selectThread(0);
             app.chat.search.setText("14:00"); app.chat.searchMessages();
@@ -42,7 +42,7 @@ public final class PreviewCapture {
             if(app.chat.messages.visibleCount()!=3)throw new AssertionError("global message search");
             app.chat.scope.setSelectedIndex(0); app.chat.search.setText("14:00"); app.chat.showSearch(true); app.chat.searchMessages();
             app.setSize(1440,900); save(app,"14-message-search");
-            app.chat.conversationList.search.setText("Nguyễn");
+            app.chat.conversationList.search.setText("Trần Thị");
             if(app.chat.conversationList.list.getModel().getSize()!=1)throw new AssertionError("conversation search");
             app.chat.conversationList.search.setText("");
             app.chat.showGroups();

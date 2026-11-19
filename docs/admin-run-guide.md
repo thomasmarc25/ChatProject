@@ -41,19 +41,20 @@ Expected output:
 - Compiles all `34` Java source files under `chat-admin/src/main/java/com/chatsystem/admin/` with `javac [debug release 21]`.
 - Produces `chat-admin/target/chat-admin-1.0.0-SNAPSHOT.jar` (`BUILD SUCCESS`).
 
-### 3.2. Launch the Administrator Swing UI Directly with JDK 21 (`java.exe`) — Recommended Fast Launch
+### 3.2. Launch the Integrated ChatSystem Admin Window (`Cá nhân` + `Quản trị`) — Recommended Fast Launch
 
-To launch the Administrator application immediately from the repository root without waiting for `exec-maven-plugin` to resolve transitive plugin dependencies:
+Because `chat-admin` reuses Member 1's Swing panels via a one-way Maven dependency on `com.chatsystem:chat-user`, install `chat-user` once, build `chat-admin`, and launch `AdminApp` directly with JDK 21:
 
 ```powershell
-mvn -f chat-admin/pom.xml "-DskipTests" compile
-& "C:\Program Files\Eclipse Adoptium\jdk-21.0.13.9-hotspot\bin\java.exe" -cp "chat-admin\target\classes;$HOME\.m2\repository\com\formdev\flatlaf\3.7.2\flatlaf-3.7.2.jar" com.chatsystem.admin.AdminApp
+mvn -f src/chat-user/pom.xml "-DskipTests" clean install
+mvn -f chat-admin/pom.xml "-DskipTests" clean package
+& "C:\Program Files\Eclipse Adoptium\jdk-21.0.13.9-hotspot\bin\java.exe" -cp "chat-admin\target\classes;src\chat-user\target\classes;$HOME\.m2\repository\com\formdev\flatlaf\3.7.2\flatlaf-3.7.2.jar" com.chatsystem.admin.AdminApp
 ```
 
-*(If `java` is already on your PowerShell `PATH` pointing to JDK 21, you can simply run:)*
+### 3.3. Launch from the Unified Mock Login Screen (`nguyenvanan` → User, `admin` → Integrated Admin)
 
 ```powershell
-java -cp "chat-admin\target\classes;$HOME\.m2\repository\com\formdev\flatlaf\3.7.2\flatlaf-3.7.2.jar" com.chatsystem.admin.AdminApp
+& "C:\Program Files\Eclipse Adoptium\jdk-21.0.13.9-hotspot\bin\java.exe" -cp "src\chat-user\target\classes;chat-admin\target\classes;$HOME\.m2\repository\com\formdev\flatlaf\3.7.2\flatlaf-3.7.2.jar" com.chatsystem.user.UserApp
 ```
 
 ### 3.3. Alternative: Launch via Maven (`exec-maven-plugin`)

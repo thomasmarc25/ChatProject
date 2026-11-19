@@ -55,7 +55,13 @@ final class ConversationListPanel extends JPanel {
         filter();
     }
 
-    void groupsOnly(boolean value) { groupsOnly = value; filter(); }
+    void groupsOnly(boolean value) {
+        if (groupsOnly == value && model.getSize() > 0) {
+            return;
+        }
+        groupsOnly = value;
+        filter();
+    }
     void select(int index) {
         groupsOnly = false;
         search.setText("");

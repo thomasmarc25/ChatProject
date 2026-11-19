@@ -26,13 +26,31 @@
 > [!TIP]
 > In Windows PowerShell, always wrap Maven `-D` arguments in double quotes (`"-DskipTests"`, `"-Dexec.mainClass=..."`) so PowerShell does not split on the period `.`.
 
-### 2.1. Launch the User Application (`src/chat-user/` — Member 1)
+### 2.1. Integrated ChatSystem Admin Launch (All 6 Personal User Pages + All 9 Admin Screens in One Window)
 
-From the repository root in Windows PowerShell:
+`chat-admin` depends one-way on `chat-user` (zero circular Maven dependency) and embeds Member 1's actual Swing panels (`UserWorkspaceHost`) under the **Cá nhân** sidebar section alongside all 9 **Quản trị** screens in `AdminMainFrame`.
+
+Build and launch from the repository root in Windows PowerShell:
+
+```powershell
+mvn -f src/chat-user/pom.xml "-DskipTests" clean install
+mvn -f chat-admin/pom.xml "-DskipTests" clean package
+& "C:\Program Files\Eclipse Adoptium\jdk-21.0.13.9-hotspot\bin\java.exe" -cp "chat-admin\target\classes;src\chat-user\target\classes;$HOME\.m2\repository\com\formdev\flatlaf\3.7.2\flatlaf-3.7.2.jar" com.chatsystem.admin.AdminApp
+```
+
+Or start from the unified Version 1 mock login window (`nguyenvanan` → User workspace, `admin` → Integrated Admin workspace):
+
+```powershell
+& "C:\Program Files\Eclipse Adoptium\jdk-21.0.13.9-hotspot\bin\java.exe" -cp "src\chat-user\target\classes;chat-admin\target\classes;$HOME\.m2\repository\com\formdev\flatlaf\3.7.2\flatlaf-3.7.2.jar" com.chatsystem.user.UserApp
+```
+
+### 2.2. Launch the User Application Independently (`src/chat-user/` — Member 1)
+
+From the repository root in Windows PowerShell (pass `--direct-user` to skip the login window and open the chat workspace directly):
 
 ```powershell
 mvn -f src/chat-user/pom.xml "-DskipTests" clean package
-mvn -f src/chat-user/pom.xml exec:java
+& "C:\Program Files\Eclipse Adoptium\jdk-21.0.13.9-hotspot\bin\java.exe" -cp "src\chat-user\target\classes;$HOME\.m2\repository\com\formdev\flatlaf\3.7.2\flatlaf-3.7.2.jar" com.chatsystem.user.UserApp --direct-user
 ```
 
 Or run the Windows launcher script directly from the repository root:
@@ -41,7 +59,7 @@ Or run the Windows launcher script directly from the repository root:
 .\run-user.cmd
 ```
 
-### 2.2. Launch the Administrator Application (`chat-admin/` — Member 2)
+### 2.3. Launch the Administrator Application Independently (`chat-admin/` — Member 2)
 
 From the repository root in Windows PowerShell (recommended fast direct JDK 21 launch after compiling):
 

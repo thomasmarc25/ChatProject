@@ -290,7 +290,7 @@ public class SpamReportDetailDialog extends JDialog {
                 )
         ));
 
-        JLabel noteLabel = new JLabel("Thao tác khóa TK chỉ mô phỏng trên bộ nhớ (mock-only).");
+        JLabel noteLabel = new JLabel("Mô phỏng trên bộ nhớ (mock-only).");
         noteLabel.setFont(AppTheme.FONT_CAPTION);
         noteLabel.setForeground(AppTheme.TEXT_SECONDARY);
 

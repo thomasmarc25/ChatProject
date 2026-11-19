@@ -28,6 +28,11 @@
             <artifactId>flatlaf</artifactId>
             <version>${flatlaf.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.chatsystem</groupId>
+            <artifactId>chat-user</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

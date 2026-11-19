@@ -41,7 +41,7 @@ public class HeaderPanel extends JPanel {
         titleStack.setLayout(new BoxLayout(titleStack, BoxLayout.Y_AXIS));
         titleStack.setOpaque(false);
 
-        breadcrumbLabel = new JLabel("ChatSystem Admin  /  Quản lý người dùng");
+        breadcrumbLabel = new JLabel("ChatSystem Admin  /  Quản trị  /  Quản lý người dùng");
         breadcrumbLabel.setFont(AppTheme.FONT_CAPTION);
         breadcrumbLabel.setForeground(AppTheme.TEXT_SECONDARY);
         breadcrumbLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -67,8 +67,12 @@ public class HeaderPanel extends JPanel {
     }
 
     public void setSection(String sectionName) {
+        setSection("Quản trị", sectionName);
+    }
+
+    public void setSection(String groupLabel, String sectionName) {
         sectionTitleLabel.setText(sectionName);
-        breadcrumbLabel.setText("ChatSystem Admin  /  " + sectionName);
+        breadcrumbLabel.setText("ChatSystem Admin  /  " + groupLabel + "  /  " + sectionName);
     }
 
     private JPanel createProfileIndicator() {

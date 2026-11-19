@@ -10,12 +10,12 @@ public final class UserApp extends JFrame {
     final CardLayout cards = new CardLayout();
     final JPanel content = new JPanel(cards);
     final ChatPanel chat = new ChatPanel();
-    final AccountPanel account = new AccountPanel(() -> showPage("Tin nhắn"));
-    final PeoplePanel friends = new PeoplePanel("Bạn bè", () -> showPage("Tin nhắn"), () -> chat.openDialog("create"));
+    final AccountPanel account = new AccountPanel(() -> showPage("Tin nhắn"), this::switchToAdminWorkspace);
+    final PeoplePanel friends = new PeoplePanel("Bạn bè", this::openChatForTarget, () -> chat.openDialog("create"));
     private final Map<String, JButton> navigation = new LinkedHashMap<>();
 
     public UserApp() {
-        super("ChatSystem User - Màn hình chat chính");
+        super("ChatSystem User — Màn hình chat chính (" + ChatData.CURRENT_FULL_NAME + ")");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1440, 900);
         setMinimumSize(new Dimension(1100, 700));
@@ -40,8 +40,8 @@ public final class UserApp extends JFrame {
 
         content.add(chat, "Tin nhắn");
         content.add(friends, "Bạn bè");
-        content.add(new PeoplePanel("Yêu cầu kết bạn", () -> showPage("Tin nhắn"), () -> chat.openDialog("create")), "Yêu cầu kết bạn");
-        content.add(new PeoplePanel("Tìm người", () -> showPage("Tin nhắn"), () -> chat.openDialog("create")), "Tìm người");
+        content.add(new PeoplePanel("Yêu cầu kết bạn", this::openChatForTarget, () -> chat.openDialog("create")), "Yêu cầu kết bạn");
+        content.add(new PeoplePanel("Tìm người", this::openChatForTarget, () -> chat.openDialog("create")), "Tìm người");
         content.add(account, "Tài khoản");
 
         addNavigation(top, "Tin nhắn", "chat", () -> showPage("Tin nhắn"));
@@ -52,7 +52,7 @@ public final class UserApp extends JFrame {
         addNavigation(top, "Cài đặt", "settings", () -> showPage("Tài khoản"));
         sidebar.add(top, BorderLayout.NORTH);
         JPanel footer = new JPanel(new GridLayout(0, 1, 0, 7)); footer.setOpaque(false);
-        JLabel who = new JLabel("Phúc · Phiên bản 1");
+        JLabel who = new JLabel(ChatData.CURRENT_FULL_NAME + " · Phiên bản 1");
         who.setForeground(new Color(0xCBD5E1)); who.setFont(who.getFont().deriveFont(12f));
         JLabel note = new JLabel("Dữ liệu mẫu · Swing UI");
         note.setForeground(new Color(0x9CA3AF)); note.setFont(note.getFont().deriveFont(11f));
@@ -63,6 +63,18 @@ public final class UserApp extends JFrame {
         footer.add(logout); footer.add(who); footer.add(note); sidebar.add(footer, BorderLayout.SOUTH);
         add(sidebar, BorderLayout.WEST); add(content);
         showPage("Tin nhắn");
+    }
+
+    private void openChatForTarget(String target) {
+        chat.conversationList.groupsOnly(false);
+        chat.selectConversationByTarget(target);
+        showPage("Tin nhắn");
+    }
+
+    private void switchToAdminWorkspace() {
+        if (MockLoginFrame.launchAdminWorkspace(this)) {
+            dispose();
+        }
     }
 
     private void addNavigation(JPanel parent, String name, String icon, Runnable action) {
@@ -100,6 +112,14 @@ public final class UserApp extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> { Ui.setup(); new UserApp().setVisible(true); });
+        boolean directUser = args != null && args.length > 0 && "--direct-user".equalsIgnoreCase(args[0]);
+        SwingUtilities.invokeLater(() -> {
+            Ui.setup();
+            if (directUser) {
+                new UserApp().setVisible(true);
+            } else {
+                new MockLoginFrame().setVisible(true);
+            }
+        });
     }
 }
