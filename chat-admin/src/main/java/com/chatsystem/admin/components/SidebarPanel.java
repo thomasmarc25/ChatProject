@@ -5,27 +5,32 @@ import com.chatsystem.admin.theme.AppTheme;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
- * Dark 240px left sidebar navigation panel for the ChatSystem Admin dashboard.
+ * Dark left sidebar navigation panel for the ChatSystem Admin dashboard,
+ * restyled to match Member 1's User application ({@code com.chatsystem.user.UserApp}
+ * and {@code NavigationIcon}).
  * Provides navigation to all 9 required Administrator screens.
  */
 public class SidebarPanel extends JPanel {
@@ -43,24 +48,9 @@ public class SidebarPanel extends JPanel {
     public static final String NAV_USER_ACTIVITY = "Người dùng hoạt động";
     public static final String NAV_ACTIVITY_CHART = "Biểu đồ hoạt động";
 
-    private static final String[] MANAGEMENT_NAV_ITEMS = {
-            NAV_USERS,
-            NAV_LOGIN_HISTORY,
-            NAV_GROUPS,
-            NAV_SPAM
-    };
+    private static final int NAV_BUTTON_HEIGHT = 42;
 
-    private static final String[] ANALYTICS_NAV_ITEMS = {
-            NAV_NEW_REGISTRATIONS,
-            NAV_REGISTRATION_CHART,
-            NAV_FRIEND_STATS,
-            NAV_USER_ACTIVITY,
-            NAV_ACTIVITY_CHART
-    };
-
-    private static final int NAV_BUTTON_HEIGHT = 36;
-
-    private final List<NavButton> navButtons = new ArrayList<>();
+    private final Map<String, JButton> navigationButtons = new LinkedHashMap<>();
     private String selectedItem = NAV_USERS;
     private Consumer<String> navigationListener;
 
@@ -69,10 +59,41 @@ public class SidebarPanel extends JPanel {
         setBackground(AppTheme.SIDEBAR_BG);
         setPreferredSize(new Dimension(AppTheme.SIDEBAR_WIDTH, 0));
         setMinimumSize(new Dimension(AppTheme.SIDEBAR_WIDTH, 0));
+        setBorder(BorderFactory.createEmptyBorder(22, 12, 16, 12));
 
-        add(createBrandHeader(), BorderLayout.NORTH);
-        add(createNavigationMenu(), BorderLayout.CENTER);
-        add(createProfileFooter(), BorderLayout.SOUTH);
+        JPanel top = new JPanel();
+        top.setOpaque(false);
+        top.setLayout(new BoxLayout(top, BoxLayout.Y_AXIS));
+
+        JLabel brand = new JLabel("ChatSystem Admin");
+        brand.setForeground(AppTheme.SIDEBAR_TEXT);
+        brand.setFont(AppTheme.FONT_BRAND_TITLE);
+        brand.setAlignmentX(Component.LEFT_ALIGNMENT);
+        brand.setBorder(BorderFactory.createEmptyBorder(0, 4, 18, 0));
+        top.add(brand);
+
+        JSeparator separator = new JSeparator();
+        separator.setForeground(AppTheme.SIDEBAR_BORDER);
+        separator.setBackground(AppTheme.SIDEBAR_BORDER);
+        separator.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
+        separator.setAlignmentX(Component.LEFT_ALIGNMENT);
+        top.add(separator);
+        top.add(Box.createVerticalStrut(14));
+
+        addNavigation(top, NAV_USERS, "users");
+        addNavigation(top, NAV_LOGIN_HISTORY, "history");
+        addNavigation(top, NAV_GROUPS, "groups");
+        addNavigation(top, NAV_SPAM, "spam");
+        addNavigation(top, NAV_NEW_REGISTRATIONS, "new_user");
+        addNavigation(top, NAV_REGISTRATION_CHART, "reg_chart");
+        addNavigation(top, NAV_FRIEND_STATS, "friend_stats");
+        addNavigation(top, NAV_USER_ACTIVITY, "activity");
+        addNavigation(top, NAV_ACTIVITY_CHART, "act_chart");
+
+        add(top, BorderLayout.NORTH);
+        add(createFooter(), BorderLayout.SOUTH);
+
+        updateNavigationSelection();
     }
 
     public void setNavigationListener(Consumer<String> listener) {
@@ -85,333 +106,176 @@ public class SidebarPanel extends JPanel {
 
     public void setSelectedItem(String itemLabel) {
         this.selectedItem = itemLabel;
-        for (NavButton button : navButtons) {
-            button.setSelectedState(button.getNavLabel().equals(itemLabel));
-        }
-        repaint();
+        updateNavigationSelection();
     }
 
-    private JPanel createBrandHeader() {
-        JPanel brandPanel = new JPanel(new BorderLayout(AppTheme.SPACING_SM + 4, 0));
-        brandPanel.setBackground(AppTheme.SIDEBAR_BG);
-        brandPanel.setPreferredSize(new Dimension(AppTheme.SIDEBAR_WIDTH, AppTheme.HEADER_HEIGHT));
-        brandPanel.setMinimumSize(new Dimension(AppTheme.SIDEBAR_WIDTH, AppTheme.HEADER_HEIGHT));
-        brandPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, AppTheme.SIDEBAR_BORDER),
-                BorderFactory.createEmptyBorder(0, AppTheme.SPACING_MD, 0, AppTheme.SPACING_MD)
-        ));
+    private void addNavigation(JPanel parent, String label, String iconKind) {
+        JButton button = new JButton(label, new AdminNavigationIcon(iconKind));
+        button.setHorizontalAlignment(SwingConstants.LEFT);
+        button.setIconTextGap(11);
+        button.setForeground(AppTheme.SIDEBAR_NAV_TEXT);
+        button.setBackground(AppTheme.SIDEBAR_BG);
+        button.setFont(AppTheme.FONT_BODY);
+        button.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 8));
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+        button.setOpaque(true);
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        button.setAlignmentX(Component.LEFT_ALIGNMENT);
+        button.setMaximumSize(new Dimension(Integer.MAX_VALUE, NAV_BUTTON_HEIGHT));
+        button.setPreferredSize(new Dimension(AppTheme.SIDEBAR_WIDTH - 24, NAV_BUTTON_HEIGHT));
 
-        JPanel badgeWrapper = new JPanel(new BorderLayout());
-        badgeWrapper.setOpaque(false);
-        JPanel brandBadge = new RoundedBadgePanel("CS", AppTheme.PRIMARY, AppTheme.SIDEBAR_TEXT, 36);
-        JPanel badgeCenter = new JPanel();
-        badgeCenter.setLayout(new BoxLayout(badgeCenter, BoxLayout.Y_AXIS));
-        badgeCenter.setOpaque(false);
-        badgeCenter.add(Box.createVerticalGlue());
-        brandBadge.setAlignmentX(Component.CENTER_ALIGNMENT);
-        badgeCenter.add(brandBadge);
-        badgeCenter.add(Box.createVerticalGlue());
-        badgeWrapper.add(badgeCenter, BorderLayout.CENTER);
-
-        JPanel textGroup = new JPanel();
-        textGroup.setLayout(new BoxLayout(textGroup, BoxLayout.Y_AXIS));
-        textGroup.setOpaque(false);
-
-        JLabel titleLabel = new JLabel("ChatSystem");
-        titleLabel.setFont(AppTheme.FONT_SECTION_TITLE);
-        titleLabel.setForeground(AppTheme.SIDEBAR_TEXT);
-        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JLabel subtitleLabel = new JLabel("Admin Dashboard");
-        subtitleLabel.setFont(AppTheme.FONT_CAPTION);
-        subtitleLabel.setForeground(AppTheme.SIDEBAR_TEXT_MUTED);
-        subtitleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        textGroup.add(Box.createVerticalGlue());
-        textGroup.add(titleLabel);
-        textGroup.add(Box.createVerticalStrut(2));
-        textGroup.add(subtitleLabel);
-        textGroup.add(Box.createVerticalGlue());
-
-        brandPanel.add(badgeWrapper, BorderLayout.WEST);
-        brandPanel.add(textGroup, BorderLayout.CENTER);
-        return brandPanel;
-    }
-
-    private JPanel createNavigationMenu() {
-        JPanel navContainer = new JPanel();
-        navContainer.setLayout(new BoxLayout(navContainer, BoxLayout.Y_AXIS));
-        navContainer.setBackground(AppTheme.SIDEBAR_BG);
-        navContainer.setBorder(BorderFactory.createEmptyBorder(
-                AppTheme.SPACING_MD - 2,
-                AppTheme.SPACING_MD - 4,
-                AppTheme.SPACING_MD - 2,
-                AppTheme.SPACING_MD - 4
-        ));
-
-        navContainer.add(createSectionGroupLabel("QUẢN LÝ HỆ THỐNG"));
-        for (String item : MANAGEMENT_NAV_ITEMS) {
-            addNavButton(navContainer, item);
-        }
-
-        navContainer.add(Box.createVerticalStrut(AppTheme.SPACING_SM));
-        navContainer.add(createSectionGroupLabel("THỐNG KÊ & BIỂU ĐỒ"));
-        for (String item : ANALYTICS_NAV_ITEMS) {
-            addNavButton(navContainer, item);
-        }
-
-        navContainer.add(Box.createVerticalGlue());
-        return navContainer;
-    }
-
-    private JLabel createSectionGroupLabel(String text) {
-        JLabel label = new JLabel(text);
-        label.setFont(AppTheme.FONT_CAPTION_BOLD);
-        label.setForeground(AppTheme.SIDEBAR_TEXT_MUTED);
-        label.setBorder(BorderFactory.createEmptyBorder(2, AppTheme.SPACING_SM, 6, 0));
-        label.setAlignmentX(Component.LEFT_ALIGNMENT);
-        return label;
-    }
-
-    private void addNavButton(JPanel navContainer, String item) {
-        NavButton btn = new NavButton(item, item.equals(selectedItem));
-        btn.setAlignmentX(Component.LEFT_ALIGNMENT);
-        btn.addActionListener(e -> {
-            setSelectedItem(item);
-            if (navigationListener != null) {
-                navigationListener.accept(item);
-            }
-        });
-        navButtons.add(btn);
-        navContainer.add(btn);
-        navContainer.add(Box.createVerticalStrut(4));
-    }
-
-    private JPanel createProfileFooter() {
-        JPanel footerPanel = new JPanel();
-        footerPanel.setLayout(new BoxLayout(footerPanel, BoxLayout.Y_AXIS));
-        footerPanel.setBackground(AppTheme.SIDEBAR_BG);
-        footerPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(1, 0, 0, 0, AppTheme.SIDEBAR_BORDER),
-                BorderFactory.createEmptyBorder(
-                        AppTheme.SPACING_MD - 4,
-                        AppTheme.SPACING_MD,
-                        AppTheme.SPACING_MD - 4,
-                        AppTheme.SPACING_MD
-                )
-        ));
-
-        JPanel profileRow = new JPanel(new BorderLayout(AppTheme.SPACING_SM + 2, 0));
-        profileRow.setOpaque(false);
-        profileRow.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JPanel avatarBadge = new RoundedBadgePanel("AD", AppTheme.SIDEBAR_SURFACE, AppTheme.SIDEBAR_TEXT, 36);
-
-        JPanel infoGroup = new JPanel();
-        infoGroup.setLayout(new BoxLayout(infoGroup, BoxLayout.Y_AXIS));
-        infoGroup.setOpaque(false);
-
-        JLabel adminTitleLabel = new JLabel("Administrator");
-        adminTitleLabel.setFont(AppTheme.FONT_BODY_BOLD);
-        adminTitleLabel.setForeground(AppTheme.SIDEBAR_TEXT);
-        adminTitleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JLabel adminRoleLabel = new JLabel("Quản trị viên");
-        adminRoleLabel.setFont(AppTheme.FONT_CAPTION);
-        adminRoleLabel.setForeground(AppTheme.SIDEBAR_TEXT_MUTED);
-        adminRoleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        infoGroup.add(adminTitleLabel);
-        infoGroup.add(Box.createVerticalStrut(2));
-        infoGroup.add(adminRoleLabel);
-
-        profileRow.add(avatarBadge, BorderLayout.WEST);
-        profileRow.add(infoGroup, BorderLayout.CENTER);
-
-        JButton logoutButton = createLogoutButton();
-        logoutButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        footerPanel.add(profileRow);
-        footerPanel.add(Box.createVerticalStrut(AppTheme.SPACING_SM + 2));
-        footerPanel.add(logoutButton);
-
-        return footerPanel;
-    }
-
-    private JButton createLogoutButton() {
-        return new JButton("Đăng xuất") {
-            private boolean hovered = false;
-
-            {
-                setFont(AppTheme.FONT_BODY_BOLD);
-                setForeground(AppTheme.SIDEBAR_TEXT);
-                setFocusPainted(false);
-                setBorderPainted(false);
-                setContentAreaFilled(false);
-                setOpaque(false);
-                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                setHorizontalAlignment(SwingConstants.CENTER);
-                Dimension size = new Dimension(
-                        AppTheme.SIDEBAR_WIDTH - (AppTheme.SPACING_MD * 2),
-                        36
-                );
-                setPreferredSize(size);
-                setMaximumSize(new Dimension(Integer.MAX_VALUE, 36));
-                setMinimumSize(new Dimension(120, 36));
-
-                addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseEntered(MouseEvent e) {
-                        hovered = true;
-                        repaint();
-                    }
-
-                    @Override
-                    public void mouseExited(MouseEvent e) {
-                        hovered = false;
-                        repaint();
-                    }
-                });
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                if (!label.equals(selectedItem)) {
+                    button.setBackground(AppTheme.SIDEBAR_SURFACE);
+                    button.setForeground(AppTheme.SIDEBAR_TEXT);
+                }
             }
 
             @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                Color bg = hovered ? AppTheme.DANGER : AppTheme.SIDEBAR_SURFACE;
-                g2.setColor(bg);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), AppTheme.CORNER_RADIUS, AppTheme.CORNER_RADIUS);
-                if (!hovered) {
-                    g2.setColor(AppTheme.SIDEBAR_BORDER);
-                    g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, AppTheme.CORNER_RADIUS, AppTheme.CORNER_RADIUS);
+            public void mouseExited(MouseEvent e) {
+                if (!label.equals(selectedItem)) {
+                    button.setBackground(AppTheme.SIDEBAR_BG);
+                    button.setForeground(AppTheme.SIDEBAR_NAV_TEXT);
                 }
-                g2.dispose();
-                super.paintComponent(g);
             }
-        };
+        });
+
+        button.addActionListener(e -> {
+            setSelectedItem(label);
+            if (navigationListener != null) {
+                navigationListener.accept(label);
+            }
+        });
+
+        parent.add(button);
+        parent.add(Box.createVerticalStrut(6));
+        navigationButtons.put(label, button);
+    }
+
+    private void updateNavigationSelection() {
+        navigationButtons.forEach((label, button) -> {
+            boolean active = label.equals(selectedItem);
+            button.setBackground(active ? AppTheme.PRIMARY : AppTheme.SIDEBAR_BG);
+            button.setForeground(active ? AppTheme.SIDEBAR_TEXT : AppTheme.SIDEBAR_NAV_TEXT);
+            button.setFont(active ? AppTheme.FONT_BODY_BOLD : AppTheme.FONT_BODY);
+        });
+        repaint();
+    }
+
+    private JPanel createFooter() {
+        JPanel footer = new JPanel(new GridLayout(0, 1, 0, 6));
+        footer.setOpaque(false);
+        footer.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 0));
+
+        JButton logout = new JButton("Đăng xuất");
+        logout.setFont(AppTheme.FONT_BODY);
+        logout.setForeground(AppTheme.SIDEBAR_FOOTER_TEXT);
+        logout.setBorder(BorderFactory.createEmptyBorder(2, 8, 2, 0));
+        logout.setBorderPainted(false);
+        logout.setContentAreaFilled(false);
+        logout.setFocusPainted(false);
+        logout.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        logout.setHorizontalAlignment(SwingConstants.LEFT);
+        logout.addActionListener(e -> JOptionPane.showMessageDialog(
+                this,
+                "Bản thiết kế giao diện quản trị — dữ liệu mẫu, chưa kết nối đăng nhập/đăng xuất máy chủ.",
+                "Phiên bản 1",
+                JOptionPane.INFORMATION_MESSAGE
+        ));
+
+        JLabel who = new JLabel("Quản trị viên · Phiên bản 1");
+        who.setForeground(AppTheme.SIDEBAR_FOOTER_TEXT);
+        who.setFont(AppTheme.FONT_CAPTION);
+
+        JLabel note = new JLabel("Dữ liệu mẫu · Swing UI");
+        note.setForeground(AppTheme.SIDEBAR_TEXT_MUTED);
+        note.setFont(AppTheme.FONT_SIDEBAR_NOTE);
+
+        footer.add(logout);
+        footer.add(who);
+        footer.add(note);
+        return footer;
     }
 
     /**
-     * Custom rounded navigation item button for the dark sidebar.
+     * Local Java2D outline icons matching {@code com.chatsystem.user.NavigationIcon}
+     * (1.7f rounded stroke using the button's active/inactive foreground color).
      */
-    private static final class NavButton extends JButton {
+    private static final class AdminNavigationIcon implements Icon {
 
-        private final String navLabel;
-        private boolean selectedState;
-        private boolean hovered;
+        private final String kind;
 
-        private NavButton(String navLabel, boolean selectedState) {
-            super(navLabel);
-            this.navLabel = navLabel;
-            this.selectedState = selectedState;
-
-            setFocusPainted(false);
-            setBorderPainted(false);
-            setContentAreaFilled(false);
-            setOpaque(false);
-            setHorizontalAlignment(SwingConstants.LEFT);
-            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            setBorder(BorderFactory.createEmptyBorder(0, AppTheme.SPACING_MD - 2, 0, AppTheme.SPACING_MD - 2));
-
-            Dimension targetSize = new Dimension(
-                    AppTheme.SIDEBAR_WIDTH - ((AppTheme.SPACING_MD - 4) * 2),
-                    NAV_BUTTON_HEIGHT
-            );
-            setPreferredSize(targetSize);
-            setMaximumSize(new Dimension(Integer.MAX_VALUE, NAV_BUTTON_HEIGHT));
-            setMinimumSize(new Dimension(140, NAV_BUTTON_HEIGHT));
-
-            updateTypography();
-
-            addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    hovered = true;
-                    repaint();
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    hovered = false;
-                    repaint();
-                }
-            });
-        }
-
-        private String getNavLabel() {
-            return navLabel;
-        }
-
-        private void setSelectedState(boolean selectedState) {
-            this.selectedState = selectedState;
-            updateTypography();
-            repaint();
-        }
-
-        private void updateTypography() {
-            if (selectedState) {
-                setFont(AppTheme.FONT_BODY_BOLD);
-                setForeground(AppTheme.SIDEBAR_TEXT);
-            } else {
-                setFont(AppTheme.FONT_BODY);
-                setForeground(AppTheme.SIDEBAR_TEXT_MUTED);
-            }
+        private AdminNavigationIcon(String kind) {
+            this.kind = kind;
         }
 
         @Override
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-            if (selectedState) {
-                g2.setColor(hovered ? AppTheme.PRIMARY_HOVER : AppTheme.PRIMARY);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), AppTheme.CORNER_RADIUS, AppTheme.CORNER_RADIUS);
-            } else if (hovered) {
-                g2.setColor(AppTheme.SIDEBAR_SURFACE);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), AppTheme.CORNER_RADIUS, AppTheme.CORNER_RADIUS);
-                setForeground(AppTheme.SIDEBAR_TEXT);
-            } else {
-                setForeground(AppTheme.SIDEBAR_TEXT_MUTED);
-            }
-
-            g2.dispose();
-            super.paintComponent(g);
-        }
-    }
-
-    /**
-     * Compact rounded badge painted with Java2D (no external icon dependency).
-     */
-    private static final class RoundedBadgePanel extends JPanel {
-
-        private final Color badgeBg;
-        private final int diameter;
-
-        private RoundedBadgePanel(String initials, Color badgeBg, Color textColor, int diameter) {
-            super(new FlowLayout(FlowLayout.CENTER, 0, 0));
-            this.badgeBg = badgeBg;
-            this.diameter = diameter;
-            setOpaque(false);
-            Dimension size = new Dimension(diameter, diameter);
-            setPreferredSize(size);
-            setMinimumSize(size);
-            setMaximumSize(size);
-
-            setLayout(new BorderLayout());
-            JLabel label = new JLabel(initials, SwingConstants.CENTER);
-            label.setFont(AppTheme.FONT_CAPTION_BOLD);
-            label.setForeground(textColor);
-            add(label, BorderLayout.CENTER);
+        public int getIconWidth() {
+            return 22;
         }
 
         @Override
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(badgeBg);
-            g2.fillRoundRect(0, 0, diameter, diameter, AppTheme.CORNER_RADIUS, AppTheme.CORNER_RADIUS);
-            g2.dispose();
-            super.paintComponent(g);
+        public int getIconHeight() {
+            return 22;
+        }
+
+        @Override
+        public void paintIcon(Component c, Graphics graphics, int x, int y) {
+            Graphics2D g = (Graphics2D) graphics.create();
+            g.translate(x, y);
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g.setColor(c.getForeground());
+            g.setStroke(new BasicStroke(1.7f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+            switch (kind) {
+                case "users", "friend_stats" -> {
+                    g.drawOval(3, 2, 7, 7);
+                    g.drawOval(13, 4, 5, 5);
+                    g.drawArc(1, 10, 13, 12, 0, 180);
+                    g.drawArc(11, 11, 10, 10, 0, 145);
+                }
+                case "new_user" -> {
+                    g.drawOval(3, 2, 7, 7);
+                    g.drawArc(1, 10, 13, 12, 0, 180);
+                    g.drawLine(15, 13, 21, 13);
+                    g.drawLine(18, 10, 18, 16);
+                }
+                case "groups" -> {
+                    g.drawRoundRect(2, 3, 18, 13, 5, 5);
+                    g.drawLine(6, 16, 6, 20);
+                    g.drawLine(6, 20, 10, 16);
+                }
+                case "history" -> {
+                    g.drawOval(2, 2, 18, 18);
+                    g.drawLine(11, 6, 11, 11);
+                    g.drawLine(11, 11, 15, 14);
+                }
+                case "spam" -> {
+                    g.drawRoundRect(3, 3, 16, 16, 5, 5);
+                    g.drawLine(11, 7, 11, 12);
+                    g.fillOval(10, 15, 2, 2);
+                }
+                case "reg_chart", "act_chart" -> {
+                    g.drawLine(3, 19, 19, 19);
+                    g.drawRect(5, 11, 3, 8);
+                    g.drawRect(10, 6, 3, 13);
+                    g.drawRect(15, 9, 3, 10);
+                }
+                case "activity" -> {
+                    g.drawLine(2, 12, 6, 12);
+                    g.drawLine(6, 12, 9, 5);
+                    g.drawLine(9, 5, 13, 17);
+                    g.drawLine(13, 17, 16, 12);
+                    g.drawLine(16, 12, 20, 12);
+                }
+                default -> {
+                    g.drawOval(4, 4, 14, 14);
+                }
+            }
+            g.dispose();
         }
     }
 }

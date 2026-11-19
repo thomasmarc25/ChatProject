@@ -212,12 +212,12 @@ public class SpamReportDetailDialog extends JDialog {
         );
         snapshotArea.setFont(AppTheme.FONT_BODY);
         snapshotArea.setForeground(AppTheme.TEXT_PRIMARY);
-        snapshotArea.setBackground(new Color(0xFF, 0xFB, 0xEB));
+        snapshotArea.setBackground(AppTheme.WARNING_SOFT_SURFACE);
         snapshotArea.setLineWrap(true);
         snapshotArea.setWrapStyleWord(true);
         snapshotArea.setEditable(false);
         snapshotArea.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(0xFD, 0xE6, 0x8A), 1, true),
+                BorderFactory.createLineBorder(AppTheme.WARNING_SOFT_BORDER, 1, true),
                 BorderFactory.createEmptyBorder(12, 14, 12, 14)
         ));
 
@@ -297,13 +297,7 @@ public class SpamReportDetailDialog extends JDialog {
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, AppTheme.SPACING_SM, 0));
         actions.setOpaque(false);
 
-        JButton closeBtn = new JButton("Đóng");
-        closeBtn.setFont(AppTheme.FONT_BODY_BOLD);
-        closeBtn.setForeground(AppTheme.TEXT_PRIMARY);
-        closeBtn.setBackground(AppTheme.SURFACE_CARD);
-        closeBtn.setFocusPainted(false);
-        closeBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        closeBtn.setPreferredSize(new Dimension(96, AppTheme.CONTROL_HEIGHT));
+        JButton closeBtn = AppTheme.createSecondaryButton("Đóng", 96);
         closeBtn.addActionListener(e -> dispose());
 
         boolean currentlyLocked = reportedUser != null ? reportedUser.isLocked() : report.isReportedUserLocked();
@@ -312,43 +306,7 @@ public class SpamReportDetailDialog extends JDialog {
                 : "Khóa TK @" + report.getReportedUsername();
         Color accent = currentlyLocked ? AppTheme.SUCCESS : AppTheme.DANGER;
 
-        JButton lockBtn = new JButton(lockActionText) {
-            private boolean hovered = false;
-
-            {
-                setFont(AppTheme.FONT_BODY_BOLD);
-                setForeground(AppTheme.SURFACE_CARD);
-                setFocusPainted(false);
-                setBorderPainted(false);
-                setContentAreaFilled(false);
-                setOpaque(false);
-                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                setPreferredSize(new Dimension(210, AppTheme.CONTROL_HEIGHT));
-                addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseEntered(MouseEvent e) {
-                        hovered = true;
-                        repaint();
-                    }
-
-                    @Override
-                    public void mouseExited(MouseEvent e) {
-                        hovered = false;
-                        repaint();
-                    }
-                });
-            }
-
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(hovered ? accent.darker() : accent);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), AppTheme.CORNER_RADIUS, AppTheme.CORNER_RADIUS);
-                g2.dispose();
-                super.paintComponent(g);
-            }
-        };
+        JButton lockBtn = AppTheme.createAccentButton(lockActionText, 210, accent);
         lockBtn.addActionListener(e -> {
             dispose();
             if (onTriggerLockConfirmation != null) {

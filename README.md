@@ -43,17 +43,17 @@ Or run the Windows launcher script directly from the repository root:
 
 ### 2.2. Launch the Administrator Application (`chat-admin/` — Member 2)
 
-From the repository root in Windows PowerShell:
+From the repository root in Windows PowerShell (recommended fast direct JDK 21 launch after compiling):
 
 ```powershell
-mvn -f chat-admin/pom.xml "-DskipTests" clean package
-mvn -f chat-admin/pom.xml exec:java
+mvn -f chat-admin/pom.xml "-DskipTests" compile
+& "C:\Program Files\Eclipse Adoptium\jdk-21.0.13.9-hotspot\bin\java.exe" -cp "chat-admin\target\classes;$HOME\.m2\repository\com\formdev\flatlaf\3.7.2\flatlaf-3.7.2.jar" com.chatsystem.admin.AdminApp
 ```
 
-Or specify the main class explicitly:
+Or launch via Maven (`exec-maven-plugin`):
 
 ```powershell
-mvn -f chat-admin/pom.xml compile exec:java "-Dexec.mainClass=com.chatsystem.admin.AdminApp"
+mvn -f chat-admin/pom.xml exec:java
 ```
 
 See [`docs/admin-run-guide.md`](docs/admin-run-guide.md) for full PowerShell environment setup and PostgreSQL verification commands.

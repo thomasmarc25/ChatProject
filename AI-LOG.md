@@ -1611,3 +1611,68 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
        - Stdout printed: `PASS: rendered 17 windows; friend filters, local/global/empty message search, conversation search and group filter verified`
        - Generated `17` PNG files (`01-chat.png` through `14-message-search.png`, including all 4 dialogs `12-dialog-create.png`, `12-dialog-group.png`, `12-dialog-llm.png`, `12-dialog-spam.png`) in `C:\Users\DELL\.gemini\antigravity\brain\8a98bca0-4a35-400e-87ac-7f2b692989d0\scratch\user_smoke_renders`.
        - Preserved `src/chat-user/target/` and `user_smoke_renders/` on disk for inspection while keeping `target/` excluded from the Git merge index.
+
+
+---
+
+## Entry 18 — Admin Swing UI Visual Alignment with Member 1's User Application (`integration/version1`)
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: Google Antigravity IDE
+   - Version/Model: Google Antigravity `2.29.0` (`ProductVersion 2.29.0.0`, Language Server `hub-2.29.0`, Electron `44.5.1`); Agent Model: `Gemini 4 Argon (High)`
+   - Platform: Desktop IDE on Microsoft Windows 11 Home Single Language 26H2 (OS Build `10.0.26300.9711`, x64) / PowerShell
+2. **Access date and time (with time zone):**
+   - Prompt received: `2026-11-18 22:51:12 UTC+07:00 (Asia/Ho_Chi_Minh)`
+3. **Prompt(s) used:**
+   - Source observation: Observed directly as a chat prompt sent to the agent in the Antigravity session.
+   - **Verbatim:**
+     ```markdown
+     On integration/version1, restyle the existing Admin Swing application
+     using Phuc's User application as the visual reference. Inspect Ui.java
+     and UserApp.java in src/chat-user, and use the freshly rendered User
+     screenshots for comparison.
+
+     Start with Admin's shared AppTheme, SidebarPanel, and HeaderPanel.
+     Match Phuc's dark sidebar, blue selection state, Segoe UI typography,
+     page background, button styling, and spacing. Then check all nine Admin
+     screens for hardcoded styles that conflict with the shared theme.
+
+     Preserve the Admin navigation, tables, filters, dialogs, and charts.
+     Keep both apps independently launchable. Limit changes to Admin styling
+     and relevant documentation. Keep the shared PostgreSQL schema intact.
+
+     Build Admin and launch it on Windows. Visually check User Management,
+     one dialog, and one chart. Reuse the working Java launch method if
+     Maven exec stalls. Report the exact PowerShell command I can use to
+     open Admin myself, the files changed, and which screens you verified.
+
+     Write Markdown and AI-LOG.md in English. Summarize in Vietnamese in chat.
+     Do not commit or push.
+     ```
+4. **Purpose:**
+   - Restyle the Admin Swing application (`chat-admin/`) on `integration/version1` to visually align with Member 1's User application (`src/chat-user/src/main/java/com/chatsystem/user/Ui.java` and `UserApp.java`): align `AppTheme`, `SidebarPanel`, and `HeaderPanel` with Phuc's dark sidebar (`#111827`), outline navigation icons, full-bleed blue selection state (`#2563EB`), footer layout, `Segoe UI` typography, `#F5F7FB` page background, `#EAF0FE` soft-blue table selection, button styling, and spacing; eliminate conflicting hardcoded styles across all 9 Admin screens and dialogs; and verify compilation and live GUI rendering on Windows.
+5. **AI-generated content:**
+   - **Updated `chat-admin/src/main/java/com/chatsystem/admin/theme/AppTheme.java`:**
+     - Aligned all color tokens and `UIManager` defaults (`AppTheme.setupLookAndFeel()`) with Member 1's `src/chat-user/src/main/java/com/chatsystem/user/Ui.java` (`PRIMARY = #2563EB`, `SIDEBAR_BG = #111827`, `PAGE_BG = #F5F7FB`, `TEXT_PRIMARY = #1F2937`, `TEXT_SECONDARY = #6B7280`, `BORDER = #E5E7EB`, `PRIMARY_SOFT_BG = #EAF0FE` matching `Ui.SOFT_BLUE`, `SIDEBAR_NAV_TEXT = #D1D5DB`, `SIDEBAR_FOOTER_TEXT = #CBD5E1`, `SIDEBAR_TEXT_MUTED = #9CA3AF`, `SIDEBAR_BORDER = #374151`, `FONT_BRAND_TITLE = Segoe UI Bold 21pt`, `Table.selectionBackground = #EAF0FE`, `TableHeader.background = #FFFFFF`, `TableHeader.foreground = #1F2937`, `Button.background = #FFFFFF`, `Button.foreground = #1F2937`, `Component.arc = Button.arc = TextComponent.arc = 10`).
+     - Added shared component factory helpers (`createSecondaryButton`, `createPrimaryButton`, `createPrimaryOutlineButton`, `createAccentButton`, and `configureSharedTable`) so all 9 Admin screens and 7 modal dialogs share consistent button dimensions (`40px` height, auto-expanding minimum width so bold text never truncates) and table headers (`#FFFFFF` background, `#1F2937` bold text, `#E5E7EB` bottom border).
+   - **Restyled `chat-admin/src/main/java/com/chatsystem/admin/components/SidebarPanel.java`:**
+     - Matched `UserApp.java` and `NavigationIcon.java` from `src/chat-user`: `ChatSystem Admin` 21pt bold white brand header above a 1px `#374151` separator, 9 navigation buttons with custom 22x22 Java2D 1.7f rounded outline icons (`AdminNavigationIcon`), full-bleed solid `#2563EB` blue selection state with bold white text and icon, and the 3-line footer (`Đăng xuất`, `Quản trị viên · Phiên bản 1`, `Dữ liệu mẫu · Swing UI`).
+   - **Restyled `chat-admin/src/main/java/com/chatsystem/admin/components/HeaderPanel.java`:**
+     - Aligned with `ChatPanel` and `AvatarIcon` in `src/chat-user`: soft-blue `Phiên bản 1 · Dữ liệu mẫu` pill badge, circular `#2563EB` `"A"` administrator avatar, bold `Quản trị viên` title, and green `● Đang hoạt động` status indicator.
+   - **Eliminated Hardcoded Styles Across All 9 Admin Screens, Chart Component, and 7 Dialogs:**
+     - Updated `components/MonthlyBarChartPanel.java`, `ui/UserManagementPanel.java`, `ui/LoginHistoryPanel.java`, `ui/ChatGroupManagementPanel.java`, `ui/SpamReportPanel.java`, `ui/NewUserRegistrationPanel.java`, `ui/RegistrationChartPanel.java`, `ui/FriendStatisticsPanel.java`, `ui/UserActivityPanel.java`, `ui/ActivityChartPanel.java`, `ui/UserFormDialog.java`, `ui/ConfirmActionDialog.java`, `ui/PasswordUpdateDialog.java`, `ui/UserLoginHistoryDialog.java`, `ui/UserFriendsDialog.java`, `ui/GroupMembersDialog.java`, and `ui/SpamReportDetailDialog.java` so zero `new Color(...)` or `new Font(...)` calls exist outside `AppTheme.java` and all tables/buttons use `AppTheme`'s shared helpers.
+   - **Refreshed All 19 Authentic Admin Screenshots in `docs/screenshots/admin/`** and updated `docs/admin-run-guide.md` and `README.md` with the direct JDK 21 PowerShell launch command.
+6. **Student's independent work and edits/validation:**
+   - Student directed the visual alignment of the Admin application against Member 1's User application (`Ui.java`, `UserApp.java`, and the freshly rendered User screenshots) and specified the visual verification requirements.
+   - Additional student review/validation: `STUDENT TO COMPLETE`
+7. **Screenshots or chat history:**
+   - `evidence/chat_history/chatgpt.png`
+   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+   - `docs/screenshots/admin/01_user_management.png` through `docs/screenshots/admin/09_activity_chart_2026.png` (19 refreshed PNG screenshots)
+8. **Verification and outcomes:**
+   - **Static Style Audit (`Select-String -Pattern "new Color\(|new Font\("` across `chat-admin/src/main/java`):**
+     - Verified that **zero** hardcoded `new Color(...)` or `new Font(...)` calls exist outside `AppTheme.java`.
+   - **Maven Compilation (`mvn -f chat-admin/pom.xml "-DskipTests" clean compile` on JDK 21.0.13):**
+     - Outcome: **PASS (`BUILD SUCCESS` in `7.706 s`, exit code `0`)** — compiled all 34 Java source files with `javac [debug release 21]`.
+   - **Live Windows GUI Launch & Visual Verification (`task-1167` via JDK 21 `java.exe`):**
+     - Launched `AdminMainFrame` and all 7 modal dialogs on the Swing EDT under JDK 21.0.13, captured all 19 updated PNG screenshots into `docs/screenshots/admin/`, and visually verified `01_user_management.png` (User Management), `01a_user_add_edit_dialog.png` (Add/Edit User Dialog), `06_registration_chart_2026.png` (Registration Chart), `09_activity_chart_2026.png` (Activity Chart), `02_system_login_history.png`, `03_chat_groups.png`, `04_spam_reports.png`, `07_friend_statistics.png`, and `08_user_activity.png` against Member 1's User UI screenshots (`01-chat.png`, `02-friends.png`, `05-account-0.png`, `12-dialog-create.png`).

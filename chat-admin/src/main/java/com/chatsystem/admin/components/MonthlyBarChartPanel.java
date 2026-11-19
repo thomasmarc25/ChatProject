@@ -247,7 +247,7 @@ public class MonthlyBarChartPanel extends JPanel {
 
             // Subtle column hover highlight
             if (i == hoveredMonthIndex) {
-                g2.setColor(new Color(0xF8, 0xFA, 0xFC));
+                g2.setColor(AppTheme.CHART_HOVER_SLOT);
                 int slotLeft = originX + (int) Math.round(i * slotWidth);
                 g2.fillRect(slotLeft + 2, topMargin, (int) slotWidth - 4, plotH);
             }
@@ -281,7 +281,7 @@ public class MonthlyBarChartPanel extends JPanel {
                 g2.drawString(valText, textX, textY);
             } else {
                 // Zero-count month indicator on baseline + "0" label
-                g2.setColor(new Color(0xD1, 0xD5, 0xDB));
+                g2.setColor(AppTheme.CHART_ZERO_BAR);
                 g2.fillRoundRect(barX, originY - 4, barWidth, 4, 3, 3);
 
                 String zeroText = "0";
@@ -303,7 +303,7 @@ public class MonthlyBarChartPanel extends JPanel {
 
         // 5. Solid Y-axis and X-axis lines
         g2.setStroke(new BasicStroke(1.5f));
-        g2.setColor(new Color(0x9C, 0xA3, 0xAF));
+        g2.setColor(AppTheme.CHART_AXIS_LINE);
         g2.drawLine(originX, topMargin - 6, originX, originY);
         g2.drawLine(originX, originY, originX + plotW, originY);
         g2.setStroke(oldStroke);
@@ -331,7 +331,7 @@ public class MonthlyBarChartPanel extends JPanel {
             int boxX = originX + (plotW - boxW) / 2;
             int boxY = topMargin + (plotH - boxH) / 2 - 8;
 
-            g2.setColor(new Color(255, 251, 235, 242));
+            g2.setColor(AppTheme.WARNING_SOFT_SURFACE);
             g2.fillRoundRect(boxX, boxY, boxW, boxH, 12, 12);
             g2.setColor(AppTheme.WARNING);
             g2.drawRoundRect(boxX, boxY, boxW - 1, boxH - 1, 12, 12);

@@ -143,7 +143,7 @@ public class LoginHistoryPanel extends JPanel {
         schemaBadge.setOpaque(true);
         schemaBadge.setBackground(AppTheme.PRIMARY_SOFT_BG);
         schemaBadge.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(0xBF, 0xDB, 0xFE), 1, true),
+                BorderFactory.createLineBorder(AppTheme.PRIMARY_BORDER, 1, true),
                 BorderFactory.createEmptyBorder(6, 12, 6, 12)
         ));
 
@@ -381,26 +381,7 @@ public class LoginHistoryPanel extends JPanel {
     }
 
     private JScrollPane createTableScrollPane() {
-        loginTable.setFont(AppTheme.FONT_BODY);
-        loginTable.setForeground(AppTheme.TEXT_PRIMARY);
-        loginTable.setBackground(AppTheme.SURFACE_CARD);
-        loginTable.setRowHeight(AppTheme.TABLE_ROW_HEIGHT);
-        loginTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        loginTable.setSelectionBackground(AppTheme.PRIMARY_SOFT_BG);
-        loginTable.setSelectionForeground(AppTheme.TEXT_PRIMARY);
-        loginTable.setShowHorizontalLines(true);
-        loginTable.setShowVerticalLines(false);
-        loginTable.setGridColor(AppTheme.BORDER);
-        loginTable.setIntercellSpacing(new Dimension(0, 1));
-        loginTable.setFillsViewportHeight(true);
-
-        JTableHeader header = loginTable.getTableHeader();
-        header.setReorderingAllowed(false);
-        header.setPreferredSize(new Dimension(0, 40));
-        header.setFont(AppTheme.FONT_CAPTION_BOLD);
-        header.setBackground(AppTheme.PAGE_BG);
-        header.setForeground(AppTheme.TEXT_SECONDARY);
-        header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, AppTheme.BORDER));
+        AppTheme.configureSharedTable(loginTable);
 
         DefaultTableCellRenderer centerRenderer = createPaddedRenderer(SwingConstants.CENTER, AppTheme.FONT_BODY, AppTheme.TEXT_SECONDARY);
         DefaultTableCellRenderer timeRenderer = createPaddedRenderer(SwingConstants.CENTER, AppTheme.FONT_BODY_BOLD, AppTheme.TEXT_PRIMARY);
@@ -654,16 +635,7 @@ public class LoginHistoryPanel extends JPanel {
     }
 
     private JButton createSecondaryButton(String text, int width) {
-        JButton btn = new JButton(text);
-        btn.setFont(AppTheme.FONT_BODY_BOLD);
-        btn.setForeground(AppTheme.TEXT_PRIMARY);
-        btn.setBackground(AppTheme.SURFACE_CARD);
-        btn.setFocusPainted(false);
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.setMargin(new Insets(0, 6, 0, 6));
-        btn.setPreferredSize(new Dimension(width, AppTheme.CONTROL_HEIGHT));
-        btn.setMinimumSize(new Dimension(width, AppTheme.CONTROL_HEIGHT));
-        return btn;
+        return AppTheme.createSecondaryButton(text, width);
     }
 
     private DefaultTableCellRenderer createPaddedRenderer(int alignment, java.awt.Font font, Color textColor) {

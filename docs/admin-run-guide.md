@@ -41,29 +41,42 @@ Expected output:
 - Compiles all `34` Java source files under `chat-admin/src/main/java/com/chatsystem/admin/` with `javac [debug release 21]`.
 - Produces `chat-admin/target/chat-admin-1.0.0-SNAPSHOT.jar` (`BUILD SUCCESS`).
 
-### 3.2. Launch the Administrator Swing UI via Maven (`exec-maven-plugin`)
+### 3.2. Launch the Administrator Swing UI Directly with JDK 21 (`java.exe`) — Recommended Fast Launch
 
-Because `chat-admin/pom.xml` already configures `<exec.mainClass>com.chatsystem.admin.AdminApp</exec.mainClass>`, you can launch the application directly from `chat-admin/`:
+To launch the Administrator application immediately from the repository root without waiting for `exec-maven-plugin` to resolve transitive plugin dependencies:
 
 ```powershell
-Set-Location chat-admin
-mvn exec:java
+mvn -f chat-admin/pom.xml "-DskipTests" compile
+& "C:\Program Files\Eclipse Adoptium\jdk-21.0.13.9-hotspot\bin\java.exe" -cp "chat-admin\target\classes;$HOME\.m2\repository\com\formdev\flatlaf\3.7.2\flatlaf-3.7.2.jar" com.chatsystem.admin.AdminApp
+```
+
+*(If `java` is already on your PowerShell `PATH` pointing to JDK 21, you can simply run:)*
+
+```powershell
+java -cp "chat-admin\target\classes;$HOME\.m2\repository\com\formdev\flatlaf\3.7.2\flatlaf-3.7.2.jar" com.chatsystem.admin.AdminApp
+```
+
+### 3.3. Alternative: Launch via Maven (`exec-maven-plugin`)
+
+Because `chat-admin/pom.xml` configures `<exec.mainClass>com.chatsystem.admin.AdminApp</exec.mainClass>`, you can also launch via Maven when online plugin resolution is available:
+
+```powershell
+mvn -f chat-admin/pom.xml exec:java
 ```
 
 Or specify the main class explicitly (with PowerShell-safe quoting):
 
 ```powershell
-Set-Location chat-admin
-mvn compile exec:java "-Dexec.mainClass=com.chatsystem.admin.AdminApp"
+mvn -f chat-admin/pom.xml compile exec:java "-Dexec.mainClass=com.chatsystem.admin.AdminApp"
 ```
 
-### 3.3. Build and Launch the User Application (`src/chat-user/` — Member 1)
+### 3.4. Build and Launch the User Application (`src/chat-user/` — Member 1)
 
-From the repository root in Windows PowerShell:
+From the repository root in Windows PowerShell (direct JDK 21 launch):
 
 ```powershell
-mvn -f src/chat-user/pom.xml "-DskipTests" clean package
-mvn -f src/chat-user/pom.xml exec:java
+mvn -f src/chat-user/pom.xml "-DskipTests" compile
+& "C:\Program Files\Eclipse Adoptium\jdk-21.0.13.9-hotspot\bin\java.exe" -cp "src\chat-user\target\classes;$HOME\.m2\repository\com\formdev\flatlaf\3.7.2\flatlaf-3.7.2.jar" com.chatsystem.user.UserApp
 ```
 
 Or run the Windows launcher script directly from the repository root:
@@ -72,7 +85,7 @@ Or run the Windows launcher script directly from the repository root:
 .\run-user.cmd
 ```
 
-### 3.4. If `JAVA_HOME` or `mvn` Is Not on Your Default PowerShell `PATH`
+### 3.5. If `JAVA_HOME` or `mvn` Is Not on Your Default PowerShell `PATH`
 
 If you use a local JDK 21 installation and the Maven Wrapper distribution cached under `$HOME\.m2\wrapper\dists`, run:
 

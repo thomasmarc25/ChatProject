@@ -154,24 +154,7 @@ public class GroupMembersDialog extends JDialog {
         ));
 
         JTable table = new JTable(new GroupMembersTableModel(members));
-        table.setFont(AppTheme.FONT_BODY);
-        table.setForeground(AppTheme.TEXT_PRIMARY);
-        table.setBackground(AppTheme.SURFACE_CARD);
-        table.setRowHeight(40);
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.setSelectionBackground(AppTheme.PRIMARY_SOFT_BG);
-        table.setSelectionForeground(AppTheme.TEXT_PRIMARY);
-        table.setShowHorizontalLines(true);
-        table.setShowVerticalLines(false);
-        table.setGridColor(AppTheme.BORDER);
-        table.setFillsViewportHeight(true);
-
-        JTableHeader tableHeader = table.getTableHeader();
-        tableHeader.setReorderingAllowed(false);
-        tableHeader.setPreferredSize(new Dimension(0, 38));
-        tableHeader.setFont(AppTheme.FONT_CAPTION_BOLD);
-        tableHeader.setBackground(AppTheme.PAGE_BG);
-        tableHeader.setForeground(AppTheme.TEXT_SECONDARY);
+        AppTheme.configureSharedTable(table);
 
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -224,13 +207,7 @@ public class GroupMembersDialog extends JDialog {
         noteLabel.setFont(AppTheme.FONT_CAPTION);
         noteLabel.setForeground(AppTheme.TEXT_SECONDARY);
 
-        JButton closeButton = new JButton("Đóng");
-        closeButton.setFont(AppTheme.FONT_BODY_BOLD);
-        closeButton.setForeground(AppTheme.TEXT_PRIMARY);
-        closeButton.setBackground(AppTheme.SURFACE_CARD);
-        closeButton.setFocusPainted(false);
-        closeButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        closeButton.setPreferredSize(new Dimension(100, AppTheme.CONTROL_HEIGHT));
+        JButton closeButton = AppTheme.createSecondaryButton("Đóng", 100);
         closeButton.addActionListener(e -> dispose());
 
         footer.add(noteLabel, BorderLayout.WEST);
