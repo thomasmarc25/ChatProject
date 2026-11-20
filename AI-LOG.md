@@ -2032,3 +2032,239 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
        6. Group management `"Xóa thành viên"` enabled for `@nguyenvanan` in `Cộng đồng Java Việt Nam` (group `ADMIN`), disabled with exact tooltip `"Chỉ quản trị viên nhóm mới có thể xóa thành viên"` for `@nguyenvanan` in `CLB Thuật Toán & AI` (ordinary `MEMBER`), and disabled with the exact same tooltip for system `ADMIN` (`@admin`) inside integrated `AdminMainFrame` when viewing `Cộng đồng Java Việt Nam` (not a group admin of that group).
    - **Existing User UI Smoke Suite (`com.chatsystem.user.PreviewCapture`, `task-1342`):**
      - Outcome: **PASS (`PREVIEW_CAPTURE_EXIT_CODE: 0`)** — `PASS: rendered 17 windows; friend filters, local/global/empty message search, conversation search and group filter verified`.
+
+---
+
+## Member 1 Original Implementation Record
+
+Entries 22–26 record Lê Đức Phúc's original User application work, based on actual requests and tool results retained in the project conversation and checked against the Phuc branch. They were written on 2026-11-20 after the integration entries above. Entries 0–21 remain unchanged. The integration and follow-up improvements described in Entries 17–21 retain their original attribution; they are not reassigned to Member 1.
+
+## Entry 22 — Member 1 User Application Setup and Account and Social Screens
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: OpenAI Codex desktop.
+   - Model exposed during original implementation: GPT-6.1-sol.
+   - Platform: Microsoft Windows / PowerShell; Java Swing, Maven and FlatLaf 3.7.2.
+2. **Access date and time (with time zone):**
+   - Original implementation date recorded in the project conversation: 2026-11-17, UTC+07:00.
+   - Exact original prompt receipt times were not recorded.
+   - Entry added retrospectively on 2026-11-20; later rewritten commit dates are not treated as session start times.
+3. **Prompt(s) used:**
+   - Source observation: Actual messages observed in the project conversation.
+   - **Verbatim:**
+     > hãy làm những phần tôi được giao trong trong deadline 1(20%), hãy làm tại `C:\Users\Legion\Documents\javascript\ChatProject`  , sau khi tạo mỗi file nhớ commit theo yêu cầu của project,
+   - **Assignment clarification — Verbatim:**
+     > ảnh đầu tiền là yêu cầu chung của phiên bản 1(deadline 1), các ảnh kế tiếp là yêu cầu của từng thành viên, tôi là người 1
+   - Five attached assignment images described Version 1 and the two members' responsibilities.
+   - **Technology clarification — Verbatim:**
+     > dự án này là ở môn lập trình java nên phải làm bằng java, mỗi màn hình là mỗi swing
+4. **Purpose:**
+   - Build Member 1's assigned Vietnamese user interfaces for accounts, friends, friend requests, people search, direct/group chat and related dialogs within Version 1.
+5. **AI-generated content:**
+   - Created src/chat-user/pom.xml targeting Java 21 with UTF-8 and FlatLaf 3.7.2; added run-user.cmd.
+   - Created Ui.java, MockData.java, AccountPanel.java, PeoplePanel.java, ChatPanel.java and UserApp.java in src/chat-user/src/main/java/com/chatsystem/user/.
+   - Implemented login, registration, password recovery, profile and password-change tabs in AccountPanel.
+   - Implemented friends, friend-request and people-search views in PeoplePanel with corresponding action controls and sample-data filters.
+   - Added chat, group creation/management, member/admin controls, encryption-option UI, spam reporting and LLM suggestion dialogs.
+   - Account tabs and social views share their respective panel classes; a separate Java class for every account/social view was not implemented.
+   - Earlier Python generation helpers were local development tools outside the ChatProject repository. They were not required to run the Java application.
+6. **Student's independent work and edits/validation:**
+   - The student supplied the assignment images, identified themselves as Member 1, specified the project directory and required Java Swing.
+   - The student later reported installing Maven and configuring JAVA_HOME.
+   - Additional independent source edits and comprehensive manual acceptance results: STUDENT TO COMPLETE.
+7. **Screenshots or chat history:**
+   - Original Phuc branch: git/screenshots/02-friends.png, 03-requests.png, 04-people.png and 05-account-0.png through 09-account-4.png.
+   - Current main locations after the team's screenshot move: screenshots/ with the same filenames.
+   - Quoted prompts are actual conversation text; no standalone chat export is claimed.
+8. **Verification and outcomes:**
+   - Maven package commands passed during original implementation using compiler release 21 on JDK 25.
+   - PreviewCapture rendered the account/social views and verified friend-name and online/offline filtering.
+   - Original authentication, password recovery, persistence and social mutations were UI-only controls. Later in-memory login and feature wiring are documented separately in Entries 19–21.
+   - Grouped source commits on Phuc: ea4ebec (setup/theme/launcher) and 383bcda (account/social screens).
+
+---
+
+## Entry 23 — Member 1 Modern Blue Chat Reference Redesign
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: OpenAI Codex desktop; model exposed during original implementation: GPT-6.1-sol.
+   - Platform: Windows / PowerShell; Java Swing, Java2D, Maven and FlatLaf 3.7.2.
+2. **Access date and time (with time zone):**
+   - Work date: 2026-11-17, UTC+07:00, as recorded in the project conversation.
+   - Final clean-build output reported 2026-11-17T12:59:08+07:00. This is build completion time, not prompt receipt time.
+3. **Prompt(s) used:**
+   - Source observation: Actual user request with two reference images.
+   - **Verbatim:**
+     > hình đầu tiên là 1 trang swing tôi đã nhờ bạn làm lúc trước về giao diện chat, hình tiếp theo là các màu mà nhóm tôi đã chọn, hãy làm lại giao diện giao cho giống với hình đầu tiên
+4. **Purpose:**
+   - Reproduce the reference chat layout and the team's Modern Blue palette while retaining the assigned user-screen controls.
+5. **AI-generated content:**
+   - Created AvatarIcon.java, NavigationIcon.java, ChatData.java, ConversationListPanel.java, MessageBubble.java and MessageListPanel.java.
+   - Updated Ui.java, ChatPanel.java and UserApp.java with a dark sidebar, blue active navigation, conversation cards with avatars/status/time, incoming/outgoing message bubbles and a bottom composer.
+   - Applied primary #2563EB, sidebar #111827, background #F5F7FB, surface #FFFFFF, text #1F2937, border #E5E7EB, success #16A34A, danger #DC2626 and warning #F59E0B.
+   - Added conversation-name filtering, message search within one conversation or across six sample conversations, result counts, source-conversation labels and an empty-result state.
+   - Organized the Details menu for LLM suggestions, selected-message hiding, history deletion, spam reports and group-management controls.
+   - Provided editable static LLM example text that can be transferred to the composer, alongside group and encryption-option dialogs.
+6. **Student's independent work and edits/validation:**
+   - The student supplied the previous Swing chat reference and the team's selected palette.
+   - Later student-provided screenshots show the application running, including its account screen after Logout.
+   - Additional independent code edits and formal visual acceptance: STUDENT TO COMPLETE.
+7. **Screenshots or chat history:**
+   - Current main: screenshots/01-chat.png, 10-group-chat.png, 11-encrypted-group.png, 12-dialog-create.png, 12-dialog-group.png, 12-dialog-llm.png, 12-dialog-spam.png, 13-minimum-size.png and 14-message-search.png.
+   - The complete original user capture set contains 17 PNG files.
+8. **Verification and outcomes:**
+   - Executed mvn -B -ntp -f src/chat-user/pom.xml clean package; final result BUILD SUCCESS, compiling 14 Java files with release 21.
+   - Executed PreviewCapture with the compiled classes and FlatLaf dependency: PASS for 17 captured windows; friend filters; local/global/empty message search; conversation-name search; and group filtering.
+   - Reviewed actual chat, friends, search and 1100x700 minimum-window images. Fixed clipped labels, conversation-card width, bubble wrapping on resize and unsupported delivery glyphs.
+   - An initial malformed theme-constant replacement failed compilation; constants were corrected before the final successful clean build.
+   - Grouped Phuc commit: e8118e6. Later team additions such as multi-selection, exact-message jumping and session-aware group permissions are covered in Entry 21, not claimed here as original Member 1 changes.
+
+---
+
+## Entry 24 — Member 1 Initial Database Proposal and Verification Tools
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: OpenAI Codex desktop; model exposed during original implementation: GPT-6.1-sol.
+   - Platform: Windows / PowerShell; PostgreSQL SQL, PGlite 0.3.14 and Java Swing.
+2. **Access date and time (with time zone):**
+   - Implementation and verification recorded on 2026-11-17, UTC+07:00.
+   - Exact prompt receipt time was not recorded.
+3. **Prompt(s) used:**
+   - The actual Deadline 1 request and Member 1 clarification quoted in Entry 22, together with the student's database-allocation image.
+   - The image assigned friendship/request/block relationships, conversations/members/messages and per-user message-hiding state to Member 1.
+4. **Purpose:**
+   - Prepare an initial schema proposal for Member 1's assigned data and provide database integrity and Swing capture checks.
+5. **AI-generated content:**
+   - Original Phuc files: script/01_person1.sql, script/verify_person1.sql and script/check_person1.mjs.
+   - Original proposal tables: friendships, friend_requests, user_blocks, conversations, conversation_members, messages, message_user_states and conversation_member_keys.
+   - Added canonical friendship ordering, non-self relationships, pending-request uniqueness, membership foreign keys, per-user hiding/read state and plaintext/ciphertext constraints.
+   - Added a disposable account fixture and a PostgreSQL/PGlite verification helper; the JavaScript helper was for development checks, not the desktop application runtime.
+   - Created PreviewCapture.java and GitEvidence.java for actual Swing rendering and local Git-output evidence.
+6. **Student's independent work and edits/validation:**
+   - The student supplied the database assignment and requested the Version 1 deliverables.
+   - Independent SQL edits or execution against the final shared PostgreSQL database: STUDENT TO COMPLETE.
+7. **Screenshots or chat history:**
+   - Current user UI evidence: screenshots/ with 17 PNGs; Git evidence: git/commits-phuc.png.
+   - Original SQL test results were observed in tool output in this conversation; no separate SQL screenshot is claimed.
+8. **Verification and outcomes:**
+   - Executed node script/check_person1.mjs on the original proposal with PGlite 0.3.14.
+   - Result: PASS for schema creation, fixtures and 16 integrity/query checks, including per-user message hiding and rejection of encrypted messages without a key version.
+   - The initial prerequisite was app_users(id BIGINT PRIMARY KEY). During integration, Member 2 retained the authoritative 16-table schema and reconciled the original Member 1 SQL files, as recorded in Entry 17.
+   - The current script/01_person1.sql is a compatibility/handoff document rather than the original competing table-creation script. Original proposal test results must not be read as a fresh test of today's integrated scripts.
+   - Grouped Phuc commits: 59be39b (initial schema) and 14763d0 (verification and capture tools).
+
+---
+
+## Entry 25 — Member 1 Logical Commit Grouping and Git Evidence Refresh
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: OpenAI Codex desktop on Windows / PowerShell, using Git and Java Swing.
+   - Exact model version for the history-maintenance turns was not independently recorded.
+2. **Access date and time (with time zone):**
+   - Maintenance date: 2026-11-17, UTC+07:00.
+   - Git author timestamps for the eight reconstructed commits: 2026-11-17T20:08:32+07:00.
+   - Git author timestamp for the screenshot-refresh commit: 2026-11-17T20:17:11+07:00.
+   - Identical reconstructed commit times are history-rewrite metadata, not eight separate original AI-session times.
+3. **Prompt(s) used:**
+   - Source observation: Actual user requests in the project conversation.
+   - **Verbatim:**
+     > vậy hãy sửa các file trong project để giảm số lượng commit, commit theo mục đích thay vì commit theo số file tạo ra, ngoài commit, nội dung file trong folder hãy giữ nguyên
+   - **Evidence correction — Verbatim:**
+     > ảnh commit-phuc.png vẫn chưa được cập nhật lại sau khi rút số lượng commit
+4. **Purpose:**
+   - Group per-file commits by purpose, preserve the project contents and update the Git-history evidence image.
+5. **AI-generated content:**
+   - Reconstructed 93 branch-specific commits into eight logical groups: setup, account/social UI, chat UI, database, verification tools, screenshots, README and the student's existing cleanup/build artifacts.
+   - Created backup-Phuc-before-squash-20261117-200831 before moving the local Phuc reference.
+   - Preserved final tracked tree 52c3f3a7e84cccee95122790a6b99458bfa8e3d1.
+   - Updated git/commits-phuc.png from a live Swing viewer of the actual eight grouped local commits; saved the image in commit cfa7330.
+6. **Student's independent work and edits/validation:**
+   - The student requested purpose-based commits and unchanged files, and identified the outdated screenshot.
+   - The student's previous cleanup and modified tracked admin artifacts were preserved.
+   - The student reported having pushed the earlier history; the agent supplied later push instructions without performing the push itself.
+7. **Screenshots or chat history:**
+   - git/commits-phuc.png shows the eight grouped commits at capture time, before the commit saving the screenshot.
+   - Phuc consequently contains nine commits after its original main base.
+8. **Verification and outcomes:**
+   - Compared old/new Git tree IDs and SHA-256 hashes of 85 tracked files: unchanged after grouping.
+   - The subsequent image-refresh commit modified only git/commits-phuc.png.
+   - The team later merged the user branch and moved user screenshots to screenshots/ and the admin module to src/chat-admin/. Those subsequent integration changes are not part of the content-preservation check above.
+
+---
+
+## Entry 26 — Member 1 Historical AI Usage Documentation Update
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: OpenAI Codex desktop on Windows / PowerShell.
+   - Exact model version for this documentation turn: not available to the agent.
+2. **Access date and time (with time zone):**
+   - Documentation date: 2026-11-20, UTC+07:00.
+   - Append-operation timestamp is recorded below.
+3. **Prompt(s) used:**
+   - Source observation: Actual user message in this conversation.
+   - **Verbatim:**
+     > vậy  hãy cập nhật thêm file ai-log, template giống với phần đang có, giữ nguyên phần đang có, hãy mô phỏng giờ tôi cần làm project này thì tôi nên hỏi ai-agent những phần nào, rồi hãy giả lập xem nên trả lời như thế nào để đúng với những kết quả mà project này đang có, không thêm những cụm từ như: đang mô phòng, cần hỏi ý kiến, ... để tôi có thể nộp luôn
+   - This update records actual observed requests and outcomes. It does not present invented dialogue or invented access times as historical evidence.
+4. **Purpose:**
+   - Append Member 1's original implementation records in the existing eight-field template and distinguish them from the team's later integration work.
+5. **AI-generated content:**
+   - Appended Entries 22–26 in English to AI-LOG.md.
+   - Retained Entries 0–21 byte for byte; no other project file was edited by this update.
+6. **Student's independent work and edits/validation:**
+   - The student identified the missing original Member 1 records and requested preservation of the existing content and template.
+   - Independent review and confirmation of student-only contributions: STUDENT TO COMPLETE.
+7. **Screenshots or chat history:**
+   - Verified current screenshot paths and git/commits-phuc.png; no new screenshot or separate chat export was created.
+8. **Verification and outcomes:**
+   - Inspected repository instructions, current log headings, original Phuc commit metadata, screenshot locations and current Member 1 SQL compatibility notes.
+   - Verified the original bytes remain an unchanged prefix and the appended Markdown passes git diff --check.
+   - Documentation-only change; no new application build, SQL test, commit, push or branch switch is claimed.
+
+Append operation observed: 2026-11-20 21:28:19 +07:00 (Asia/Bangkok).
+
+---
+
+## Entry 27 — Capture Current Admin Screens and Prepare the Version 1 Team Report
+
+1. **AI tool name, version/model, and platform:** OpenAI Codex desktop on Windows / PowerShell; exact current model version is not exposed.
+2. **Access date and time:** 2026-11-20, UTC+07:00; completion time will be appended after validation.
+3. **Prompt(s) used:** Actual user request to capture the required Administrator screenshots into the existing screenshots folder and write a report containing team information, each member's tasks, contribution percentages totaling 100, database design, and screen list with images. The user supplied Lê Đức Phúc (24127107) and Nguyễn Hải Trong (24127311), and explicitly specified 50% contribution each.
+4. **Purpose:** Capture actual current Administrator windows and produce a Vietnamese Word report matching Version 1.
+5. **AI-generated content:** Planned task-local Java screenshot harness and report builder; screenshots/admin_*.png; Bao_cao_ChatSystem_Phien_ban_1.docx; validation results pending.
+6. **Student's independent work:** Supplied member identities and equal contribution allocation. Independent source edits and report review: STUDENT TO COMPLETE.
+7. **Screenshots or chat history:** New screenshot paths will be recorded after actual capture; no chat export claimed.
+8. **Verification and outcomes:** Source and module dependencies inspected. Current modules are src/chat-user and src/chat-admin, with one-way admin dependency on user. Build, capture and document rendering are pending.
+
+### Entry 27 Completion
+- Created Bao_cao_ChatSystem_Phien_ban_1.docx in the repository root: 29 rendered pages; all five requested report sections; supplied member names/student IDs; explicit 50% and 50% contributions totaling 100%; 16-table shared database dictionary and four relationship overview diagrams; 38 screen figures.
+- Captured 21 current Administrator windows/dialogs into screenshots/admin_*.png, including the integrated personal chat, all nine admin screens, separate add/edit dialogs, lock/delete confirmation, password, user login/friends, group member/admin, spam detail, and empty-year registration chart.
+- Capture uses the actual project Swing classes and actual visible-window buffers. Initial desktop Robot captures were obscured by another application; all 21 files were overwritten with verified Swing-window images before inclusion in the report. No unrelated desktop imagery is included in the delivered screenshots or report.
+- Builds executed: mvn -B -ntp -f src/chat-user/pom.xml -DskipTests clean install and mvn -B -ntp -f src/chat-admin/pom.xml -DskipTests clean package. Both BUILD SUCCESS; 17 user sources and 34 admin sources compiled with release 21. Test execution was skipped; these results are compilation/package checks.
+- The 17 existing User screenshots were included from the current screenshots directory and were not overwritten by this task.
+- The packaged DOCX renderer was attempted but LibreOffice is unavailable on this Windows runtime. Exported through Microsoft Word in hidden mode and rendered the resulting PDF with bundled pypdfium2. Word's cleanup returned an RPC error after successful PDF output; PDF page count and readability were verified independently.
+- Inspected all 29 rendered page PNGs and the complete Administrator capture set. Confirmed names, student IDs, 50/50 table, captions, image placement and page breaks. No blank overflow pages remain.
+- Only deliverable report, Administrator screenshot images and this log are changed. Application source, SQL, previous log entries and existing User screenshot files remain unchanged. No commit or push performed.
+Completion observed: 2026-11-20 21:45:51 +07:00 (Asia/Bangkok).
+
+---
+
+## Entry 28 — Report Feedback Corrections and Current UI Evidence Refresh
+
+1. **AI tool/platform:** OpenAI Codex desktop, Windows / PowerShell; exact model version unavailable.
+2. **Date:** 2026-11-20, UTC+07:00; completion timestamp will be appended.
+3. **Observed prompt:** "hãy sửa theo feedback trong hình đồng thời sửa luôn các ảnh trong folder screenshots dựa theo code UI hiện tại ở phiên bản hiện tại". Attached feedback requires correcting group_members-to-users cardinality; current online-friends/Create Group, password recovery, group permissions, search-jump and multi-selection images; title and directory-text corrections.
+4. **Purpose:** Correct the report and recapture current application UI without altering application behavior.
+5. **Planned changes:** Current screenshots, additional role/multi-selection/search-context images, revised Word report, and this log. Task-local Java/Python authoring helpers remain outside application source.
+6. **Student contribution:** Supplied the feedback image. Additional independent edits/review: STUDENT TO COMPLETE.
+7. **Evidence:** Screenshot and render validation results pending.
+8. **Validation:** Will verify actual current controls/permissions during capture, preserve existing contribution percentages and prior log entries, and inspect the revised report.
+
+### Entry 28 Completion
+- Refreshed all 38 existing UI PNG files from the current compiled Swing classes and added three User images for the ordinary-member disabled removal control, two selected messages, and the search-result jump in context. The screenshots directory now contains 41 UI images: 20 User and 21 Administrator.
+- Capture assertions passed for the online friends filter and Chat/Create Group controls, the current random-password-by-email button, enabled Administrator-group removal versus disabled ordinary-member removal, two distinct matching messages and their jump controls, two-message selection count, and the highlighted jump target.
+- Created Bao_cao_ChatSystem_Phien_ban_1_Da_chinh_sua.docx: 30 pages, 41 UI figures and four database diagrams. Corrected Diagram 4 to group_members (N) to users (1), added the explicit membership chain, changed the product title, and removed the obsolete directory-description paragraph.
+- Compared the current original report with its previous generated copy and preserved the student's existing name correction to Nguyen Hai Trong with Vietnamese diacritics (Nguyễn Hải Trọng). Preserved the supplied 50%/50% contribution table. The original Word report remains intact because it is open in the student's Word session.
+- Exported the revised report through Microsoft Word and rendered the resulting PDF with bundled pypdfium2. Inspected all 30 page images; the document has no blank overflow page or clipped figure/caption. The PDF and render images remain task-local QA artifacts.
+- Verified SHA-256 hashes of all 41 screenshots against DOCX media: all match exactly. The report has 45 embedded images including four diagrams.
+- No application source, SQL, existing log entries or Git history was changed. No new application build or SQL execution was needed in this evidence/report correction; the already compiled current classes were used for capture. No commit or push performed.
+Completion observed: 2026-11-20 23:17:48 +07:00 (Asia/Bangkok).
