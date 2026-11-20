@@ -274,15 +274,7 @@ public class UserManagementPanel extends JPanel {
         sortCombo.addActionListener(e -> applyFiltersAndSort());
 
         // Refresh / reset filters button
-        JButton refreshButton = new JButton("Làm mới");
-        refreshButton.setFont(AppTheme.FONT_BODY_BOLD);
-        refreshButton.setForeground(AppTheme.TEXT_PRIMARY);
-        refreshButton.setBackground(AppTheme.SURFACE_CARD);
-        refreshButton.setFocusPainted(false);
-        refreshButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        refreshButton.setMargin(new Insets(0, 8, 0, 8));
-        refreshButton.setPreferredSize(new Dimension(88, AppTheme.CONTROL_HEIGHT));
-        refreshButton.setMinimumSize(new Dimension(84, AppTheme.CONTROL_HEIGHT));
+        JButton refreshButton = AppTheme.createSecondaryButton("Làm mới", 88);
         refreshButton.addActionListener(e -> resetFilters());
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -440,26 +432,7 @@ public class UserManagementPanel extends JPanel {
     }
 
     private void configureTableAppearance() {
-        userTable.setFont(AppTheme.FONT_BODY);
-        userTable.setForeground(AppTheme.TEXT_PRIMARY);
-        userTable.setBackground(AppTheme.SURFACE_CARD);
-        userTable.setRowHeight(AppTheme.TABLE_ROW_HEIGHT);
-        userTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        userTable.setSelectionBackground(AppTheme.PRIMARY_SOFT_BG);
-        userTable.setSelectionForeground(AppTheme.TEXT_PRIMARY);
-        userTable.setShowHorizontalLines(true);
-        userTable.setShowVerticalLines(false);
-        userTable.setGridColor(AppTheme.BORDER);
-        userTable.setIntercellSpacing(new Dimension(0, 1));
-        userTable.setFillsViewportHeight(true);
-
-        JTableHeader header = userTable.getTableHeader();
-        header.setReorderingAllowed(false);
-        header.setPreferredSize(new Dimension(0, 40));
-        header.setFont(AppTheme.FONT_CAPTION_BOLD);
-        header.setBackground(AppTheme.PAGE_BG);
-        header.setForeground(AppTheme.TEXT_SECONDARY);
-        header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, AppTheme.BORDER));
+        AppTheme.configureSharedTable(userTable);
 
         DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer() {
             @Override
@@ -470,8 +443,8 @@ public class UserManagementPanel extends JPanel {
                         table, value, isSelected, hasFocus, row, column
                 );
                 label.setFont(AppTheme.FONT_CAPTION_BOLD);
-                label.setForeground(AppTheme.TEXT_SECONDARY);
-                label.setBackground(AppTheme.PAGE_BG);
+                label.setForeground(AppTheme.TEXT_PRIMARY);
+                label.setBackground(AppTheme.SURFACE_CARD);
                 if (column == UserTableModel.COL_INDEX
                         || column == UserTableModel.COL_CREATED_AT
                         || column == UserTableModel.COL_STATUS
@@ -709,43 +682,7 @@ public class UserManagementPanel extends JPanel {
     }
 
     private JButton createPrimaryActionButton(String text) {
-        return new JButton(text) {
-            private boolean hovered = false;
-
-            {
-                setFont(AppTheme.FONT_BODY_BOLD);
-                setForeground(AppTheme.SURFACE_CARD);
-                setFocusPainted(false);
-                setBorderPainted(false);
-                setContentAreaFilled(false);
-                setOpaque(false);
-                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-                addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseEntered(MouseEvent e) {
-                        hovered = true;
-                        repaint();
-                    }
-
-                    @Override
-                    public void mouseExited(MouseEvent e) {
-                        hovered = false;
-                        repaint();
-                    }
-                });
-            }
-
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(hovered ? AppTheme.PRIMARY_HOVER : AppTheme.PRIMARY);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), AppTheme.CORNER_RADIUS, AppTheme.CORNER_RADIUS);
-                g2.dispose();
-                super.paintComponent(g);
-            }
-        };
+        return AppTheme.createPrimaryButton(text, 176);
     }
 
     private void openUserFormDialog(User existingUser) {

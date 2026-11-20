@@ -368,26 +368,7 @@ public class SpamReportPanel extends JPanel {
     }
 
     private JScrollPane createTableScrollPane() {
-        reportTable.setFont(AppTheme.FONT_BODY);
-        reportTable.setForeground(AppTheme.TEXT_PRIMARY);
-        reportTable.setBackground(AppTheme.SURFACE_CARD);
-        reportTable.setRowHeight(AppTheme.TABLE_ROW_HEIGHT);
-        reportTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        reportTable.setSelectionBackground(AppTheme.PRIMARY_SOFT_BG);
-        reportTable.setSelectionForeground(AppTheme.TEXT_PRIMARY);
-        reportTable.setShowHorizontalLines(true);
-        reportTable.setShowVerticalLines(false);
-        reportTable.setGridColor(AppTheme.BORDER);
-        reportTable.setIntercellSpacing(new Dimension(0, 1));
-        reportTable.setFillsViewportHeight(true);
-
-        JTableHeader header = reportTable.getTableHeader();
-        header.setReorderingAllowed(false);
-        header.setPreferredSize(new Dimension(0, 40));
-        header.setFont(AppTheme.FONT_CAPTION_BOLD);
-        header.setBackground(AppTheme.PAGE_BG);
-        header.setForeground(AppTheme.TEXT_SECONDARY);
-        header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, AppTheme.BORDER));
+        AppTheme.configureSharedTable(reportTable);
 
         DefaultTableCellRenderer centerRenderer = createPaddedRenderer(SwingConstants.CENTER, AppTheme.FONT_BODY, AppTheme.TEXT_SECONDARY);
         DefaultTableCellRenderer reporterRenderer = createPaddedRenderer(SwingConstants.LEFT, AppTheme.FONT_BODY, AppTheme.TEXT_PRIMARY);
@@ -743,68 +724,15 @@ public class SpamReportPanel extends JPanel {
     }
 
     private JButton createPrimaryOutlineButton(String text, int width) {
-        JButton btn = new JButton(text);
-        btn.setFont(AppTheme.FONT_CAPTION_BOLD);
-        btn.setForeground(AppTheme.PRIMARY);
-        btn.setBackground(AppTheme.PRIMARY_SOFT_BG);
-        btn.setFocusPainted(false);
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.setMargin(new Insets(0, 8, 0, 8));
-        btn.setPreferredSize(new Dimension(width, AppTheme.CONTROL_HEIGHT));
-        return btn;
+        return AppTheme.createPrimaryOutlineButton(text, width);
     }
 
     private JButton createDangerActionButton(String text, int width) {
-        return new JButton(text) {
-            private boolean hovered = false;
-
-            {
-                setFont(AppTheme.FONT_CAPTION_BOLD);
-                setForeground(AppTheme.SURFACE_CARD);
-                setFocusPainted(false);
-                setBorderPainted(false);
-                setContentAreaFilled(false);
-                setOpaque(false);
-                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                setPreferredSize(new Dimension(width, AppTheme.CONTROL_HEIGHT));
-                addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseEntered(MouseEvent e) {
-                        hovered = true;
-                        repaint();
-                    }
-
-                    @Override
-                    public void mouseExited(MouseEvent e) {
-                        hovered = false;
-                        repaint();
-                    }
-                });
-            }
-
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(hovered ? AppTheme.DANGER.darker() : AppTheme.DANGER);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), AppTheme.CORNER_RADIUS, AppTheme.CORNER_RADIUS);
-                g2.dispose();
-                super.paintComponent(g);
-            }
-        };
+        return AppTheme.createAccentButton(text, width, AppTheme.DANGER);
     }
 
     private JButton createSecondaryButton(String text, int width) {
-        JButton btn = new JButton(text);
-        btn.setFont(AppTheme.FONT_BODY_BOLD);
-        btn.setForeground(AppTheme.TEXT_PRIMARY);
-        btn.setBackground(AppTheme.SURFACE_CARD);
-        btn.setFocusPainted(false);
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.setMargin(new Insets(0, 6, 0, 6));
-        btn.setPreferredSize(new Dimension(width, AppTheme.CONTROL_HEIGHT));
-        btn.setMinimumSize(new Dimension(width, AppTheme.CONTROL_HEIGHT));
-        return btn;
+        return AppTheme.createSecondaryButton(text, width);
     }
 
     private DefaultTableCellRenderer createPaddedRenderer(int alignment, java.awt.Font font, Color textColor) {

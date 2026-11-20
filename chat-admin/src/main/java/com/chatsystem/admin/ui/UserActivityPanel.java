@@ -380,7 +380,7 @@ public class UserActivityPanel extends JPanel {
         });
 
         JLabel ruleHintLabel = new JLabel(
-                "Chọn 1 trong 3 chỉ số cụ thể để so sánh (=, <, >) • Không cộng gộp chỉ số tổng"
+                "Chọn 1 trong 3 chỉ số cụ thể (=, <, >) • Không dùng chỉ số tổng"
         );
         ruleHintLabel.setFont(AppTheme.FONT_CAPTION);
         ruleHintLabel.setForeground(AppTheme.TEXT_SECONDARY);
@@ -447,26 +447,7 @@ public class UserActivityPanel extends JPanel {
     }
 
     private JScrollPane createTableScrollPane() {
-        activityTable.setFont(AppTheme.FONT_BODY);
-        activityTable.setForeground(AppTheme.TEXT_PRIMARY);
-        activityTable.setBackground(AppTheme.SURFACE_CARD);
-        activityTable.setRowHeight(AppTheme.TABLE_ROW_HEIGHT);
-        activityTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        activityTable.setSelectionBackground(AppTheme.PRIMARY_SOFT_BG);
-        activityTable.setSelectionForeground(AppTheme.TEXT_PRIMARY);
-        activityTable.setShowHorizontalLines(true);
-        activityTable.setShowVerticalLines(false);
-        activityTable.setGridColor(AppTheme.BORDER);
-        activityTable.setIntercellSpacing(new Dimension(0, 1));
-        activityTable.setFillsViewportHeight(true);
-
-        JTableHeader header = activityTable.getTableHeader();
-        header.setReorderingAllowed(false);
-        header.setPreferredSize(new Dimension(0, 40));
-        header.setFont(AppTheme.FONT_CAPTION_BOLD);
-        header.setBackground(AppTheme.PAGE_BG);
-        header.setForeground(AppTheme.TEXT_SECONDARY);
-        header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, AppTheme.BORDER));
+        AppTheme.configureSharedTable(activityTable);
 
         DefaultTableCellRenderer centerRenderer = createPaddedRenderer(SwingConstants.CENTER, AppTheme.FONT_BODY, AppTheme.TEXT_SECONDARY);
         DefaultTableCellRenderer boldNameRenderer = createPaddedRenderer(SwingConstants.LEFT, AppTheme.FONT_BODY_BOLD, AppTheme.TEXT_PRIMARY);
@@ -752,29 +733,11 @@ public class UserActivityPanel extends JPanel {
     }
 
     private JButton createPrimaryOutlineButton(String text, int width) {
-        JButton btn = new JButton(text);
-        btn.setFont(AppTheme.FONT_CAPTION_BOLD);
-        btn.setForeground(AppTheme.PRIMARY);
-        btn.setBackground(AppTheme.PRIMARY_SOFT_BG);
-        btn.setFocusPainted(false);
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.setMargin(new Insets(0, 6, 0, 6));
-        btn.setPreferredSize(new Dimension(width, AppTheme.CONTROL_HEIGHT));
-        btn.setMinimumSize(new Dimension(width, AppTheme.CONTROL_HEIGHT));
-        return btn;
+        return AppTheme.createPrimaryOutlineButton(text, width);
     }
 
     private JButton createSecondaryButton(String text, int width) {
-        JButton btn = new JButton(text);
-        btn.setFont(AppTheme.FONT_BODY_BOLD);
-        btn.setForeground(AppTheme.TEXT_PRIMARY);
-        btn.setBackground(AppTheme.SURFACE_CARD);
-        btn.setFocusPainted(false);
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.setMargin(new Insets(0, 6, 0, 6));
-        btn.setPreferredSize(new Dimension(width, AppTheme.CONTROL_HEIGHT));
-        btn.setMinimumSize(new Dimension(width, AppTheme.CONTROL_HEIGHT));
-        return btn;
+        return AppTheme.createSecondaryButton(text, width);
     }
 
     private DefaultTableCellRenderer createPaddedRenderer(int alignment, java.awt.Font font, Color textColor) {

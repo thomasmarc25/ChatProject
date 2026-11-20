@@ -33,7 +33,6 @@ import java.awt.Insets;
 public class ActivityChartPanel extends JPanel {
 
     private static final Integer[] YEAR_OPTIONS = {2026, 2025, 2024};
-    private static final Color BAR_GREEN_HOVER = new Color(0x15, 0x80, 0x3D);
 
     private final MockUserRepository userRepository;
     private final JComboBox<Integer> yearCombo;
@@ -58,7 +57,7 @@ public class ActivityChartPanel extends JPanel {
                 "Người dùng duy nhất mở app",
                 "Trục hoành (X): 12 tháng trong năm (Tháng 1 – Tháng 12 • Múi giờ Asia/Ho_Chi_Minh)",
                 AppTheme.SUCCESS,
-                BAR_GREEN_HOVER,
+                AppTheme.SUCCESS_HOVER,
                 AppTheme.SUCCESS_BG,
                 initialYear,
                 initialCounts
@@ -111,7 +110,7 @@ public class ActivityChartPanel extends JPanel {
         titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JLabel subtitleLabel = new JLabel(
-                "Biểu đồ số người dùng DUY NHẤT mở ứng dụng (COUNT(DISTINCT user_id)) qua 12 tháng"
+                "Thống kê số người dùng DUY NHẤT mở ứng dụng (COUNT(DISTINCT user_id)) qua 12 tháng"
         );
         subtitleLabel.setFont(AppTheme.FONT_BODY);
         subtitleLabel.setForeground(AppTheme.TEXT_SECONDARY);
@@ -155,8 +154,8 @@ public class ActivityChartPanel extends JPanel {
         ));
 
         JLabel defLabel = new JLabel(
-                "Quy tắc (QUERY 10): Đếm người dùng DUY NHẤT mở app mỗi tháng (COUNT(DISTINCT aoe.user_id)). "
-                        + "KHÔNG dùng số lượt đăng nhập, tin nhắn hay tổng lượt mở app (Tháng 3/2026: 8 lượt mở app = 5 người)."
+                "Quy tắc (QUERY 10): Đếm người dùng DUY NHẤT mở app mỗi tháng (COUNT(DISTINCT aoe.user_id)) — "
+                        + "KHÔNG dùng số lượt đăng nhập, tin nhắn hay tổng lượt mở app (VD Tháng 3/2026: 8 lượt mở = 5 người)."
         );
         defLabel.setFont(AppTheme.FONT_CAPTION);
         defLabel.setForeground(AppTheme.TEXT_PRIMARY);
@@ -293,15 +292,6 @@ public class ActivityChartPanel extends JPanel {
     }
 
     private JButton createSecondaryButton(String text, int width) {
-        JButton btn = new JButton(text);
-        btn.setFont(AppTheme.FONT_CAPTION_BOLD);
-        btn.setForeground(AppTheme.TEXT_PRIMARY);
-        btn.setBackground(AppTheme.SURFACE_CARD);
-        btn.setFocusPainted(false);
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.setMargin(new Insets(0, 6, 0, 6));
-        btn.setPreferredSize(new Dimension(width, AppTheme.CONTROL_HEIGHT));
-        btn.setMinimumSize(new Dimension(width, AppTheme.CONTROL_HEIGHT));
-        return btn;
+        return AppTheme.createSecondaryButton(text, width);
     }
 }

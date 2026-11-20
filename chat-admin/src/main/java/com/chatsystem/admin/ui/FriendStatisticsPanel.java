@@ -173,7 +173,7 @@ public class FriendStatisticsPanel extends JPanel {
         tooltipBadge.setOpaque(true);
         tooltipBadge.setBackground(AppTheme.PRIMARY_SOFT_BG);
         tooltipBadge.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(0xBF, 0xDB, 0xFE), 1, true),
+                BorderFactory.createLineBorder(AppTheme.PRIMARY_BORDER, 1, true),
                 BorderFactory.createEmptyBorder(6, 12, 6, 12)
         ));
         tooltipBadge.setToolTipText(FOF_TOOLTIP_TEXT);
@@ -194,8 +194,8 @@ public class FriendStatisticsPanel extends JPanel {
         ruleBanner.setToolTipText(FOF_TOOLTIP_TEXT);
 
         JLabel ruleLabel = new JLabel(
-                "Quy tắc 'Bạn bè + Bạn của bạn (1–2 bậc)': Đếm người dùng DISTINCT trong 1 hoặc 2 bậc kết bạn (ACCEPTED), "
-                        + "đã loại trừ chính mình (self), loại trừ trùng lặp (duplicates) và TK đã xóa mềm."
+                "Quy tắc 'Bạn bè + Bạn của bạn (1–2 bậc)': Đếm người dùng DISTINCT trong 1–2 bậc (ACCEPTED), "
+                        + "loại trừ chính mình (self), trùng lặp (duplicates) và TK đã xóa mềm."
         );
         ruleLabel.setFont(AppTheme.FONT_CAPTION);
         ruleLabel.setForeground(AppTheme.TEXT_PRIMARY);
@@ -405,26 +405,7 @@ public class FriendStatisticsPanel extends JPanel {
     }
 
     private JScrollPane createTableScrollPane() {
-        statsTable.setFont(AppTheme.FONT_BODY);
-        statsTable.setForeground(AppTheme.TEXT_PRIMARY);
-        statsTable.setBackground(AppTheme.SURFACE_CARD);
-        statsTable.setRowHeight(AppTheme.TABLE_ROW_HEIGHT);
-        statsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        statsTable.setSelectionBackground(AppTheme.PRIMARY_SOFT_BG);
-        statsTable.setSelectionForeground(AppTheme.TEXT_PRIMARY);
-        statsTable.setShowHorizontalLines(true);
-        statsTable.setShowVerticalLines(false);
-        statsTable.setGridColor(AppTheme.BORDER);
-        statsTable.setIntercellSpacing(new Dimension(0, 1));
-        statsTable.setFillsViewportHeight(true);
-
-        JTableHeader header = statsTable.getTableHeader();
-        header.setReorderingAllowed(false);
-        header.setPreferredSize(new Dimension(0, 40));
-        header.setFont(AppTheme.FONT_CAPTION_BOLD);
-        header.setBackground(AppTheme.PAGE_BG);
-        header.setForeground(AppTheme.TEXT_SECONDARY);
-        header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, AppTheme.BORDER));
+        AppTheme.configureSharedTable(statsTable);
 
         DefaultTableCellRenderer centerRenderer = createPaddedRenderer(SwingConstants.CENTER, AppTheme.FONT_BODY, AppTheme.TEXT_SECONDARY, null);
         DefaultTableCellRenderer boldNameRenderer = createPaddedRenderer(SwingConstants.LEFT, AppTheme.FONT_BODY_BOLD, AppTheme.TEXT_PRIMARY, null);
@@ -668,16 +649,7 @@ public class FriendStatisticsPanel extends JPanel {
     }
 
     private JButton createSecondaryButton(String text, int width) {
-        JButton btn = new JButton(text);
-        btn.setFont(AppTheme.FONT_BODY_BOLD);
-        btn.setForeground(AppTheme.TEXT_PRIMARY);
-        btn.setBackground(AppTheme.SURFACE_CARD);
-        btn.setFocusPainted(false);
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.setMargin(new Insets(0, 6, 0, 6));
-        btn.setPreferredSize(new Dimension(width, AppTheme.CONTROL_HEIGHT));
-        btn.setMinimumSize(new Dimension(width, AppTheme.CONTROL_HEIGHT));
-        return btn;
+        return AppTheme.createSecondaryButton(text, width);
     }
 
     private DefaultTableCellRenderer createPaddedRenderer(

@@ -1,57 +1,55 @@
 # PostgreSQL Database Scripts (`script/`)
 
-This directory contains the SQL scripts for the **Chat System** shared PostgreSQL database (used by both the User Application and the Administrator Application).
+This directory contains the unified SQL scripts for the **Chat System** shared PostgreSQL database (used by both the User Application in `src/chat-user/` and the Administrator Application in `chat-admin/`).
 
 ---
 
-## 1. Prerequisites
+## 1. Prerequisites & Authoritative Contract
 
-- **Database Engine:** PostgreSQL 15 or newer (tested against PostgreSQL 18).
+- **Authoritative Schema Contract:** [`script/01_schema.sql`](01_schema.sql) and [`docs/database-design.md`](../docs/database-design.md) define the **single authoritative 16-table schema** for the entire project.
+- **Database Engine:** PostgreSQL 15 or newer (verified on PostgreSQL 18.4).
 - **Encoding & Time Zone:** `UTF-8` client/database encoding; application queries and calendar aggregations use time zone `Asia/Ho_Chi_Minh`.
 - **Extensions:** None required. All constraints and case-insensitive uniqueness checks use standard built-in PostgreSQL expressions.
-- **Target Database State:** `01_schema.sql` must be executed inside an **already-created, empty PostgreSQL database**.
-  - It runs inside a single transaction (`BEGIN; ... COMMIT;`).
-  - It intentionally omits `DROP DATABASE`, `DROP SCHEMA CASCADE`, `TRUNCATE`, and `CREATE TABLE IF NOT EXISTS` so that running it against a non-empty or incompatible schema fails fast without destroying existing data.
+- **Target Database State:** `01_schema.sql` must be executed inside an **already-created, empty PostgreSQL database** (`BEGIN; ... COMMIT;`).
 
 ---
 
-## 2. Script Execution Order
+## 2. Unified Script Execution Order
 
 | Order | File | Purpose |
 |---|---|---|
-| **1** | `01_schema.sql` | Creates all 16 tables (13 core tables + 3 group-encryption storage preparation tables), primary keys, foreign keys (`ON DELETE RESTRICT`), row-level `CHECK` constraints, and indexes. |
-| **2** | `02_seed.sql` | Inserts deterministic synthetic seed data (admin, active, locked, soft-deleted, and zero-activity/zero-friend accounts; social graph with 1-hop and 2-hop overlaps; blocks; multi-login single-launch and multi-launch events; direct & group messages including encrypted storage fixtures and hidden messages; and spam reports) and synchronizes identity sequences. |
-| **3** | `03_admin_queries.sql` | Runnable reference SQL queries with editable `params` CTEs covering all 10 Administrator subsystem query patterns. |
-| **4** | `04_verify.sql` | Automated rollback-safe verification suite (`BEGIN; ... ROLLBACK;`) asserting all database-enforced constraints (Part A) and seed/query invariants (Part B) without leaving fixture modifications behind. |
+| **1** | `01_schema.sql` | **Single Authoritative DDL:** Creates all 16 tables (13 core tables + 3 group-encryption storage preparation tables), primary keys, foreign keys (`ON DELETE RESTRICT`), row-level `CHECK` constraints, and 32 indexes. |
+| **2** | `02_seed.sql` | **Deterministic Seed Data:** Inserts 26 accounts (`PBKDF2-HMAC-SHA256` local test hashes), login history, app-open events, social graph (1-hop & 2-hop overlaps), directional blocks, direct & group messages (including encrypted storage fixtures and hidden messages), and spam reports; synchronizes identity sequences. |
+| **3** | `03_admin_queries.sql` | **Admin Reference Queries:** Runnable SQL queries with editable `params` CTEs covering all 10 Administrator subsystem query patterns (`QUERY 1`..`QUERY 10`). |
+| **4** | `04_verify.sql` | **Comprehensive Automated Verification:** Rollback-safe PL/pgSQL verification suite (`BEGIN; ... ROLLBACK;`) asserting all database-enforced constraints (`PASS [A1]`–`PASS [A9]`) and seed/query invariants (`PASS [B1]`–`PASS [B9]`). |
+| **5** | `01_person1.sql` | **Reconciled User-Subsystem Reference Queries:** Read-only reference queries for the User subsystem (unified direct + group conversation list, visible message transcripts respecting `direct_message_hidden`/`group_message_hidden`, and block-filtered user search) adapted to `01_schema.sql`. Contains zero competing `CREATE TABLE` DDL statements. |
+| **6** | `verify_person1.sql` | **Reconciled User-Subsystem Verification:** Rollback-safe PL/pgSQL verification block (`BEGIN; ... ROLLBACK;`) testing User-subsystem constraints and per-user message hiding isolation on top of `01_schema.sql` and `02_seed.sql`. |
+| **7** | `check_person1.mjs` | **Optional Offline PGlite Runner:** Node.js script reconciled to load `01_schema.sql` + `02_seed.sql` + `verify_person1.sql` in PGlite (requires optional local `.tools` PGlite package). |
 
 ---
 
-## 3. How to Execute
+## 3. How to Execute (`psql`)
 
-1. Create a fresh, empty database (replace `<db_user>` and `<db_name>` with your local PostgreSQL role and target database name):
-
-   ```bash
-   createdb -U <db_user> -E UTF8 <db_name>
-   ```
-
-2. Run `01_schema.sql` with `ON_ERROR_STOP=1` enabled so execution halts immediately if any error occurs:
-
-   ```bash
-   psql -U <db_user> -d <db_name> -v ON_ERROR_STOP=1 -f script/01_schema.sql
-   ```
-
-3. Load deterministic seed data, run the administrative queries, and execute the automated verification assertions:
-
-   ```bash
-   psql -U <db_user> -d <db_name> -v ON_ERROR_STOP=1 -f script/02_seed.sql
-   psql -U <db_user> -d <db_name> -v ON_ERROR_STOP=1 -f script/03_admin_queries.sql
-   psql -U <db_user> -d <db_name> -v ON_ERROR_STOP=1 -f script/04_verify.sql
-   ```
+```powershell
+createdb -h 127.0.0.1 -p 5432 -U postgres -E UTF8 chat_system_v1
+psql -h 127.0.0.1 -p 5432 -U postgres -d chat_system_v1 -v ON_ERROR_STOP=1 -f script/01_schema.sql
+psql -h 127.0.0.1 -p 5432 -U postgres -d chat_system_v1 -v ON_ERROR_STOP=1 -f script/02_seed.sql
+psql -h 127.0.0.1 -p 5432 -U postgres -d chat_system_v1 -v ON_ERROR_STOP=1 -f script/03_admin_queries.sql
+psql -h 127.0.0.1 -p 5432 -U postgres -d chat_system_v1 -v ON_ERROR_STOP=1 -f script/04_verify.sql
+psql -h 127.0.0.1 -p 5432 -U postgres -d chat_system_v1 -v ON_ERROR_STOP=1 -f script/01_person1.sql
+psql -h 127.0.0.1 -p 5432 -U postgres -d chat_system_v1 -v ON_ERROR_STOP=1 -f script/verify_person1.sql
+```
 
 ---
 
-## 4. Schema Maintenance Notes
+## 4. Schema Reconciliation & Maintenance Notes
 
-- **Restrictive Foreign Keys (`ON DELETE RESTRICT`):** All historical and relationship tables use `ON DELETE RESTRICT`. User account removal is modeled as soft deletion (`users.deleted_at = now()`) so historical login logs, app-open events, messages, and spam reports are preserved.
-- **Application-Maintained `updated_at`:** `users.updated_at` defaults to `now()` on `INSERT`, but PostgreSQL `DEFAULT` does not automatically update the column on subsequent `UPDATE` statements. The Version 2 service layer (`JdbcTemplate`) is responsible for setting `updated_at = now()` whenever a user profile row is updated.
-- **Password Storage:** Password creation, reset, and update operations write a password hash to `users.password_hash`; plaintext passwords are never stored.
+- **Reconciled User-Subsystem Table Mapping:**
+  - `app_users` -> `users`
+  - `friendships(user_low, user_high)` -> `friendships(user_low_id, user_high_id)`
+  - `friend_requests.status` -> uppercase `'PENDING'`, `'ACCEPTED'`, `'REJECTED'`, `'CANCELLED'`
+  - Direct conversations & messages -> `direct_messages` + `direct_message_hidden`
+  - Group conversations, members & messages -> `chat_groups`, `group_members`, `group_messages`, `group_message_hidden`
+  - Group encryption key envelopes -> `user_public_keys`, `group_key_versions`, `group_key_envelopes`
+- **Restrictive Foreign Keys (`ON DELETE RESTRICT`):** All historical and relationship tables use `ON DELETE RESTRICT`. User account removal is modeled as soft deletion (`users.deleted_at = now()`).
+- **Application-Maintained `updated_at`:** The Version 2 service layer (`JdbcTemplate`) is responsible for setting `updated_at = now()` whenever a `users` row is updated.

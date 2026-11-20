@@ -41,23 +41,52 @@ Expected output:
 - Compiles all `34` Java source files under `chat-admin/src/main/java/com/chatsystem/admin/` with `javac [debug release 21]`.
 - Produces `chat-admin/target/chat-admin-1.0.0-SNAPSHOT.jar` (`BUILD SUCCESS`).
 
-### 3.2. Launch the Administrator Swing UI via Maven (`exec-maven-plugin`)
+### 3.2. Launch the Integrated ChatSystem Admin Window (`Cá nhân` + `Quản trị`) — Recommended Fast Launch
 
-Because `chat-admin/pom.xml` already configures `<exec.mainClass>com.chatsystem.admin.AdminApp</exec.mainClass>`, you can launch the application directly from `chat-admin/`:
+Because `chat-admin` reuses Member 1's Swing panels via a one-way Maven dependency on `com.chatsystem:chat-user`, install `chat-user` once, build `chat-admin`, and launch `AdminApp` directly with JDK 21:
 
 ```powershell
-Set-Location chat-admin
-mvn exec:java
+mvn -f src/chat-user/pom.xml "-DskipTests" clean install
+mvn -f chat-admin/pom.xml "-DskipTests" clean package
+& "C:\Program Files\Eclipse Adoptium\jdk-21.0.13.9-hotspot\bin\java.exe" -cp "chat-admin\target\classes;src\chat-user\target\classes;$HOME\.m2\repository\com\formdev\flatlaf\3.7.2\flatlaf-3.7.2.jar" com.chatsystem.admin.AdminApp
+```
+
+### 3.3. Launch from the Unified Mock Login Screen (`nguyenvanan` → User, `admin` → Integrated Admin)
+
+```powershell
+& "C:\Program Files\Eclipse Adoptium\jdk-21.0.13.9-hotspot\bin\java.exe" -cp "src\chat-user\target\classes;chat-admin\target\classes;$HOME\.m2\repository\com\formdev\flatlaf\3.7.2\flatlaf-3.7.2.jar" com.chatsystem.user.UserApp
+```
+
+### 3.3. Alternative: Launch via Maven (`exec-maven-plugin`)
+
+Because `chat-admin/pom.xml` configures `<exec.mainClass>com.chatsystem.admin.AdminApp</exec.mainClass>`, you can also launch via Maven when online plugin resolution is available:
+
+```powershell
+mvn -f chat-admin/pom.xml exec:java
 ```
 
 Or specify the main class explicitly (with PowerShell-safe quoting):
 
 ```powershell
-Set-Location chat-admin
-mvn compile exec:java "-Dexec.mainClass=com.chatsystem.admin.AdminApp"
+mvn -f chat-admin/pom.xml compile exec:java "-Dexec.mainClass=com.chatsystem.admin.AdminApp"
 ```
 
-### 3.3. If `JAVA_HOME` or `mvn` Is Not on Your Default PowerShell `PATH`
+### 3.4. Build and Launch the User Application (`src/chat-user/` — Member 1)
+
+From the repository root in Windows PowerShell (direct JDK 21 launch):
+
+```powershell
+mvn -f src/chat-user/pom.xml "-DskipTests" compile
+& "C:\Program Files\Eclipse Adoptium\jdk-21.0.13.9-hotspot\bin\java.exe" -cp "src\chat-user\target\classes;$HOME\.m2\repository\com\formdev\flatlaf\3.7.2\flatlaf-3.7.2.jar" com.chatsystem.user.UserApp
+```
+
+Or run the Windows launcher script directly from the repository root:
+
+```powershell
+.\run-user.cmd
+```
+
+### 3.5. If `JAVA_HOME` or `mvn` Is Not on Your Default PowerShell `PATH`
 
 If you use a local JDK 21 installation and the Maven Wrapper distribution cached under `$HOME\.m2\wrapper\dists`, run:
 
@@ -81,6 +110,8 @@ psql -h 127.0.0.1 -p 5432 -U postgres -d chat_system_v1_test -v ON_ERROR_STOP=1 
 psql -h 127.0.0.1 -p 5432 -U postgres -d chat_system_v1_test -v ON_ERROR_STOP=1 -f script/02_seed.sql
 psql -h 127.0.0.1 -p 5432 -U postgres -d chat_system_v1_test -v ON_ERROR_STOP=1 -f script/03_admin_queries.sql
 psql -h 127.0.0.1 -p 5432 -U postgres -d chat_system_v1_test -v ON_ERROR_STOP=1 -f script/04_verify.sql
+psql -h 127.0.0.1 -p 5432 -U postgres -d chat_system_v1_test -v ON_ERROR_STOP=1 -f script/01_person1.sql
+psql -h 127.0.0.1 -p 5432 -U postgres -d chat_system_v1_test -v ON_ERROR_STOP=1 -f script/verify_person1.sql
 ```
 
 ---

@@ -1479,3 +1479,556 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
      - Launched `AdminMainFrame` (`1280x800`) and all 7 modal dialogs on the Swing EDT under JDK 21.0.13, captured all 19 authentic PNG screenshots into `docs/screenshots/admin/`, and verified clean layout rendering across all screens and dialogs.
    - **Live PostgreSQL 18.4 Full-Suite SQL Verification (`task-895` on isolated port `55439`, database `chat_audit_v1`):**
      - Executed `01_schema.sql`, `02_seed.sql`, `03_admin_queries.sql`, and `04_verify.sql` sequentially with `psql -v ON_ERROR_STOP=1` -> **PASS (`exit code: 0`; all assertions `PASS [A1]`–`PASS [A9]` and `PASS [B1]`–`PASS [B9]` succeeded, followed by `DO`, `ROLLBACK`, and clean cluster shutdown)**.
+
+
+---
+
+## Entry 17 — Branch Integration (`integration/version1`): Merge `origin/Phuc` (`src/chat-user/`) with `main` (`chat-admin/` & `script/`)
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: Google Antigravity IDE
+   - Version/Model: Google Antigravity `2.29.0` (`ProductVersion 2.29.0.0`, Language Server `hub-2.29.0`, Electron `44.5.1`); Agent Model: `Gemini 4 Argon (High)`
+   - Platform: Desktop IDE on Microsoft Windows 11 Home Single Language 26H2 (OS Build `10.0.26300.9711`, x64) / PowerShell
+2. **Access date and time (with time zone):**
+   - Initial integration prompt received: `2026-11-18 22:15:39 UTC+07:00 (Asia/Ho_Chi_Minh)` (`Get-Date`: `2026-11-18 22:16:18 +07:00`)
+   - Follow-up `PreviewCapture` direct JDK 21 verification prompt received: `2026-11-18 22:36:59 UTC+07:00 (Asia/Ho_Chi_Minh)` (`Get-Date`: `2026-11-18 22:37:56 +07:00`)
+3. **Prompt(s) used:**
+   - Source observation: Observed directly as chat prompts sent to the agent in the Antigravity session.
+   - **Initial Branch Integration Prompt (`2026-11-18 22:15:39 +07:00`) — Verbatim:**
+     ```markdown
+     I am on integration/version1, created from my main branch. I have run
+     git merge --no-ff --no-commit origin/Phuc. Inspect the current merge
+     state, Git index, and working tree before editing. Read AGENTS.md.
+
+     Resolve and complete the integration using these ownership decisions:
+
+     1. main owns the finished Admin application and the shared PostgreSQL
+        schema. Preserve all nine Admin feature groups, dialogs, charts,
+        resources, and SQL verification work from main. Compare against main
+        even for files Git merged automatically.
+
+     2. origin/Phuc owns the User application under src/chat-user/.
+        Preserve its screens, navigation, mock data, resources, and UserApp
+        entry point. Keep both User and Admin independently launchable.
+        Preserve real Git evidence from both contributors.
+
+     3. Use main's actual schema SQL and database-design.md as the database
+        contract. Inspect Phuc's 01_person1.sql, verify_person1.sql, and
+        check_person1.mjs. Reconcile their references in documentation and
+        launch instructions so the final project has one database setup path.
+        Do not execute Phuc's competing schema on top of main's schema.
+
+     4. Inspect actual usages of Phuc's conversations, conversation_members,
+        messages, and message_user_states model. Adapt any real SQL or
+        data-access code to main's tables. UI-only classes such as ChatData
+        may still present a unified conversation list. Keep Version 1
+        runnable with mock data. Do not introduce JDBC into Swing.
+
+     5. Check java -version and mvn -version. Phuc's User POM requests release
+        21. Inspect main's configured Java version. If main uses 17, try to
+        build User at release 17 and fix small compatibility issues if needed.
+        Align the POM and run-user.cmd with the version actually verified.
+        Report any genuine Java 21 dependency before changing the project's
+        required JDK.
+
+     6. Inspect the actual Maven layout and build both modules from source.
+        Exclude generated target/ files from the integration changes.
+        Preserve existing module paths unless a build fix requires a change.
+
+     Keep the visual redesign for the next step. Resolve conflicts file by
+     file and stage the resolutions. Do not commit or push.
+     Write project Markdown in English. Finish with a Vietnamese chat summary
+     of the SQL decision, Java version, build results, and unresolved items.
+     ```
+   - **Follow-up User UI Smoke Verification Prompt (`2026-11-18 22:36:59 +07:00`) — Verbatim:**
+     ```markdown
+     The expected user_smoke_renders directory does not exist. The Maven log
+     shows chat-user compiled 14 Java files with release 21, then stopped
+     showing progress while downloading dependencies for exec-maven-plugin.
+
+     Finish the existing User UI verification from the Chat repository root:
+
+     1. Confirm the previous Maven task has stopped.
+     2. Check whether src/chat-user/target/classes still contains
+        com/chatsystem/user/PreviewCapture.class. The previous script had a
+        cleanup step that may have removed target/. If the class is missing,
+        run only: mvn -f src/chat-user/pom.xml compile
+     3. Locate the FlatLaf JAR used by chat-user in the local Maven repository.
+        Use JDK 21's java.exe directly with target/classes and that JAR on the
+        Windows classpath to launch com.chatsystem.user.PreviewCapture.
+        Pass the absolute user_smoke_renders path as its single argument.
+        This avoids the stalled exec-maven-plugin download and explicitly
+        selects PreviewCapture.
+     4. Keep stdout, stderr, target/, and the generated PNG files so they can
+        be inspected.
+     5. Report the process exit code, the number of new PNGs, the output
+        directory, and whether the final PASS line appeared.
+
+     Do not touch Git history, commit, push, or restart earlier work.
+     Respond in Vietnamese.
+     ```
+4. **Purpose:**
+   - Resolve the `git merge --no-ff --no-commit origin/Phuc` state on `integration/version1`: preserve all Admin UI (`chat-admin/`), shared PostgreSQL schema (`script/01_schema.sql`..`04_verify.sql`), `AGENTS.md`, `AI-LOG.md`, and `evidence/` from `main`; preserve the User Swing application (`src/chat-user/`), `run-user.cmd`, and `git/` evidence from `origin/Phuc`; reconcile `script/01_person1.sql`, `script/verify_person1.sql`, and `script/check_person1.mjs` against `main`'s authoritative 16-table schema so there is a single unified database setup path; verify Java 21 alignment across both modules; exclude generated `target/` files from the Git index; build both `chat-admin/` and `src/chat-user/` from source; and execute `com.chatsystem.user.PreviewCapture` directly with JDK 21's `java.exe` to verify all 17 User Swing windows/dialogs.
+5. **AI-generated content:**
+   - **Restored `main`-owned files that `origin/Phuc` had deleted or modified during merge:**
+     - Restored `AGENTS.md`, `evidence/chat_history/antigravity_session_8a98bca0.md`, and `evidence/chat_history/chatgpt.png` from `main` (`git checkout main -- ...`).
+     - Preserved `main`'s `AI-LOG.md` and appended `Entry 17`.
+     - Reset `chat-admin/target` in the Git index to `HEAD` (`git checkout HEAD -- chat-admin/target`) so zero compiled `.class` or `target/` artifacts are included in the merge diff.
+   - **Preserved `origin/Phuc`-owned User Application (`src/chat-user/`) and Git Evidence (`git/`):**
+     - Kept all 13 Java source files under `src/chat-user/src/main/java/com/chatsystem/user/` (`AccountPanel`, `AvatarIcon`, `ChatData`, `ChatPanel`, `ConversationListPanel`, `GitEvidence`, `MessageBubble`, `MessageListPanel`, `MockData`, `NavigationIcon`, `PeoplePanel`, `PreviewCapture`, `Ui`, `UserApp`), `src/chat-user/pom.xml`, `git/commits-phuc.png`, and `git/screenshots/01-chat.png`..`14-message-search.png` intact.
+     - Verified that `ChatData.java` and `MockData.java` are pure in-memory Swing model/fixture classes with zero JDBC or SQL code.
+   - **Reconciled `script/01_person1.sql`, `script/verify_person1.sql`, and `script/check_person1.mjs` to `main`'s Authoritative 16-Table Schema:**
+     - `script/01_person1.sql`: Replaced competing `CREATE TABLE` DDL (`app_users`, `conversations`, `conversation_members`, `messages`, `message_user_states`, `conversation_member_keys`) with schema-mapping documentation and 4 runnable read-only User-subsystem reference queries (`USER QUERY 1` unified direct + group conversation list, `USER QUERY 2` visible direct message transcript respecting `direct_message_hidden`, `USER QUERY 3` visible group message transcript respecting `group_message_hidden`, and `USER QUERY 4` people directory search excluding directional `user_blocks`) that execute directly on `01_schema.sql` + `02_seed.sql`.
+     - `script/verify_person1.sql`: Reconciled into a rollback-safe `BEGIN; DO $$ ... $$; ROLLBACK;` PL/pgSQL verification script runnable after `01_schema.sql` and `02_seed.sql`, testing canonical friendship ordering, self-friendship/self-block rejection, opposite-direction simultaneous `PENDING` friend request rejection, group message plaintext/ciphertext payload check, and per-user message hiding isolation (`direct_message_hidden`).
+     - `script/check_person1.mjs`: Updated the optional Node/PGlite smoke runner to load `script/01_schema.sql` + `script/02_seed.sql` + `script/verify_person1.sql` and test User-subsystem constraints against `main`'s authoritative tables.
+   - **Resolved `README.md` Conflict & Updated Documentation (in English):**
+     - Resolved `UU README.md` to document both `src/chat-user/` (`com.chatsystem.user.UserApp`) and `chat-admin/` (`com.chatsystem.admin.AdminApp`), the single authoritative PostgreSQL setup path (`01_schema.sql` -> `02_seed.sql` -> `03_admin_queries.sql` -> `04_verify.sql` -> `01_person1.sql` -> `verify_person1.sql`), and PowerShell-safe Maven commands.
+     - Updated `run-user.cmd`, `script/README.md`, `docs/admin-run-guide.md`, and `docs/version1-submission-checklist.md`.
+6. **Student's independent work and edits/validation:**
+   - Student created the `integration/version1` branch from `main`, initiated `git merge --no-ff --no-commit origin/Phuc`, specified the 6 ownership and integration rules, identified the stalled `exec-maven-plugin` download during User UI verification, and directed the direct JDK 21 `java.exe -cp` execution of `com.chatsystem.user.PreviewCapture`.
+   - Additional student review/validation: `STUDENT TO COMPLETE`
+7. **Screenshots or chat history:**
+   - `evidence/chat_history/chatgpt.png`
+   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+   - `git/commits-phuc.png`
+   - `git/screenshots/01-chat.png` through `14-message-search.png`
+   - `docs/screenshots/admin/01_user_management.png` through `09_activity_chart_2026.png`
+8. **Verification and outcomes:**
+   - **Java & Maven Environment Verification:**
+     - `java -version`: `openjdk version "21.0.13" 2026-10-20 LTS (Temurin-21.0.13+9)`
+     - `mvn -version`: `Apache Maven 3.6.3` running on Java `21.0.13`
+     - Confirmed both `chat-admin/pom.xml` (`<maven.compiler.release>21</maven.compiler.release>`) and `src/chat-user/pom.xml` (`<maven.compiler.release>21</maven.compiler.release>`) target Java 21 LTS.
+   - **Maven Build of Both Modules from Source (`task-961`):**
+     - `mvn -f chat-admin/pom.xml "-DskipTests" clean package` -> **PASS (`BUILD SUCCESS` in `5.676 s`, 34 Java source files compiled with `release 21`, packaged `chat-admin/target/chat-admin-1.0.0-SNAPSHOT.jar`)**.
+     - `mvn -f src/chat-user/pom.xml "-DskipTests" clean package` -> **PASS (`BUILD SUCCESS` in `11.118 s`, 13 Java source files compiled with `release 21`, packaged `src/chat-user/target/chat-user-1.0-SNAPSHOT.jar`)**.
+   - **Live PostgreSQL 18.4 Unified SQL Suite Verification (`task-961` on isolated port `55440`, database `chat_merge_v1`):**
+     - Executed `01_schema.sql`, `02_seed.sql`, `03_admin_queries.sql`, `04_verify.sql` (`PASS [A1]`–`PASS [A9]` & `PASS [B1]`–`PASS [B9]`), `01_person1.sql` (`USER QUERY 1`..`4`), and `verify_person1.sql` (`PASS [verify_person1.sql]: All User-subsystem constraints and visibility checks passed on authoritative schema.`) sequentially with `psql -v ON_ERROR_STOP=1` -> **PASS (`ALL_UNIFIED_SQL_SCRIPTS_PASSED`, exit code `0`)**.
+   - **Direct JDK 21 Execution of `com.chatsystem.user.PreviewCapture` (User UI Smoke Verification):**
+     - Stopped stalled `exec-maven-plugin` background download (`task-965`) and confirmed zero background tasks running.
+     - Executed:
+       `& "C:\Program Files\Eclipse Adoptium\jdk-21.0.13.9-hotspot\bin\java.exe" -cp "src\chat-user\target\classes;C:\Users\DELL\.m2\repository\com\formdev\flatlaf\3.7.2\flatlaf-3.7.2.jar" com.chatsystem.user.PreviewCapture "C:\Users\DELL\.gemini\antigravity\brain\8a98bca0-4a35-400e-87ac-7f2b692989d0\scratch\user_smoke_renders"`
+     - Outcome: **PASS (`JAVA_EXIT_CODE: 0`)**
+       - Stdout printed: `PASS: rendered 17 windows; friend filters, local/global/empty message search, conversation search and group filter verified`
+       - Generated `17` PNG files (`01-chat.png` through `14-message-search.png`, including all 4 dialogs `12-dialog-create.png`, `12-dialog-group.png`, `12-dialog-llm.png`, `12-dialog-spam.png`) in `C:\Users\DELL\.gemini\antigravity\brain\8a98bca0-4a35-400e-87ac-7f2b692989d0\scratch\user_smoke_renders`.
+       - Preserved `src/chat-user/target/` and `user_smoke_renders/` on disk for inspection while keeping `target/` excluded from the Git merge index.
+
+
+---
+
+## Entry 18 — Admin Swing UI Visual Alignment with Member 1's User Application (`integration/version1`)
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: Google Antigravity IDE
+   - Version/Model: Google Antigravity `2.29.0` (`ProductVersion 2.29.0.0`, Language Server `hub-2.29.0`, Electron `44.5.1`); Agent Model: `Gemini 4 Argon (High)`
+   - Platform: Desktop IDE on Microsoft Windows 11 Home Single Language 26H2 (OS Build `10.0.26300.9711`, x64) / PowerShell
+2. **Access date and time (with time zone):**
+   - Prompt received: `2026-11-18 22:51:12 UTC+07:00 (Asia/Ho_Chi_Minh)`
+3. **Prompt(s) used:**
+   - Source observation: Observed directly as a chat prompt sent to the agent in the Antigravity session.
+   - **Verbatim:**
+     ```markdown
+     On integration/version1, restyle the existing Admin Swing application
+     using Phuc's User application as the visual reference. Inspect Ui.java
+     and UserApp.java in src/chat-user, and use the freshly rendered User
+     screenshots for comparison.
+
+     Start with Admin's shared AppTheme, SidebarPanel, and HeaderPanel.
+     Match Phuc's dark sidebar, blue selection state, Segoe UI typography,
+     page background, button styling, and spacing. Then check all nine Admin
+     screens for hardcoded styles that conflict with the shared theme.
+
+     Preserve the Admin navigation, tables, filters, dialogs, and charts.
+     Keep both apps independently launchable. Limit changes to Admin styling
+     and relevant documentation. Keep the shared PostgreSQL schema intact.
+
+     Build Admin and launch it on Windows. Visually check User Management,
+     one dialog, and one chart. Reuse the working Java launch method if
+     Maven exec stalls. Report the exact PowerShell command I can use to
+     open Admin myself, the files changed, and which screens you verified.
+
+     Write Markdown and AI-LOG.md in English. Summarize in Vietnamese in chat.
+     Do not commit or push.
+     ```
+4. **Purpose:**
+   - Restyle the Admin Swing application (`chat-admin/`) on `integration/version1` to visually align with Member 1's User application (`src/chat-user/src/main/java/com/chatsystem/user/Ui.java` and `UserApp.java`): align `AppTheme`, `SidebarPanel`, and `HeaderPanel` with Phuc's dark sidebar (`#111827`), outline navigation icons, full-bleed blue selection state (`#2563EB`), footer layout, `Segoe UI` typography, `#F5F7FB` page background, `#EAF0FE` soft-blue table selection, button styling, and spacing; eliminate conflicting hardcoded styles across all 9 Admin screens and dialogs; and verify compilation and live GUI rendering on Windows.
+5. **AI-generated content:**
+   - **Updated `chat-admin/src/main/java/com/chatsystem/admin/theme/AppTheme.java`:**
+     - Aligned all color tokens and `UIManager` defaults (`AppTheme.setupLookAndFeel()`) with Member 1's `src/chat-user/src/main/java/com/chatsystem/user/Ui.java` (`PRIMARY = #2563EB`, `SIDEBAR_BG = #111827`, `PAGE_BG = #F5F7FB`, `TEXT_PRIMARY = #1F2937`, `TEXT_SECONDARY = #6B7280`, `BORDER = #E5E7EB`, `PRIMARY_SOFT_BG = #EAF0FE` matching `Ui.SOFT_BLUE`, `SIDEBAR_NAV_TEXT = #D1D5DB`, `SIDEBAR_FOOTER_TEXT = #CBD5E1`, `SIDEBAR_TEXT_MUTED = #9CA3AF`, `SIDEBAR_BORDER = #374151`, `FONT_BRAND_TITLE = Segoe UI Bold 21pt`, `Table.selectionBackground = #EAF0FE`, `TableHeader.background = #FFFFFF`, `TableHeader.foreground = #1F2937`, `Button.background = #FFFFFF`, `Button.foreground = #1F2937`, `Component.arc = Button.arc = TextComponent.arc = 10`).
+     - Added shared component factory helpers (`createSecondaryButton`, `createPrimaryButton`, `createPrimaryOutlineButton`, `createAccentButton`, and `configureSharedTable`) so all 9 Admin screens and 7 modal dialogs share consistent button dimensions (`40px` height, auto-expanding minimum width so bold text never truncates) and table headers (`#FFFFFF` background, `#1F2937` bold text, `#E5E7EB` bottom border).
+   - **Restyled `chat-admin/src/main/java/com/chatsystem/admin/components/SidebarPanel.java`:**
+     - Matched `UserApp.java` and `NavigationIcon.java` from `src/chat-user`: `ChatSystem Admin` 21pt bold white brand header above a 1px `#374151` separator, 9 navigation buttons with custom 22x22 Java2D 1.7f rounded outline icons (`AdminNavigationIcon`), full-bleed solid `#2563EB` blue selection state with bold white text and icon, and the 3-line footer (`Đăng xuất`, `Quản trị viên · Phiên bản 1`, `Dữ liệu mẫu · Swing UI`).
+   - **Restyled `chat-admin/src/main/java/com/chatsystem/admin/components/HeaderPanel.java`:**
+     - Aligned with `ChatPanel` and `AvatarIcon` in `src/chat-user`: soft-blue `Phiên bản 1 · Dữ liệu mẫu` pill badge, circular `#2563EB` `"A"` administrator avatar, bold `Quản trị viên` title, and green `● Đang hoạt động` status indicator.
+   - **Eliminated Hardcoded Styles Across All 9 Admin Screens, Chart Component, and 7 Dialogs:**
+     - Updated `components/MonthlyBarChartPanel.java`, `ui/UserManagementPanel.java`, `ui/LoginHistoryPanel.java`, `ui/ChatGroupManagementPanel.java`, `ui/SpamReportPanel.java`, `ui/NewUserRegistrationPanel.java`, `ui/RegistrationChartPanel.java`, `ui/FriendStatisticsPanel.java`, `ui/UserActivityPanel.java`, `ui/ActivityChartPanel.java`, `ui/UserFormDialog.java`, `ui/ConfirmActionDialog.java`, `ui/PasswordUpdateDialog.java`, `ui/UserLoginHistoryDialog.java`, `ui/UserFriendsDialog.java`, `ui/GroupMembersDialog.java`, and `ui/SpamReportDetailDialog.java` so zero `new Color(...)` or `new Font(...)` calls exist outside `AppTheme.java` and all tables/buttons use `AppTheme`'s shared helpers.
+   - **Refreshed All 19 Authentic Admin Screenshots in `docs/screenshots/admin/`** and updated `docs/admin-run-guide.md` and `README.md` with the direct JDK 21 PowerShell launch command.
+6. **Student's independent work and edits/validation:**
+   - Student directed the visual alignment of the Admin application against Member 1's User application (`Ui.java`, `UserApp.java`, and the freshly rendered User screenshots) and specified the visual verification requirements.
+   - Additional student review/validation: `STUDENT TO COMPLETE`
+7. **Screenshots or chat history:**
+   - `evidence/chat_history/chatgpt.png`
+   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+   - `docs/screenshots/admin/01_user_management.png` through `docs/screenshots/admin/09_activity_chart_2026.png` (19 refreshed PNG screenshots)
+8. **Verification and outcomes:**
+   - **Static Style Audit (`Select-String -Pattern "new Color\(|new Font\("` across `chat-admin/src/main/java`):**
+     - Verified that **zero** hardcoded `new Color(...)` or `new Font(...)` calls exist outside `AppTheme.java`.
+   - **Maven Compilation (`mvn -f chat-admin/pom.xml "-DskipTests" clean compile` on JDK 21.0.13):**
+     - Outcome: **PASS (`BUILD SUCCESS` in `7.706 s`, exit code `0`)** — compiled all 34 Java source files with `javac [debug release 21]`.
+   - **Live Windows GUI Launch & Visual Verification (`task-1167` via JDK 21 `java.exe`):**
+     - Launched `AdminMainFrame` and all 7 modal dialogs on the Swing EDT under JDK 21.0.13, captured all 19 updated PNG screenshots into `docs/screenshots/admin/`, and visually verified `01_user_management.png` (User Management), `01a_user_add_edit_dialog.png` (Add/Edit User Dialog), `06_registration_chart_2026.png` (Registration Chart), `09_activity_chart_2026.png` (Activity Chart), `02_system_login_history.png`, `03_chat_groups.png`, `04_spam_reports.png`, `07_friend_statistics.png`, and `08_user_activity.png` against Member 1's User UI screenshots (`01-chat.png`, `02-friends.png`, `05-account-0.png`, `12-dialog-create.png`).
+
+
+---
+
+## Entry 19 — End-to-End Version 1 Integration: Unified Mock Login Flow, User Feature Wiring, and Cross-App Fixture Alignment (`integration/version1`)
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: Google Antigravity IDE
+   - Version/Model: Google Antigravity `2.29.0` (`ProductVersion 2.29.0.0`, Language Server `hub-2.29.0`, Electron `44.5.1`); Agent Model: `Gemini 4 Neon (Medium)`
+   - Platform: Desktop IDE on Microsoft Windows 11 Home Single Language 26H2 (OS Build `10.0.26300.9711`, x64) / PowerShell
+2. **Access date and time (with time zone):**
+   - Prompt received: `2026-11-19 08:25:22 UTC+07:00 (Asia/Ho_Chi_Minh)`
+3. **Prompt(s) used:**
+   - Source observation: Observed directly as a chat prompt sent to the agent in the Antigravity session.
+   - **Verbatim:**
+     ```markdown
+     Continue working on the already-pushed integration/version1 branch.
+     I want Phuc's User features and my Admin features to work together as
+     one coherent Version 1 desktop project. Inspect the current branch,
+     including changes made after the merge.
+
+     Use origin/Phuc as the reference for User features and UI style.
+     Use the shared PostgreSQL schema from main as the database contract.
+     Keep both User and Admin independently launchable for future JAR packaging.
+
+     1. Trace the actual startup flow
+
+     Start from the existing launch scripts, main classes, login screens,
+     and navigation handlers. Identify what a person currently sees when
+     launching the project and how they reach User or Admin functionality.
+
+     Reuse the current login flow if one exists. For Version 1, provide
+     a working mock entry flow that opens Phuc's User workspace for a USER
+     demo account and my Admin workspace for an ADMIN demo account.
+     If the project already supports this, reuse it. Keep the existing
+     module entry points working and avoid circular Maven dependencies.
+
+     2. Integrate Phuc's existing User features
+
+     Compare the current source with origin/Phuc. Check the actual navigation
+     and button handlers for:
+     - Registration, login, profile, password change, and password reset.
+     - Friends, online friends, people search, friend requests, and blocking.
+     - Direct chat, message history, search, hiding messages, and spam reports.
+     - Group chat, group creation, members, group-admin actions, and the
+       encrypted-group UI.
+     - The LLM suggestion/edit dialog.
+
+     Reuse Phuc's screens and dialogs. Connect existing controls to their
+     intended screens where wiring is missing. Preserve working interactions.
+     Distinguish features already present on origin/Phuc from assignment
+     features still missing there. Do not mark a feature complete solely
+     because a button or screenshot exists.
+
+     3. Align the two sides where the same data is shown
+
+     Use consistent demo usernames, group names, member roles, and report
+     participants across both applications. For example, a sample group on
+     the User side should show the same members and group admin on the Admin
+     side. A sample spam report should identify the correct reporter and
+     reported user in both views.
+
+     Check these values against the actual shared schema and its seed data.
+     Keep SQL setup on the approved schema. Version 1 should launch without
+     a live database. Explicitly report whether cross-app actions are backed
+     by shared state or only illustrated with matching fixtures.
+
+     4. Verify the integrated result through the normal launch path
+
+     Build both modules. If GUI access is available, exercise:
+     - USER login → chat → select a group → view group members.
+     - USER → open spam report for the selected conversation.
+     - ADMIN login → inspect that sample group and its member/admin list.
+     - ADMIN → open the corresponding sample spam report.
+
+     Preserve all nine Admin feature groups and Phuc's User UI style.
+     Keep Markdown and AI-LOG.md in English. Report in Vietnamese in chat:
+     what was already integrated, what you connected, which interactions
+     you actually verified, which remain mock-only, and the exact PowerShell
+     command I should use to launch the project. Do not commit or push.
+     ```
+4. **Purpose:**
+   - Connect Phuc's User application (`src/chat-user/`) and the Admin application (`chat-admin/`) into a coherent Version 1 desktop project on `integration/version1`: add a working mock entry/login flow routing `USER` demo accounts (`@nguyenvanan`) to `UserApp` and `ADMIN` demo accounts (`@admin`) to `AdminMainFrame` without circular Maven dependencies; wire missing handlers in `AccountPanel`, `PeoplePanel`, `ChatPanel`, and `SidebarPanel`; align all demo usernames, groups, group members/admins, and spam report participants across `ChatData.java`, `MockData.java`, `MockUserRepository.java`, and `script/02_seed.sql`; and build and visually/functionally verify both modules through the normal launch path.
+5. **AI-generated content:**
+   - **Created `src/chat-user/src/main/java/com/chatsystem/user/MockLoginFrame.java`:** Unified Version 1 mock login entry screen styled with Phuc's `Ui` tokens (`#111827` dark left panel + `#FFFFFF` login card) that routes `USER` demo accounts (`nguyenvanan`) to `UserApp` and `ADMIN` demo accounts (`admin`) to `com.chatsystem.admin.ui.AdminMainFrame` via reflection (zero compile-time or Maven dependency between `chat-user` and `chat-admin`).
+   - **Updated `src/chat-user/src/main/java/com/chatsystem/user/UserApp.java`, `AccountPanel.java`, `PeoplePanel.java`, `ChatPanel.java`, `ChatData.java`, `MockData.java`, and `PreviewCapture.java`:**
+     - `UserApp.main`: launches `MockLoginFrame` by default (or `UserApp` directly when `--direct-user` is passed); keeps `new UserApp()` starting on `"Tin nhắn"` for `PreviewCapture` compatibility.
+     - `AccountPanel`: wired the `"Đăng nhập"` tab to route `admin` → `AdminMainFrame` and `nguyenvanan` → User `"Tin nhắn"`; aligned `"Thông tin cá nhân"` with seeded user `@nguyenvanan` (`Nguyễn Văn An`, `nguyenvanan@chatsystem.vn`, `12 Nguyễn Huệ, Quận 1, TP.HCM`, `14/03/2002`).
+     - `PeoplePanel` & `ChatPanel`: clicking `"Chat"` on a user in `Bạn bè` or `Tìm người` selects that user's matching conversation in `ChatPanel`; updated `ChatPanel` header status to show each group's exact member count; updated `createDialog("group")` to display the selected group's aligned members and group roles (`Admin nhóm` vs `Thành viên`) from `ChatData.CONVERSATIONS`; updated `createDialog("spam")` to show reporter `Nguyễn Văn An (@nguyenvanan)`, reported user `current.name() (@current.username())`, and pre-populated sample reason + message snapshot when reporting `@phamminhchau`.
+     - `ChatData.java` & `MockData.java`: aligned demo usernames (`@nguyenvanan`, `@tranthibich`, `@lehoangnam`, `@phamminhchau`, `@hoangquocviet`, `@vuthithao`, `@dangquanghuy`, `@ngothuyduong`, `@dogiabao`, `@haquynhnhu`), all 3 sample groups (`Cộng đồng Java Việt Nam` 4 members / 2 admins, `Nhóm Đồ Án Hệ Thống Chat` E2EE 3 members / 1 admin, `CLB Thuật Toán & AI` 5 members / 2 admins), and Spam Report #1 (`@nguyenvanan` reporting `@phamminhchau`, `"Phát tán đường dẫn lừa đảo trúng thưởng"`, `"Nhận ngay khuyến mãi trúng thưởng 50 triệu tại link lạ!"`) with `script/02_seed.sql` and `chat-admin`'s `MockUserRepository.java`.
+   - **Updated `chat-admin/src/main/java/com/chatsystem/admin/components/SidebarPanel.java` & `ui/SpamReportDetailDialog.java`:**
+     - Wired Admin's `"Đăng xuất"` button to return to `MockLoginFrame` via reflection when launched on the unified classpath (falling back to the Version 1 mock-only dialog when `chat-admin` runs standalone).
+     - Shortened the footer note in `SpamReportDetailDialog` so it never touches the `"Đóng"` button.
+   - **Updated `README.md`, `docs/admin-run-guide.md`, and `AI-LOG.md`.**
+6. **Student's independent work and edits/validation:**
+   - Student specified the 4-part integration scope (unified mock entry flow without circular Maven dependencies, User feature wiring audit against `origin/Phuc`, cross-app fixture alignment against `script/02_seed.sql`, and end-to-end GUI verification scenarios).
+   - Additional student review/validation: `STUDENT TO COMPLETE`
+7. **Screenshots or chat history:**
+   - `evidence/chat_history/chatgpt.png`
+   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+8. **Verification and outcomes:**
+   - **Independent Maven Builds of Both Modules (`task-1227` & `task-1248` on JDK 21.0.13):**
+     - `mvn -f chat-admin/pom.xml "-DskipTests" clean package` -> **PASS (`BUILD SUCCESS`, 34 Java source files compiled with `release 21`, packaged `chat-admin-1.0.0-SNAPSHOT.jar`)**.
+     - `mvn -f src/chat-user/pom.xml "-DskipTests" clean package` -> **PASS (`BUILD SUCCESS`, 15 Java source files compiled with `release 21`, packaged `chat-user-1.0.0-SNAPSHOT.jar`)**.
+   - **User UI Smoke Suite (`com.chatsystem.user.PreviewCapture`, `task-1235`):**
+     - **PASS (`PREVIEW_CAPTURE_EXIT_CODE: 0`)** — `PASS: rendered 17 windows; friend filters, local/global/empty message search, conversation search and group filter verified`.
+   - **End-to-End Integrated USER + ADMIN GUI Verification (`IntegratedFlowVerify`, `task-1235` & `task-1248`):**
+     - **PASS (`REVERIFY_EXIT_CODE: 0`)** — `PASS: All 4 integrated USER + ADMIN scenarios verified with 100% aligned fixtures.`
+     - Verified live on JDK 21 Swing EDT and visually inspected all 5 captured renders (`01_unified_login.png`, `02_user_group_members_dialog.png`, `03_user_spam_report_dialog.png`, `04_admin_group_members_dialog.png`, `05_admin_spam_detail_dialog.png`).
+
+
+---
+
+## Entry 20 — Embed All User Features (`Cá nhân`) Inside `AdminMainFrame` Alongside All 9 Admin Screens (`Quản trị`)
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: Google Antigravity IDE
+   - Version/Model: Google Antigravity `2.29.0` (`ProductVersion 2.29.0.0`, Language Server `hub-2.29.0`, Electron `44.5.1`); Agent Model: `Gemini 4 Neon (Medium)`
+   - Platform: Desktop IDE on Microsoft Windows 11 Home Single Language 26H2 (OS Build `10.0.26300.9711`, x64) / PowerShell
+2. **Access date and time (with time zone):**
+   - Prompt received: `2026-11-19 09:07:57 UTC+07:00 (Asia/Ho_Chi_Minh)`
+3. **Prompt(s) used:**
+   - Source observation: Observed directly as a chat prompt sent to the agent in the Antigravity session.
+   - **Verbatim:**
+     ```markdown
+     Work in the existing Chat repository on branch integration/version1.
+     Implement the integration now. The branch has already been pushed.
+     Start by checking the current branch, Git status, and applicable
+     AGENTS.md. Preserve existing uncommitted work.
+
+     GOAL
+
+     When I launch ChatSystem Admin, I want to use every User feature Phuc
+     implemented AND all nine existing Admin features in the same main
+     window. The Admin sidebar should let me switch between personal and
+     administrative pages. Keep the standalone User application launchable.
+
+     1. Inspect the actual implementation
+
+     Use origin/Phuc as the reference for Phuc's feature coverage. Compare
+     it with the current src/chat-user module. Inspect UserApp, AccountPanel,
+     PeoplePanel, ChatPanel, their child components, and the Admin frame
+     and sidebar. Follow menu items, tabs, buttons, row actions, callbacks,
+     and dialogs. Include features found in the source even if they are
+     missing from the checklist below.
+
+     Reuse any integration already present on integration/version1.
+
+     2. Integrate both feature sets into the Admin window
+
+     Organize the existing Admin sidebar into two sections:
+
+     - Cá nhân: Tin nhắn, Bạn bè, Nhóm chat, Tìm kiếm, Yêu cầu kết bạn,
+       and Cài đặt.
+     - Quản trị: preserve all nine current Admin destinations.
+
+     Selecting a page should update the content area of the same Admin
+     JFrame. Reuse Phuc's dialogs for actions that already open a dialog.
+     Keep one sidebar and make every item accessible at the minimum window
+     height, including Đăng xuất.
+
+     Keep “Nhóm chat” and “Quản lý nhóm chat” as separate destinations.
+     The first lets the signed-in person participate in groups. The second
+     lets an administrator inspect groups across the system.
+
+     3. Preserve all of Phuc's User features
+
+     - Tin nhắn: conversation list, conversation selection, compose/send
+       preview, search in the current conversation or all history, details,
+       hide selected messages, clear history, spam report, and the mock LLM
+       suggestion dialog with insertion into the message composer.
+     - Bạn bè: search, online/offline filtering, open chat, unfriend, block.
+     - Tìm kiếm: find people, send a friend request, open chat, create a group.
+     - Yêu cầu kết bạn: view, filter, accept, and reject requests.
+     - Nhóm chat: group conversations, create/rename groups, view/add/remove
+       members, assign a group admin, and access the encryption preview.
+     - Tài khoản: login, registration, password recovery, profile editing,
+       password change, and logout.
+
+     Use the existing login/registration/recovery flow for signed-out users.
+     While signed in, Cài đặt should open that person's profile and password
+     settings. Display the current session identity wherever Phuc's original
+     screens hardcode the name “Phúc”. Keep the personal features available
+     to the signed-in Admin while preserving Admin-only navigation for the
+     Admin role.
+
+     4. Reuse Phuc's Swing code and visual design
+
+     Embed the existing Swing panels and reuse their working actions.
+     If some navigation is tied to UserApp's JFrame, extract only the
+     callbacks or reusable components needed by both applications.
+     Do not copy the entire User UI, launch UserApp as a second window,
+     or introduce circular Maven dependencies.
+
+     Use Phuc's existing Ui.java and rendered User screens as the visual
+     reference for the combined interface. Preserve the Admin tables,
+     filters, dialogs, and chart layouts. When switching between Cá nhân
+     and Quản trị, preserve the selected conversation and unsent draft.
+
+     5. Respect Version 1 and the shared database
+
+     Use the PostgreSQL schema already approved on integration/version1
+     as the shared data contract. Keep the current mock-data launch path.
+     Preserve the original level of functionality for actions Phuc built
+     as previews, including LLM suggestions and group encryption.
+     Do not add live backend integration as part of this UI task.
+
+     6. Verify the result from the normal Admin entry point
+
+     Build both applications. Launch Admin alone and check these flows:
+
+     - Tin nhắn → select a conversation → type a draft → Quản lý người dùng
+       → return to Tin nhắn. Verify the conversation and draft remain.
+     - Bạn bè → search/filter → select a person → open chat.
+     - Yêu cầu kết bạn → select a request → open the accept/reject action.
+     - Nhóm chat → select a group → inspect members and group options.
+     - Tin nhắn → Chi tiết → LLM suggestion → insert it into the composer.
+     - Cài đặt → profile and password change. Verify registration and
+       recovery are reachable from the signed-out flow.
+     - Open all nine Admin destinations and verify the standalone User
+       application still launches.
+
+     Capture one real screenshot showing the ChatSystem Admin title,
+     the sidebar with Cá nhân and Quản trị, and Phuc's chat page in the
+     content area. If GUI capture is unavailable, report that explicitly.
+
+     Write all project Markdown and AI-LOG.md updates in English.
+     Finish with a Vietnamese chat summary containing:
+     - The exact PowerShell command to launch the integrated Admin app.
+     - A table: feature, exact click path from Admin, behavior, and what
+       was actually verified.
+     - Any missing features, mock-only actions, or checks still pending.
+
+     Do not commit or push automatically.
+     ```
+4. **Purpose:**
+   - Extract minimal reusable Swing components (`UserSessionProfile`, `UserWorkspaceHost`) inside `src/chat-user/` so `chat-admin/` embeds all of Phuc's User panels directly inside `AdminMainFrame` via a one-way acyclic Maven dependency (`chat-admin` → `chat-user`, zero circular dependency, zero duplicated UI code); organize `SidebarPanel` into `Cá nhân` (6 items) and `Quản trị` (9 items) inside a scrollable container with pinned brand header and `Đăng xuất` footer; preserve selected conversation and unsent draft across section switches; wire signed-in `Cài đặt` to Profile & Password Change while keeping Login/Registration/Password Recovery reachable from the signed-out flow; verify all flows end-to-end on Windows; and capture an authentic screenshot of `ChatSystem Admin` displaying the combined sidebar and Phuc's chat page.
+5. **AI-generated content:**
+   - **Extracted Reusable Components in `src/chat-user/` (No Duplication, Acyclic Reuse):**
+     - Created `src/chat-user/src/main/java/com/chatsystem/user/UserSessionProfile.java`: immutable session identity record (`DEMO_USER`, `DEMO_ADMIN`) removing hardcoded personal names across reused panels.
+     - Created `src/chat-user/src/main/java/com/chatsystem/user/UserWorkspaceHost.java`: public `JPanel` wrapping Phuc's actual `ChatPanel`, `PeoplePanel` (`Bạn bè`, `Yêu cầu kết bạn`, `Tìm người`), and `AccountPanel` in a `CardLayout`, preserving selected conversation and unsent draft across section switches and syncing `"Chat"` button callbacks back to the host sidebar.
+     - Updated `ConversationListPanel.java`, `ChatPanel.java`, and `AccountPanel.java`: guarded against redundant conversation resets when switching back to `Tin nhắn`, injected `UserSessionProfile` into Spam Report / Group Creation / Profile settings, and configured signed-in `Cài đặt` mode to show `Thông tin cá nhân` and `Đổi mật khẩu` while keeping Login / Registration / Password Recovery reachable from the signed-out `MockLoginFrame` flow.
+   - **Integrated All 6 Personal User Pages + All 9 Admin Screens in `chat-admin/`:**
+     - Updated `chat-admin/pom.xml`: added a clean one-way dependency on `com.chatsystem:chat-user:1.0.0-SNAPSHOT` (zero circular dependency since `chat-user` has no dependency on `chat-admin`).
+     - Updated `chat-admin/src/main/java/com/chatsystem/admin/components/SidebarPanel.java`: organized the sidebar into two sections (`CÁ NHÂN`: 6 items; `QUẢN TRỊ`: all 9 Admin items) inside a dark borderless `JScrollPane` with pinned `ChatSystem Admin` brand header and `Đăng xuất` footer (opening `MockLoginFrame`), ensuring every item is accessible at `1100x700` minimum size.
+     - Updated `chat-admin/src/main/java/com/chatsystem/admin/components/HeaderPanel.java` & `ui/AdminMainFrame.java`: embedded `UserWorkspaceHost` as `CARD_PERSONAL_WORKSPACE` in `AdminMainFrame`'s `CardLayout`, kept `Nhóm chat` (personal group participation) and `Quản lý nhóm chat` (system-wide read-only admin inspection) as separate destinations, and updated header breadcrumbs (`Cá nhân` vs `Quản trị`).
+   - **Captured Authentic Screenshot & Updated Documentation:**
+     - Captured real screenshot `docs/screenshots/admin/00_admin_integrated_chat.png` showing the `ChatSystem Admin` window title, two-section sidebar (`CÁ NHÂN` and `QUẢN TRỊ`), and Phuc's embedded `Tin nhắn` chat page.
+     - Updated `README.md`, `docs/admin-run-guide.md`, and `AI-LOG.md`.
+6. **Student's independent work and edits/validation:**
+   - Student defined the single-window Admin+Personal integration goal, two-section sidebar structure (`Cá nhân` and `Quản trị`), state-preservation requirements, acyclic reuse constraints, and the 7 end-to-end verification flows plus screenshot requirement.
+   - Additional student review/validation: `STUDENT TO COMPLETE`
+7. **Screenshots or chat history:**
+   - `evidence/chat_history/chatgpt.png`
+   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+   - `docs/screenshots/admin/00_admin_integrated_chat.png` (authentic screenshot of the integrated Admin window displaying `Cá nhân` + `Quản trị` sidebar and Phuc's chat page)
+8. **Verification and outcomes:**
+   - **Acyclic Maven Builds of Both Applications (`task-1281` on JDK 21.0.13):**
+     - `mvn -f src/chat-user/pom.xml "-DskipTests" clean install` -> **PASS (`BUILD SUCCESS` in `12.939 s`, 17 source files compiled with `release 21`, installed `chat-user-1.0.0-SNAPSHOT.jar`)**.
+     - `mvn -f chat-admin/pom.xml "-DskipTests" clean package` -> **PASS (`BUILD SUCCESS` in `19.119 s`, 34 source files compiled with `release 21`, packaged `chat-admin-1.0.0-SNAPSHOT.jar`)**.
+   - **Live End-to-End GUI Verification of All 7 Flows from `AdminMainFrame` (`AdminIntegratedVerify` on JDK 21.0.13):**
+     - **PASS (`ADMIN_INTEGRATED_EXIT_CODE: 0`)** — `PASS: All 7 integrated Admin + Personal User flows verified and screenshot captured.`
+     - Verified: (1) `Tin nhắn` conversation (`Lê Hoàng Nam`) + draft persistence across switch to `Quản lý người dùng` and back; (2) `Bạn bè` search + online filter + `Chat` handoff to `Trần Thị Bích Ngọc`; (3) `Yêu cầu kết bạn` selection + `Đồng ý`/`Từ chối` controls; (4) `Nhóm chat` → `Cộng đồng Java Việt Nam` 4 members & group options dialog; (5) `Tin nhắn` → LLM suggestion insertion into composer; (6) `Cài đặt` signed-in 2 tabs (`Thông tin cá nhân`, `Đổi mật khẩu`) & signed-out `MockLoginFrame` Registration/Recovery entry; (7) all 9 `Quản trị` screens + `1100x700` minimum resize.
+     - Visually inspected `docs/screenshots/admin/00_admin_integrated_chat.png`.
+   - **Standalone User Application Verification (`com.chatsystem.user.PreviewCapture`):**
+     - **PASS (`STANDALONE_USER_EXIT_CODE: 0`)** — `PASS: rendered 17 windows; friend filters, local/global/empty message search, conversation search and group filter verified`.
+
+
+---
+
+## Entry 21 — Four Targeted Version 1 Swing UI Fixes (`integration/version1`: Req 3, Req 8, Req 11e–g, Req 12e)
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: Google Antigravity IDE
+   - Version/Model: Google Antigravity `2.29.0` (`ProductVersion 2.29.0.0`, Language Server `hub-2.29.0`, Electron `44.5.1`); Agent Model: `Gemini 4 Neon (High)`
+   - Platform: Desktop IDE on Microsoft Windows 11 Home Single Language 26H2 (OS Build `10.0.26300.9711`, x64) / PowerShell
+2. **Access date and time (with time zone):**
+   - Prompt received: `2026-11-20 18:29:11 UTC+07:00 (Asia/Ho_Chi_Minh)`
+3. **Prompt(s) used:**
+   - Source observation: Observed directly as a chat prompt sent to the agent in the Antigravity session.
+   - **Verbatim:**
+     ```markdown
+     Work on the existing integration/version1 branch. Implement the four Version 1 Swing UI fixes below, then verify them. Use the existing Vietnamese UI style, JDK 21, Maven modules, and mock data. Keep Markdown content in English and write your final chat summary in Vietnamese.
+
+     1. User requirement 3 — Forgot password
+        In AccountPanel.java, change the button “Gửi liên kết khôi phục” to “Gửi mật khẩu mới qua email”. Add a short Vietnamese hint explaining that the user will receive a randomly generated password at their registered email address. If the button shows a preview message, make it clear that this is a Version 1 simulation. Keep this flow local to the UI.
+
+     2. User requirement 8 — Create a group from online friends
+        In PeoplePanel.java, add “Tạo nhóm” next to “Chat” on the “Bạn bè” page. It must be available when the “Trực tuyến” filter is active. Reuse the existing group-creation dialog. When a friend is selected in the filtered table, open the dialog with that friend included as an initial member. Use the selected friend’s username so filtering or sorting cannot select the wrong person. Preserve the existing create-group action on the “Tìm kiếm” page.
+
+     3. User requirements 11e–g — Select multiple messages and jump to a search result
+        In MessageListPanel.java, ChatPanel.java, and related components as needed:
+        - Make it clear how to select one or several messages in the current conversation. Give selected messages a visible state and show the selection count. The existing delete/hide action should show a confirmation for the correct count. Clear the selection when switching conversations. Keep changes in memory for this preview.
+        - Add a visible “Đi tới tin nhắn” action for results in both search scopes: “Cuộc trò chuyện này” and “Toàn bộ lịch sử”.
+        - Activating a result must open the original conversation, restore its full transcript, scroll to the exact message, and highlight it so its surrounding context is visible. Identify the result by its source conversation and message ID or stable fixture index. Two messages with the same text must still lead to the correct occurrence.
+
+     4. User requirement 12e — Only a group admin can remove a member
+        In the existing group-management dialog, determine the active account’s role in the group being viewed. Enable “Xóa thành viên” only for an admin of that specific group. For an ordinary member, disable it and add the tooltip “Chỉ quản trị viên nhóm mới có thể xóa thành viên”.
+        Apply the same rule inside the integrated Admin window. A system ADMIN account only gets this action if it is also an admin of the selected chat group. Use the existing session and membership data. If the fixtures need a role field, make the smallest change needed to represent it reliably.
+
+     Verification
+     - Build chat-user first, then chat-admin using the actual POM paths in the repository. Verify the shared UI through both the standalone User workspace and the personal section inside the Admin window wherever applicable.
+     - Check these cases explicitly: forgot-password wording, group creation from a filtered friend row, selecting two messages, jumping to a result within the current chat, jumping to a result in another chat, and opening group management as both a group admin and an ordinary member.
+     - Keep this change scoped to the four UI fixes. The existing PostgreSQL schema, backend, submission archive, and report are outside this task. Leave the changes available for me to review before committing.
+     - After finishing, post a summary in Vietnamese in this chat. List the changed files, the build results, which cases you actually tested, and the exact menu or buttons I should click to check each fix on Windows. Mark any case you could not run.
+     ```
+4. **Purpose:**
+   - Implement four scoped Version 1 Swing UI fixes in `src/chat-user/` (shared by both standalone `UserApp` and integrated `AdminMainFrame`):
+     1. Requirement 3: Update forgot-password wording (`Gửi mật khẩu mới qua email`), add Vietnamese hint about receiving a randomly generated password by email, and show a clear Version 1 simulation notice.
+     2. Requirement 8: Add `Tạo nhóm` next to `Chat` on the `Bạn bè` page (available under `Trực tuyến` filter), passing the selected row's model username (`convertRowIndexToModel`) to pre-populate the reused group-creation dialog while preserving `Tạo nhóm` on `Tìm kiếm`.
+     3. Requirements 11e–g: Support selecting multiple messages with visible selection state, selection count banner, accurate multi-message in-memory hide/delete confirmation, and clear-on-switch; add a visible `Đi tới tin nhắn` button for search results in both scopes (`Cuộc trò chuyện này` and `Toàn bộ lịch sử`) identified by `(conversationUsername, messageId, fixtureIndex)` that restores the full transcript, scrolls to the exact occurrence (even when two messages share identical text), and highlights it in context.
+     4. Requirement 12e: Represent typed group membership roles (`GroupMember` with `ADMIN` / `MEMBER`) in `ChatData.java` and enable `Xóa thành viên` strictly when the active session account is a group admin of that specific group (disabling with tooltip `Chỉ quản trị viên nhóm mới có thể xóa thành viên` for ordinary members and system ADMIN accounts who are not group admins of that group).
+5. **AI-generated content:**
+   - **Updated `src/chat-user/src/main/java/com/chatsystem/user/AccountPanel.java` (Req 3):**
+     - Replaced the forgot-password submit button label `"Gửi liên kết khôi phục"` with `"Gửi mật khẩu mới qua email"`.
+     - Added a wrapped Vietnamese hint (`"Hệ thống sẽ tạo mật khẩu mới ngẫu nhiên và gửi đến địa chỉ email đã đăng ký của bạn."`) below the email input.
+     - Updated the button handler to display a clear local UI-only Version 1 simulation notice stating that no real email is sent.
+   - **Updated `src/chat-user/src/main/java/com/chatsystem/user/ChatData.java` (Req 11e–g & Req 12e):**
+     - Added deterministic message IDs (`<conversationUsername>-m<n>`), `MessageTarget(conversationUsername, messageId, fixtureIndex)`, and `DUPLICATE_TEXT_SAMPLE = "Đã xác nhận lịch họp!"` appearing twice in `Cộng đồng Java Việt Nam` (`group1-m3` at `09:36` and `group1-m7` at `10:30`) to verify exact-occurrence search jumping.
+     - Added typed `GroupMember(username, fullName, groupRole)` (`ADMIN` / `MEMBER`) and `Conversation.isGroupAdmin(accountUsername)` / `roleDescriptionFor(accountUsername)` aligned with `script/02_seed.sql` (`@nguyenvanan` is `ADMIN` in `group1` and `group2`, `MEMBER` in `group3`; system `@admin` is not a group admin in any of the three groups).
+   - **Updated `src/chat-user/src/main/java/com/chatsystem/user/PeoplePanel.java` (Req 8):**
+     - Added `"Tạo nhóm"` next to `"Chat"` on the `"Bạn bè"` page (always available, including when `"Trực tuyến"` filter is active) while preserving `"Tạo nhóm"` on the `"Tìm kiếm"` page.
+     - Added `selectedUsername()` using `table.convertRowIndexToModel(viewRow)` (and updated `confirm()` to convert view row index to model index) so filtering or sorting never passes the wrong user to the group-creation dialog.
+   - **Updated `src/chat-user/src/main/java/com/chatsystem/user/MessageBubble.java` (Req 11e–g):**
+     - Added visible selected state (`Ui.BLUE` border, `Ui.SOFT_BLUE` background, `[Đã chọn]` tag), search-jump highlight state (`Ui.WARNING` border, `#FFFBEB` background, `[Kết quả tìm kiếm]` tag), and a visible `"Đi tới tin nhắn"` action button (`putClientProperty("messageTarget", target)`) on search-result cards.
+   - **Updated `src/chat-user/src/main/java/com/chatsystem/user/MessageListPanel.java` (Req 11e–g):**
+     - Implemented multi-message selection (`Set<String> selectedMessageIds`), per-conversation in-memory message hiding (`hiddenByConversation`), automatic selection reset on conversation switch, synchronous + deferred `highlightAndScrollTo(messageId)`, and `"Đi tới tin nhắn"` callbacks for both `"Cuộc trò chuyện này"` and `"Toàn bộ lịch sử"` search scopes.
+   - **Updated `src/chat-user/src/main/java/com/chatsystem/user/ChatPanel.java` (Req 8, Req 11e–g, Req 12e):**
+     - Added the compact `selectionBar` banner displaying either the click-to-select hint or `"Đã chọn N tin nhắn trong cuộc trò chuyện hiện tại"` with `"Ẩn/Xóa (N)"` and `"Bỏ chọn"` buttons; updated the hide/delete confirmation dialog to display the exact selected count and hide messages in memory upon confirmation.
+     - Implemented `jumpToMessage(MessageTarget)` to clear the search filter, open the source conversation, restore its full transcript, highlight the exact message occurrence, and scroll it into view.
+     - Added `openCreateGroupDialog(String initialMemberUsername)` / `createGroupDialog(String)` to reuse the existing group-creation dialog pre-populated with the selected friend by username.
+     - Updated `createDialog("group")` so `"Xóa thành viên"` is enabled strictly when `current.isGroupAdmin(session.username())` (or in create mode), and disabled with tooltip `"Chỉ quản trị viên nhóm mới có thể xóa thành viên"` for ordinary group members and for system `ADMIN` accounts (`@admin`) who are not admins of that specific chat group.
+   - **Updated `src/chat-user/src/main/java/com/chatsystem/user/UserApp.java` & `UserWorkspaceHost.java`:**
+     - Wired `chat::openCreateGroupDialog` into all `PeoplePanel` instances (`Bạn bè` and `Tìm kiếm`) in both standalone `UserApp` and embedded `UserWorkspaceHost` (used by `AdminMainFrame`), and exposed clean read-only verification accessors on `UserWorkspaceHost`.
+   - **Updated `AI-LOG.md` (`Entry 21`).**
+6. **Student's independent work and edits/validation:**
+   - Student specified the four Version 1 UI fixes (Req 3, Req 8, Req 11e–g, Req 12e) and the explicit verification cases across both standalone `chat-user` and integrated `chat-admin`.
+   - Additional student review/validation: `STUDENT TO COMPLETE`
+7. **Screenshots or chat history:**
+   - `evidence/chat_history/chatgpt.png`
+   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+8. **Verification and outcomes:**
+   - **Maven Build — `src/chat-user/pom.xml` (`mvn -f src/chat-user/pom.xml "-DskipTests" clean install` on JDK 21.0.13):**
+     - Outcome: **PASS (`BUILD SUCCESS` in `4.567 s`, exit code `0`)** — compiled 17 Java source files with `release 21` and installed `com.chatsystem:chat-user:1.0.0-SNAPSHOT` to local `.m2`.
+   - **Maven Build — `chat-admin/pom.xml` (`mvn -f chat-admin/pom.xml "-DskipTests" clean package` on JDK 21.0.13):**
+     - Outcome: **PASS (`BUILD SUCCESS` in `6.383 s`, exit code `0`)** — compiled 34 Java source files with `release 21` and packaged `chat-admin/target/chat-admin-1.0.0-SNAPSHOT.jar`.
+   - **Automated + Visual Swing Verification Across Standalone `UserApp` AND Integrated `AdminMainFrame` (`task-1342` on JDK 21.0.13):**
+     - Outcome: **PASS (`VERIFY_FOUR_FIXES_EXIT_CODE: 0`)** — verified live on the Swing EDT and visually inspected all 6 rendered PNG captures (`01_forgot_password.png`..`06_group_member_disabled_remove.png`):
+       1. Forgot-password button wording (`"Gửi mật khẩu mới qua email"`) and Vietnamese random-password email hint.
+       2. Creating a group from `"Bạn bè"` with `"Trực tuyến"` filter active and table sorted descending (confirmed model username `@hoangquocviet` pre-populated cleanly), plus `"Tạo nhóm"` preserved on `"Tìm kiếm"`.
+       3. Selecting 2 messages (`tranthibich-m1`, `tranthibich-m3`), selection bar count (`2`), confirmation count wording, clear-on-switch, and in-memory hiding.
+       4. Jumping to a local search result (`"Cuộc trò chuyện này"`) for BOTH occurrences of identical-text messages (`"Đã xác nhận lịch họp!"` → `group1-m7` at `10:30` and `group1-m3` at `09:36`) in `Cộng đồng Java Việt Nam`, restoring full transcript, scrolling into view, and highlighting the exact occurrence.
+       5. Jumping to a global search result (`"Toàn bộ lịch sử"`, query `"14:00"`) into another conversation (`Phạm Minh Châu` / `phamminhchau-m3` in standalone `UserApp` and `Lê Hoàng Nam` / `lehoangnam-m3` in integrated `AdminMainFrame`).
+       6. Group management `"Xóa thành viên"` enabled for `@nguyenvanan` in `Cộng đồng Java Việt Nam` (group `ADMIN`), disabled with exact tooltip `"Chỉ quản trị viên nhóm mới có thể xóa thành viên"` for `@nguyenvanan` in `CLB Thuật Toán & AI` (ordinary `MEMBER`), and disabled with the exact same tooltip for system `ADMIN` (`@admin`) inside integrated `AdminMainFrame` when viewing `Cộng đồng Java Việt Nam` (not a group admin of that group).
+   - **Existing User UI Smoke Suite (`com.chatsystem.user.PreviewCapture`, `task-1342`):**
+     - Outcome: **PASS (`PREVIEW_CAPTURE_EXIT_CODE: 0`)** — `PASS: rendered 17 windows; friend filters, local/global/empty message search, conversation search and group filter verified`.

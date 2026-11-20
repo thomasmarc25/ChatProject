@@ -50,7 +50,7 @@ When packaging the final Version 1 submission archive (do **not** restructure or
 | Item | Owner | Current Status in This Repository | Remaining Action Before Submission |
 |---|---|---|---|
 | **Administrator Subsystem UI (`chat-admin/`)** | **Member 2** | **COMPLETED & VERIFIED** (`34` Java classes covering all 9 Admin requirement groups and 7 modal dialogs; compiles cleanly on JDK 21 with `mvn "-DskipTests" clean package`). | Copy `chat-admin/` (excluding `target/`) into the submission `src/` folder. |
-| **User Subsystem UI (12 requirement groups on Page 3 of `Final_Project.pdf`)** | **Member 1** | **PENDING INTEGRATION FROM MEMBER 1** (Not present in this repository branch). | Member 1 must complete and merge/copy all User subsystem screens into `src/` and verify compilation before packaging. |
+| **User Subsystem UI (12 requirement groups on Page 3 of `Final_Project.pdf`)** | **Member 1** | **INTEGRATED FROM `origin/Phuc` (`src/chat-user/`)** (`13` Java classes under `src/chat-user/src/main/java/com/chatsystem/user/`, entry point `com.chatsystem.user.UserApp`, plus `run-user.cmd` and 17 UI screenshots in `git/screenshots/`). | Copy `src/chat-user/` (excluding `target/`) alongside `chat-admin/` in the submission `src/` folder. |
 
 ### 2.2. `script/` — PostgreSQL Database Creation & Verification Scripts
 
@@ -60,14 +60,16 @@ When packaging the final Version 1 submission archive (do **not** restructure or
 | `script/02_seed.sql` | **Member 2** | **COMPLETED & VERIFIED** on PostgreSQL 18.4 (deterministic synthetic fixtures, PBKDF2-HMAC-SHA256 local test hashes, sequence `setval` synchronization). | Copy directly into the submission `script/` folder. |
 | `script/03_admin_queries.sql` | **Member 2** | **COMPLETED & VERIFIED** on PostgreSQL 18.4 (runnable SQL with `params` CTEs for all 10 Admin query patterns). | Copy directly into the submission `script/` folder. |
 | `script/04_verify.sql` | **Member 2** | **COMPLETED & VERIFIED** on PostgreSQL 18.4 (`PASS [A1]`–`PASS [A9]` and `PASS [B1]`–`PASS [B9]` inside `BEGIN; ... ROLLBACK;`). | Copy directly into the submission `script/` folder. |
-| `script/README.md` | **Member 2** | **COMPLETED** (documents clean-database prerequisite and execution order). | Copy directly into the submission `script/` folder. |
+| `script/01_person1.sql` | **Member 1 & Member 2** | **RECONCILED & VERIFIED** on PostgreSQL 18.4 (read-only User-subsystem reference queries adapted to `01_schema.sql`; zero competing `CREATE TABLE` DDL). | Copy into the submission `script/` folder if desired, or keep `01_schema.sql` as the primary schema script. |
+| `script/verify_person1.sql` | **Member 1 & Member 2** | **RECONCILED & VERIFIED** on PostgreSQL 18.4 (rollback-safe User-subsystem constraint and visibility assertions adapted to `01_schema.sql`). | Copy into the submission `script/` folder. |
+| `script/README.md` | **Member 2** | **COMPLETED** (documents single unified database setup path and execution order). | Copy directly into the submission `script/` folder. |
 
 ### 2.3. `git/` — Screenshots of Each Member's Real Git Commits
 
 | Item | Owner | Current Status | Remaining Action Before Submission |
 |---|---|---|---|
 | **Member 2 Git Commit Screenshots** | **Member 2** | **MANUAL CAPTURE REQUIRED** (Real commits exist on `main`, e.g., `f1087f9`..`af313b2`, plus the final documentation commit). | Capture a real screenshot of `git log --author="<Member 2>"` or the GitHub/GitLab commit history page showing Member 2's commits, and save it to `git/`. |
-| **Member 1 Git Commit Screenshots** | **Member 1** | **MANUAL CAPTURE REQUIRED** | Member 1 must capture a real screenshot of their Git commit history in the shared repository and save it to `git/`. |
+| **Member 1 Git Commit Screenshots** | **Member 1** | **INTEGRATED FROM `origin/Phuc` (`git/commits-phuc.png`)** | Included in `git/commits-phuc.png`. |
 
 ### 2.4. Version 1 Team Report (5 Mandatory Sections from `Final_Project.pdf`, Page 4)
 

@@ -147,7 +147,7 @@ public class ChatGroupManagementPanel extends JPanel {
         readOnlyBadge.setOpaque(true);
         readOnlyBadge.setBackground(AppTheme.PRIMARY_SOFT_BG);
         readOnlyBadge.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(0xBF, 0xDB, 0xFE), 1, true),
+                BorderFactory.createLineBorder(AppTheme.PRIMARY_BORDER, 1, true),
                 BorderFactory.createEmptyBorder(7, 14, 7, 14)
         ));
 
@@ -314,26 +314,7 @@ public class ChatGroupManagementPanel extends JPanel {
     }
 
     private JScrollPane createTableScrollPane() {
-        groupTable.setFont(AppTheme.FONT_BODY);
-        groupTable.setForeground(AppTheme.TEXT_PRIMARY);
-        groupTable.setBackground(AppTheme.SURFACE_CARD);
-        groupTable.setRowHeight(AppTheme.TABLE_ROW_HEIGHT);
-        groupTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        groupTable.setSelectionBackground(AppTheme.PRIMARY_SOFT_BG);
-        groupTable.setSelectionForeground(AppTheme.TEXT_PRIMARY);
-        groupTable.setShowHorizontalLines(true);
-        groupTable.setShowVerticalLines(false);
-        groupTable.setGridColor(AppTheme.BORDER);
-        groupTable.setIntercellSpacing(new Dimension(0, 1));
-        groupTable.setFillsViewportHeight(true);
-
-        JTableHeader header = groupTable.getTableHeader();
-        header.setReorderingAllowed(false);
-        header.setPreferredSize(new Dimension(0, 40));
-        header.setFont(AppTheme.FONT_CAPTION_BOLD);
-        header.setBackground(AppTheme.PAGE_BG);
-        header.setForeground(AppTheme.TEXT_SECONDARY);
-        header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, AppTheme.BORDER));
+        AppTheme.configureSharedTable(groupTable);
 
         DefaultTableCellRenderer centerRenderer = createPaddedRenderer(SwingConstants.CENTER, AppTheme.FONT_BODY, AppTheme.TEXT_SECONDARY);
         DefaultTableCellRenderer boldNameRenderer = createPaddedRenderer(SwingConstants.LEFT, AppTheme.FONT_BODY_BOLD, AppTheme.TEXT_PRIMARY);
@@ -573,29 +554,11 @@ public class ChatGroupManagementPanel extends JPanel {
     }
 
     private JButton createPrimaryOutlineButton(String text, int width) {
-        JButton btn = new JButton(text);
-        btn.setFont(AppTheme.FONT_CAPTION_BOLD);
-        btn.setForeground(AppTheme.PRIMARY);
-        btn.setBackground(AppTheme.PRIMARY_SOFT_BG);
-        btn.setFocusPainted(false);
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.setMargin(new Insets(0, 6, 0, 6));
-        btn.setPreferredSize(new Dimension(width, AppTheme.CONTROL_HEIGHT));
-        btn.setMinimumSize(new Dimension(width, AppTheme.CONTROL_HEIGHT));
-        return btn;
+        return AppTheme.createPrimaryOutlineButton(text, width);
     }
 
     private JButton createSecondaryButton(String text, int width) {
-        JButton btn = new JButton(text);
-        btn.setFont(AppTheme.FONT_BODY_BOLD);
-        btn.setForeground(AppTheme.TEXT_PRIMARY);
-        btn.setBackground(AppTheme.SURFACE_CARD);
-        btn.setFocusPainted(false);
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.setMargin(new Insets(0, 6, 0, 6));
-        btn.setPreferredSize(new Dimension(width, AppTheme.CONTROL_HEIGHT));
-        btn.setMinimumSize(new Dimension(width, AppTheme.CONTROL_HEIGHT));
-        return btn;
+        return AppTheme.createSecondaryButton(text, width);
     }
 
     private DefaultTableCellRenderer createPaddedRenderer(int alignment, java.awt.Font font, Color textColor) {
@@ -719,7 +682,7 @@ public class ChatGroupManagementPanel extends JPanel {
             int rightX = startX + leftW + gap;
             g2.setColor(AppTheme.PRIMARY_SOFT_BG);
             g2.fillRoundRect(rightX, y, rightW, btnH, 6, 6);
-            g2.setColor(new Color(0xBF, 0xDB, 0xFE));
+            g2.setColor(AppTheme.PRIMARY_BORDER);
             g2.drawRoundRect(rightX, y, rightW - 1, btnH - 1, 6, 6);
             g2.setColor(AppTheme.PRIMARY);
             g2.drawString(rightText, rightX + 8, textY);

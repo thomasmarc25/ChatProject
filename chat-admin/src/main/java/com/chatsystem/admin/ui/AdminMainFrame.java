@@ -4,6 +4,8 @@ import com.chatsystem.admin.components.HeaderPanel;
 import com.chatsystem.admin.components.SidebarPanel;
 import com.chatsystem.admin.data.MockUserRepository;
 import com.chatsystem.admin.theme.AppTheme;
+import com.chatsystem.user.UserSessionProfile;
+import com.chatsystem.user.UserWorkspaceHost;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -13,11 +15,14 @@ import java.awt.CardLayout;
 
 /**
  * Main application frame for ChatSystem Admin (Version 1 Mock-Data Preview).
- * Hosts the 240px dark SidebarPanel (all 9 navigation destinations), 64px white HeaderPanel,
- * and the CardLayout content deck containing all 9 completed Administrator screens.
+ * Hosts the dark {@link SidebarPanel} organized into {@code Cá nhân} (6 embedded User pages
+ * reused directly from {@code com.chatsystem.user.UserWorkspaceHost}) and {@code Quản trị}
+ * (all 9 Administrator screens), the 64px white {@link HeaderPanel}, and the {@link CardLayout}
+ * content deck preserving active conversation and draft state across switches.
  */
 public class AdminMainFrame extends JFrame {
 
+    private static final String CARD_PERSONAL_WORKSPACE = "PERSONAL_WORKSPACE";
     private static final String CARD_USER_MANAGEMENT = "USER_MANAGEMENT";
     private static final String CARD_LOGIN_HISTORY = "LOGIN_HISTORY";
     private static final String CARD_CHAT_GROUPS = "CHAT_GROUPS";
@@ -33,6 +38,7 @@ public class AdminMainFrame extends JFrame {
     private final CardLayout contentCardLayout;
     private final JPanel contentDeckPanel;
 
+    private UserWorkspaceHost personalWorkspace;
     private RegistrationChartPanel registrationChartPanel;
     private ActivityChartPanel activityChartPanel;
 
@@ -63,6 +69,14 @@ public class AdminMainFrame extends JFrame {
         JPanel mainColumn = new JPanel(new BorderLayout());
         mainColumn.setBackground(AppTheme.PAGE_BG);
 
+        // Reuse Member 1's actual Swing panels for all 6 personal destinations
+        this.personalWorkspace = new UserWorkspaceHost(
+                UserSessionProfile.DEMO_ADMIN,
+                true,
+                this::navigateTo,
+                null
+        );
+
         MockUserRepository userRepository = new MockUserRepository();
         UserManagementPanel userManagementPanel = new UserManagementPanel(userRepository);
         LoginHistoryPanel loginHistoryPanel = new LoginHistoryPanel(userRepository);
@@ -75,6 +89,7 @@ public class AdminMainFrame extends JFrame {
         this.activityChartPanel = new ActivityChartPanel(userRepository);
 
         contentDeckPanel.setBackground(AppTheme.PAGE_BG);
+        contentDeckPanel.add(personalWorkspace, CARD_PERSONAL_WORKSPACE);
         contentDeckPanel.add(userManagementPanel, CARD_USER_MANAGEMENT);
         contentDeckPanel.add(loginHistoryPanel, CARD_LOGIN_HISTORY);
         contentDeckPanel.add(chatGroupManagementPanel, CARD_CHAT_GROUPS);
@@ -101,8 +116,16 @@ public class AdminMainFrame extends JFrame {
 
     public void navigateTo(String selectedSection) {
         sidebarPanel.setSelectedItem(selectedSection);
-        headerPanel.setSection(selectedSection);
+        boolean isPersonal = SidebarPanel.isPersonalDestination(selectedSection);
+        headerPanel.setSection(isPersonal ? "Cá nhân" : "Quản trị", selectedSection);
         setTitle("ChatSystem Admin (Version 1 Mock Preview) — " + selectedSection);
+
+        if (isPersonal) {
+            personalWorkspace.showPersonalPage(selectedSection);
+            contentCardLayout.show(contentDeckPanel, CARD_PERSONAL_WORKSPACE);
+            return;
+        }
+
         switch (selectedSection) {
             case SidebarPanel.NAV_USERS -> contentCardLayout.show(contentDeckPanel, CARD_USER_MANAGEMENT);
             case SidebarPanel.NAV_LOGIN_HISTORY -> contentCardLayout.show(contentDeckPanel, CARD_LOGIN_HISTORY);
@@ -115,6 +138,10 @@ public class AdminMainFrame extends JFrame {
             case SidebarPanel.NAV_ACTIVITY_CHART -> contentCardLayout.show(contentDeckPanel, CARD_ACTIVITY_CHART);
             default -> contentCardLayout.show(contentDeckPanel, CARD_USER_MANAGEMENT);
         }
+    }
+
+    public UserWorkspaceHost getPersonalWorkspace() {
+        return personalWorkspace;
     }
 
     public RegistrationChartPanel getRegistrationChartPanel() {

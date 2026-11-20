@@ -211,55 +211,13 @@ public class PasswordUpdateDialog extends JDialog {
         JPanel buttonGroup = new JPanel(new FlowLayout(FlowLayout.RIGHT, AppTheme.SPACING_SM, 0));
         buttonGroup.setOpaque(false);
 
-        JButton cancelButton = new JButton("Hủy");
-        cancelButton.setFont(AppTheme.FONT_BODY_BOLD);
-        cancelButton.setForeground(AppTheme.TEXT_PRIMARY);
-        cancelButton.setBackground(AppTheme.SURFACE_CARD);
-        cancelButton.setFocusPainted(false);
-        cancelButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        cancelButton.setPreferredSize(new Dimension(96, AppTheme.CONTROL_HEIGHT));
+        JButton cancelButton = AppTheme.createSecondaryButton("Hủy", 96);
         cancelButton.addActionListener(e -> {
             clearSensitiveBuffers();
             dispose();
         });
 
-        JButton updateButton = new JButton("Cập nhật mật khẩu") {
-            private boolean hovered = false;
-
-            {
-                setFont(AppTheme.FONT_BODY_BOLD);
-                setForeground(AppTheme.SURFACE_CARD);
-                setFocusPainted(false);
-                setBorderPainted(false);
-                setContentAreaFilled(false);
-                setOpaque(false);
-                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                setPreferredSize(new Dimension(168, AppTheme.CONTROL_HEIGHT));
-                addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseEntered(MouseEvent e) {
-                        hovered = true;
-                        repaint();
-                    }
-
-                    @Override
-                    public void mouseExited(MouseEvent e) {
-                        hovered = false;
-                        repaint();
-                    }
-                });
-            }
-
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(hovered ? AppTheme.PRIMARY_HOVER : AppTheme.PRIMARY);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), AppTheme.CORNER_RADIUS, AppTheme.CORNER_RADIUS);
-                g2.dispose();
-                super.paintComponent(g);
-            }
-        };
+        JButton updateButton = AppTheme.createPrimaryButton("Cập nhật mật khẩu", 168);
         updateButton.addActionListener(e -> handleValidateAndClose());
 
         buttonGroup.add(cancelButton);

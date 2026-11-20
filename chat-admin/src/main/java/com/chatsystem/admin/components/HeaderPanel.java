@@ -11,15 +11,15 @@ import javax.swing.SwingConstants;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.RenderingHints;
 
 /**
- * Top 64px white header bar displaying the active section title, breadcrumb trail,
- * and administrator avatar/profile indicator.
+ * Top 64px white header bar displaying the active section breadcrumb/title,
+ * Version 1 mock-data indicator, and administrator profile badge aligned
+ * with Member 1's User application header style ({@code ChatPanel} & {@code AvatarIcon}).
  */
 public class HeaderPanel extends JPanel {
 
@@ -36,12 +36,12 @@ public class HeaderPanel extends JPanel {
                 BorderFactory.createEmptyBorder(0, AppTheme.CONTENT_PADDING, 0, AppTheme.CONTENT_PADDING)
         ));
 
-        // Left: Breadcrumb and Section Title
+        // Left: Breadcrumb and Active Section Title
         JPanel titleStack = new JPanel();
         titleStack.setLayout(new BoxLayout(titleStack, BoxLayout.Y_AXIS));
         titleStack.setOpaque(false);
 
-        breadcrumbLabel = new JLabel("Trang chủ / Quản lý người dùng");
+        breadcrumbLabel = new JLabel("ChatSystem Admin  /  Quản trị  /  Quản lý người dùng");
         breadcrumbLabel.setFont(AppTheme.FONT_CAPTION);
         breadcrumbLabel.setForeground(AppTheme.TEXT_SECONDARY);
         breadcrumbLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -57,26 +57,45 @@ public class HeaderPanel extends JPanel {
         titleStack.add(sectionTitleLabel);
         titleStack.add(Box.createVerticalGlue());
 
-        // Right: Administrator Avatar / Profile Indicator
+        // Right: Version 1 Mock Badge + Administrator Avatar & Presence Indicator
         JPanel rightContainer = new JPanel(new GridBagLayout());
         rightContainer.setOpaque(false);
-
-        JPanel profileIndicator = createProfileIndicator();
-        rightContainer.add(profileIndicator);
+        rightContainer.add(createProfileIndicator());
 
         add(titleStack, BorderLayout.WEST);
         add(rightContainer, BorderLayout.EAST);
     }
 
     public void setSection(String sectionName) {
+        setSection("Quản trị", sectionName);
+    }
+
+    public void setSection(String groupLabel, String sectionName) {
         sectionTitleLabel.setText(sectionName);
-        breadcrumbLabel.setText("Trang chủ / " + sectionName);
+        breadcrumbLabel.setText("ChatSystem Admin  /  " + groupLabel + "  /  " + sectionName);
     }
 
     private JPanel createProfileIndicator() {
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.X_AXIS));
         container.setOpaque(false);
+
+        JLabel mockPreviewBadge = new JLabel("Phiên bản 1 · Dữ liệu mẫu");
+        mockPreviewBadge.setFont(AppTheme.FONT_CAPTION_BOLD);
+        mockPreviewBadge.setForeground(AppTheme.PRIMARY);
+        mockPreviewBadge.setOpaque(true);
+        mockPreviewBadge.setBackground(AppTheme.PRIMARY_SOFT_BG);
+        mockPreviewBadge.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(AppTheme.PRIMARY_BORDER, 1, true),
+                BorderFactory.createEmptyBorder(4, 10, 4, 10)
+        ));
+        mockPreviewBadge.setToolTipText(
+                "Phiên bản 1: Ứng dụng giao diện quản trị sử dụng dữ liệu mẫu cố định trong bộ nhớ (In-memory mock fixtures)"
+        );
+        mockPreviewBadge.setAlignmentY(Component.CENTER_ALIGNMENT);
+
+        AvatarCircle avatar = new AvatarCircle("A", 38);
+        avatar.setAlignmentY(Component.CENTER_ALIGNMENT);
 
         JPanel textColumn = new JPanel();
         textColumn.setLayout(new BoxLayout(textColumn, BoxLayout.Y_AXIS));
@@ -86,51 +105,36 @@ public class HeaderPanel extends JPanel {
         JLabel nameLabel = new JLabel("Quản trị viên");
         nameLabel.setFont(AppTheme.FONT_BODY_BOLD);
         nameLabel.setForeground(AppTheme.TEXT_PRIMARY);
-        nameLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel roleLabel = new JLabel("Administrator");
-        roleLabel.setFont(AppTheme.FONT_CAPTION);
-        roleLabel.setForeground(AppTheme.TEXT_SECONDARY);
-        roleLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        JLabel statusLabel = new JLabel("● Đang hoạt động");
+        statusLabel.setFont(AppTheme.FONT_CAPTION);
+        statusLabel.setForeground(AppTheme.SUCCESS);
+        statusLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         textColumn.add(Box.createVerticalGlue());
         textColumn.add(nameLabel);
         textColumn.add(Box.createVerticalStrut(1));
-        textColumn.add(roleLabel);
+        textColumn.add(statusLabel);
         textColumn.add(Box.createVerticalGlue());
-
-        AvatarIndicator avatar = new AvatarIndicator("AD", 36);
-        avatar.setAlignmentY(Component.CENTER_ALIGNMENT);
-
-        JLabel mockPreviewBadge = new JLabel("Version 1 • Mock Data Preview");
-        mockPreviewBadge.setFont(AppTheme.FONT_CAPTION_BOLD);
-        mockPreviewBadge.setForeground(AppTheme.TEXT_SECONDARY);
-        mockPreviewBadge.setOpaque(true);
-        mockPreviewBadge.setBackground(AppTheme.NEUTRAL_BG);
-        mockPreviewBadge.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(AppTheme.BORDER, 1, true),
-                BorderFactory.createEmptyBorder(4, 10, 4, 10)
-        ));
-        mockPreviewBadge.setToolTipText("Phiên bản 1: Ứng dụng giao diện quản trị sử dụng dữ liệu mẫu cố định trong bộ nhớ (In-memory mock fixtures)");
-        mockPreviewBadge.setAlignmentY(Component.CENTER_ALIGNMENT);
 
         container.add(mockPreviewBadge);
         container.add(Box.createHorizontalStrut(AppTheme.SPACING_MD));
-        container.add(textColumn);
-        container.add(Box.createHorizontalStrut(AppTheme.SPACING_SM + 4));
         container.add(avatar);
+        container.add(Box.createHorizontalStrut(AppTheme.SPACING_SM + 2));
+        container.add(textColumn);
 
         return container;
     }
 
     /**
-     * Circular avatar indicator with online status badge drawn via Java2D.
+     * Circular avatar icon matching {@code com.chatsystem.user.AvatarIcon}.
      */
-    private static final class AvatarIndicator extends JPanel {
+    private static final class AvatarCircle extends JPanel {
 
         private final int size;
 
-        private AvatarIndicator(String initials, int size) {
+        private AvatarCircle(String initial, int size) {
             super(new BorderLayout());
             this.size = size;
             setOpaque(false);
@@ -139,30 +143,18 @@ public class HeaderPanel extends JPanel {
             setMinimumSize(dim);
             setMaximumSize(dim);
 
-            JLabel initialsLabel = new JLabel(initials, SwingConstants.CENTER);
-            initialsLabel.setFont(AppTheme.FONT_CAPTION_BOLD);
-            initialsLabel.setForeground(AppTheme.SURFACE_CARD);
-            add(initialsLabel, BorderLayout.CENTER);
+            JLabel label = new JLabel(initial, SwingConstants.CENTER);
+            label.setFont(AppTheme.FONT_BODY_BOLD);
+            label.setForeground(AppTheme.SURFACE_CARD);
+            add(label, BorderLayout.CENTER);
         }
 
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-            // Main avatar circle
             g2.setColor(AppTheme.PRIMARY);
             g2.fillOval(0, 0, size - 1, size - 1);
-
-            // Online indicator dot in bottom-right corner
-            int dotSize = 10;
-            int dotX = size - dotSize;
-            int dotY = size - dotSize;
-            g2.setColor(AppTheme.SURFACE_CARD);
-            g2.fillOval(dotX - 2, dotY - 2, dotSize + 3, dotSize + 3);
-            g2.setColor(AppTheme.SUCCESS);
-            g2.fillOval(dotX, dotY, dotSize - 1, dotSize - 1);
-
             g2.dispose();
             super.paintComponent(g);
         }
