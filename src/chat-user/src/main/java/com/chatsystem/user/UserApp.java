@@ -11,7 +11,7 @@ public final class UserApp extends JFrame {
     final JPanel content = new JPanel(cards);
     final ChatPanel chat = new ChatPanel();
     final AccountPanel account = new AccountPanel(() -> showPage("Tin nhắn"), this::switchToAdminWorkspace);
-    final PeoplePanel friends = new PeoplePanel("Bạn bè", this::openChatForTarget, () -> chat.openDialog("create"));
+    final PeoplePanel friends = new PeoplePanel("Bạn bè", this::openChatForTarget, chat::openCreateGroupDialog);
     private final Map<String, JButton> navigation = new LinkedHashMap<>();
 
     public UserApp() {
@@ -40,8 +40,8 @@ public final class UserApp extends JFrame {
 
         content.add(chat, "Tin nhắn");
         content.add(friends, "Bạn bè");
-        content.add(new PeoplePanel("Yêu cầu kết bạn", this::openChatForTarget, () -> chat.openDialog("create")), "Yêu cầu kết bạn");
-        content.add(new PeoplePanel("Tìm người", this::openChatForTarget, () -> chat.openDialog("create")), "Tìm người");
+        content.add(new PeoplePanel("Yêu cầu kết bạn", this::openChatForTarget, chat::openCreateGroupDialog), "Yêu cầu kết bạn");
+        content.add(new PeoplePanel("Tìm người", this::openChatForTarget, chat::openCreateGroupDialog), "Tìm người");
         content.add(account, "Tài khoản");
 
         addNavigation(top, "Tin nhắn", "chat", () -> showPage("Tin nhắn"));

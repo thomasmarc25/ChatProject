@@ -2,10 +2,14 @@ package com.chatsystem.user;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /** Main Swing chat screen matching the team's three-column reference. */
 final class ChatPanel extends JPanel {
+    static final String NON_ADMIN_REMOVE_TOOLTIP = "Chỉ quản trị viên nhóm mới có thể xóa thành viên";
+
     final MessageListPanel messages = new MessageListPanel();
     final JTextField search = Ui.input("Tìm nội dung tin nhắn...");
     final JComboBox<String> scope = new JComboBox<>(new String[]{"Cuộc trò chuyện này", "Toàn bộ lịch sử"});
@@ -13,6 +17,11 @@ final class ChatPanel extends JPanel {
     final JLabel title = new JLabel(), status = new JLabel(), avatar = new JLabel();
     final JPanel searchBar = new JPanel(new BorderLayout(8, 0));
     final JLabel searchSummary = new JLabel();
+    final JPanel selectionBar = new JPanel(new BorderLayout(8, 0));
+    final JLabel selectionLabel = new JLabel();
+    final JPanel selectionActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
+    final JButton hideSelectedBtn;
+    final JButton clearSelectionBtn;
     final ConversationListPanel conversationList;
     final UserSessionProfile session;
     ChatData.Conversation current = ChatData.CONVERSATIONS.get(0);
@@ -46,7 +55,7 @@ final class ChatPanel extends JPanel {
         identity.add(title); identity.add(status); header.add(identity);
 
         JButton find = compact("Tìm tin", () -> showSearch(!searchBar.isVisible()));
-        JButton create = compact("+ Tạo nhóm", () -> openDialog("create"));
+        JButton create = compact("+ Tạo nhóm", () -> openCreateGroupDialog(""));
         JButton details = compact("Chi tiết", () -> {});
         details.addActionListener(e -> showDetails(details));
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
@@ -62,12 +71,36 @@ final class ChatPanel extends JPanel {
         searchActions.add(scope); searchActions.add(compact("Tìm", this::searchMessages));
         searchBar.add(searchActions, BorderLayout.EAST);
         searchBar.setVisible(false);
+
+        JPanel barsWrapper = new JPanel();
+        barsWrapper.setLayout(new BoxLayout(barsWrapper, BoxLayout.Y_AXIS));
+        barsWrapper.setOpaque(false);
+
         JPanel searchWrapper = new JPanel(new BorderLayout()); searchWrapper.setOpaque(false);
         searchWrapper.add(searchBar, BorderLayout.NORTH);
         searchSummary.setForeground(Ui.MUTED);
         searchSummary.setBorder(BorderFactory.createEmptyBorder(0, 14, 6, 14));
         searchSummary.setVisible(false);
-        searchWrapper.add(searchSummary, BorderLayout.SOUTH); top.add(searchWrapper);
+        searchWrapper.add(searchSummary, BorderLayout.SOUTH);
+        barsWrapper.add(searchWrapper);
+
+        // Selection hint & multi-select status bar
+        selectionBar.setBackground(Color.WHITE);
+        selectionBar.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(0, 0, 1, 0, Ui.BORDER),
+            BorderFactory.createEmptyBorder(6, 14, 6, 14)
+        ));
+        selectionLabel.setFont(selectionLabel.getFont().deriveFont(12f));
+        hideSelectedBtn = compact("Ẩn/Xóa (0)", this::confirmHideSelectedMessages);
+        clearSelectionBtn = compact("Bỏ chọn", messages::clearSelection);
+        selectionActions.setOpaque(false);
+        selectionActions.add(hideSelectedBtn);
+        selectionActions.add(clearSelectionBtn);
+        selectionBar.add(selectionLabel, BorderLayout.CENTER);
+        selectionBar.add(selectionActions, BorderLayout.EAST);
+        barsWrapper.add(selectionBar);
+
+        top.add(barsWrapper, BorderLayout.CENTER);
         search.addActionListener(e -> searchMessages());
         conversation.add(top, BorderLayout.NORTH);
         conversation.add(messages);
@@ -89,19 +122,44 @@ final class ChatPanel extends JPanel {
         bottom.add(send, BorderLayout.EAST);
         conversation.add(bottom, BorderLayout.SOUTH);
 
+        messages.setOnSelectionChanged(this::updateSelectionBar);
+        messages.setOnJumpToMessage(this::jumpToMessage);
+
         conversationList = new ConversationListPanel(this::applyConversation);
         add(conversationList, BorderLayout.WEST);
         add(conversation);
         applyConversation(current);
+        updateSelectionBar();
     }
 
     private JButton compact(String text, Runnable action) {
         JButton b = new JButton(text);
         b.addActionListener(e -> action.run());
         b.putClientProperty("JButton.minimumWidth", 0);
-        b.setMargin(new Insets(6, 10, 6, 10));
-        b.setPreferredSize(new Dimension(b.getPreferredSize().width + 16, 36));
+        b.setMargin(new Insets(4, 10, 4, 10));
+        b.setPreferredSize(new Dimension(b.getPreferredSize().width + 16, 32));
         return b;
+    }
+
+    private void updateSelectionBar() {
+        int count = messages.selectedCount();
+        if (count == 0) {
+            selectionBar.setBackground(Color.WHITE);
+            selectionLabel.setForeground(Ui.MUTED);
+            selectionLabel.setFont(selectionLabel.getFont().deriveFont(Font.PLAIN, 12f));
+            selectionLabel.setText("Mẹo: Nhấp vào một hoặc nhiều tin nhắn bên dưới để chọn và ẩn/xóa trên bộ nhớ.");
+            selectionActions.setVisible(false);
+        } else {
+            selectionBar.setBackground(Ui.SOFT_BLUE);
+            selectionLabel.setForeground(Ui.BLUE);
+            selectionLabel.setFont(selectionLabel.getFont().deriveFont(Font.BOLD, 12f));
+            selectionLabel.setText("Đã chọn " + count + " tin nhắn trong cuộc trò chuyện hiện tại");
+            hideSelectedBtn.setText("Ẩn/Xóa (" + count + ")");
+            hideSelectedBtn.setPreferredSize(new Dimension(hideSelectedBtn.getPreferredSize().width + 8, 30));
+            selectionActions.setVisible(true);
+        }
+        selectionBar.revalidate();
+        selectionBar.repaint();
     }
 
     @Override public void doLayout() {
@@ -155,9 +213,30 @@ final class ChatPanel extends JPanel {
     void searchMessages() {
         messages.filter(search.getText(), scope.getSelectedIndex() == 1);
         searchSummary.setText(messages.visibleCount() + " kết quả trong " +
-                (scope.getSelectedIndex() == 1 ? "toàn bộ lịch sử mẫu" : "cuộc trò chuyện này"));
+                (scope.getSelectedIndex() == 1 ? "toàn bộ lịch sử mẫu" : "cuộc trò chuyện này")
+                + (messages.visibleCount() > 0 ? " — Nhấn \"Đi tới tin nhắn\" để mở ngữ cảnh gốc" : ""));
         searchSummary.setVisible(true);
         revalidate();
+    }
+
+    /**
+     * Jumps to an exact search result occurrence: opens its source conversation,
+     * restores the full transcript, scrolls to the exact message, and highlights it in context.
+     */
+    void jumpToMessage(ChatData.MessageTarget target) {
+        if (target == null) return;
+        search.setText("");
+        searchBar.setVisible(false);
+        searchSummary.setVisible(false);
+
+        if (!current.username().equalsIgnoreCase(target.conversationUsername())) {
+            conversationList.groupsOnly(false);
+            selectConversationByTarget(target.conversationUsername());
+        }
+        messages.filter("", false);
+        messages.highlightAndScrollTo(target.messageId());
+        revalidate();
+        repaint();
     }
 
     private void showDetails(JButton anchor) {
@@ -169,8 +248,10 @@ final class ChatPanel extends JPanel {
                 + "\nThông tin mẫu đồng bộ với script/02_seed.sql."));
         menu.addSeparator();
         item(menu, "Gợi ý soạn tin bằng LLM", () -> openDialog("llm"));
-        item(menu, "Xóa / ẩn tin đã chọn", () -> confirm("Xóa/ẩn tin nhắn chỉ với bạn"));
-        item(menu, "Xóa lịch sử trò chuyện", () -> confirm("Xóa lịch sử chỉ với bạn"));
+        int selCount = messages.selectedCount();
+        String hideLabel = selCount > 0 ? "Xóa / ẩn " + selCount + " tin đã chọn" : "Xóa / ẩn tin đã chọn";
+        item(menu, hideLabel, this::confirmHideSelectedMessages);
+        item(menu, "Xóa lịch sử trò chuyện", this::confirmClearHistory);
         item(menu, "Báo cáo spam", () -> openDialog("spam"));
         menu.show(anchor, 0, anchor.getHeight());
     }
@@ -180,6 +261,14 @@ final class ChatPanel extends JPanel {
     }
 
     JDialog createDialog(String type) {
+        return createDialog(type, "");
+    }
+
+    JDialog createGroupDialog(String initialMemberUsername) {
+        return createDialog("create", initialMemberUsername);
+    }
+
+    JDialog createDialog(String type, String initialMemberUsername) {
         Window owner = SwingUtilities.getWindowAncestor(this);
         JDialog d = new JDialog(owner, switch (type) {
             case "llm" -> "Trợ lý soạn tin";
@@ -217,48 +306,105 @@ final class ChatPanel extends JPanel {
             JTextField name = Ui.input("Tên nhóm");
             name.setText(createMode ? "" : current.name());
             Ui.field(p, 0, "Tên nhóm", name);
-            String[] memberItems = (createMode || current.members().isEmpty())
-                    ? new String[]{
-                        session.displayLabel() + " · Admin nhóm",
-                        "Trần Thị Bích Ngọc (@tranthibich) · Thành viên",
-                        "Lê Hoàng Nam (@lehoangnam) · Thành viên",
-                        "Hoàng Quốc Việt (@hoangquocviet) · Thành viên"
-                    }
-                    : current.members().toArray(new String[0]);
+
+            String[] memberItems = buildGroupMemberItems(createMode, initialMemberUsername);
             JList<String> members = new JList<>(memberItems);
             members.setVisibleRowCount(Math.min(5, memberItems.length));
             if (memberItems.length > 0) members.setSelectedIndex(0);
             Ui.field(p, 1, "Thành viên hiện tại", new JScrollPane(members));
-            Ui.field(p, 2, "Chọn người để thêm", new JComboBox<>(new String[]{
+
+            // Determine active account's role strictly inside this group (system ADMIN does not bypass group role)
+            boolean canRemoveMember = createMode || current.isGroupAdmin(session.username());
+            String roleText = createMode
+                    ? "Người tạo nhóm (Admin nhóm)"
+                    : current.roleDescriptionFor(session.username());
+            JLabel roleLabel = new JLabel(roleText);
+            roleLabel.setForeground(canRemoveMember ? Ui.SUCCESS : Ui.MUTED);
+            Ui.field(p, 2, "Vai trò của bạn", roleLabel);
+
+            Ui.field(p, 3, "Chọn người để thêm", new JComboBox<>(new String[]{
                 "Vũ Thị Phương Thảo (@vuthithao)",
                 "Ngô Thùy Dương (@ngothuyduong)",
                 "Đặng Quang Huy (@dangquanghuy)"
             }));
-            Ui.field(p, 3, "", Ui.row(Ui.button("Thêm", () -> Ui.demo(d)), Ui.button("Xóa thành viên", () -> Ui.demo(d))));
-            Ui.field(p, 4, "Quản trị nhóm", Ui.button("Gán admin", () -> Ui.demo(d)));
+
+            JButton addMemberBtn = Ui.button("Thêm", () -> Ui.demo(d));
+            JButton removeMemberBtn = Ui.button("Xóa thành viên", () -> Ui.demo(d));
+            removeMemberBtn.setEnabled(canRemoveMember);
+            if (!canRemoveMember) {
+                removeMemberBtn.setToolTipText(NON_ADMIN_REMOVE_TOOLTIP);
+            }
+            Ui.field(p, 4, "", Ui.row(addMemberBtn, removeMemberBtn));
+            Ui.field(p, 5, "Quản trị nhóm", Ui.button("Gán admin", () -> Ui.demo(d)));
+
             JCheckBox encrypted = new JCheckBox("Bật mã hóa đầu cuối (thiết kế)");
             encrypted.setSelected(!createMode && current.encrypted());
-            Ui.field(p, 5, "Bảo mật", encrypted);
-            Ui.field(p, 6, "Trạng thái khóa", new JLabel("Chưa trao đổi khóa · Không có mã hóa thật ở phiên bản 1"));
-            Ui.field(p, 7, "", Ui.primaryButton(createMode ? "Tạo nhóm" : "Lưu tên và tùy chọn", () -> Ui.demo(d)));
+            Ui.field(p, 6, "Bảo mật", encrypted);
+            Ui.field(p, 7, "Trạng thái khóa", new JLabel("Chưa trao đổi khóa · Không có mã hóa thật ở phiên bản 1"));
+            Ui.field(p, 8, "", Ui.primaryButton(createMode ? "Tạo nhóm" : "Lưu tên và tùy chọn", () -> Ui.demo(d)));
         }
-        Ui.field(p, 9, "", Ui.button("Đóng", d::dispose));
+        Ui.field(p, 10, "", Ui.button("Đóng", d::dispose));
         d.setContentPane(p); d.pack();
-        d.setMinimumSize(new Dimension(660, 520));
-        d.setSize(Math.max(660, d.getWidth()), Math.max(520, d.getHeight()));
+        d.setMinimumSize(new Dimension(680, 560));
+        d.setSize(Math.max(680, d.getWidth()), Math.max(560, d.getHeight()));
         d.setLocationRelativeTo(owner);
         return d;
     }
 
+    private String[] buildGroupMemberItems(boolean createMode, String initialMemberUsername) {
+        if (!createMode && !current.members().isEmpty()) {
+            return current.members().toArray(new String[0]);
+        }
+        List<String> items = new ArrayList<>();
+        items.add(session.displayLabel() + " · Admin nhóm");
+        String cleanTarget = initialMemberUsername == null
+                ? ""
+                : initialMemberUsername.strip().replace("@", "").toLowerCase(Locale.ROOT);
+        if (!cleanTarget.isEmpty() && !cleanTarget.equalsIgnoreCase(session.username())) {
+            items.add(ChatData.formatMemberEntry(cleanTarget, "Thành viên"));
+        } else {
+            items.add("Trần Thị Bích Ngọc (@tranthibich) · Thành viên");
+            items.add("Lê Hoàng Nam (@lehoangnam) · Thành viên");
+            items.add("Hoàng Quốc Việt (@hoangquocviet) · Thành viên");
+        }
+        return items.toArray(new String[0]);
+    }
+
     void openDialog(String type) { createDialog(type).setVisible(true); }
 
-    private void confirm(String text) {
-        if (!messages.hasSelection() && text.contains("tin nhắn")) {
-            JOptionPane.showMessageDialog(this, "Chọn một tin nhắn trước.");
+    void openCreateGroupDialog(String initialMemberUsername) {
+        createGroupDialog(initialMemberUsername).setVisible(true);
+    }
+
+    String buildHideConfirmationMessage() {
+        int count = messages.selectedCount();
+        return "Ẩn / xóa " + count + " tin nhắn đã chọn chỉ với bạn?\nThao tác xem trước trên bộ nhớ (Phiên bản 1, chưa lưu lên máy chủ).";
+    }
+
+    private void confirmHideSelectedMessages() {
+        int count = messages.selectedCount();
+        if (count == 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn ít nhất một tin nhắn trước (nhấp vào tin nhắn để chọn một hoặc nhiều tin).");
             return;
         }
-        if (JOptionPane.showConfirmDialog(this, text + "?\nThao tác minh họa.", "Xác nhận", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
-            Ui.demo(this);
+        if (JOptionPane.showConfirmDialog(
+                this,
+                buildHideConfirmationMessage(),
+                "Xác nhận ẩn / xóa " + count + " tin nhắn",
+                JOptionPane.OK_CANCEL_OPTION
+        ) == JOptionPane.OK_OPTION) {
+            messages.hideSelectedMessages();
+        }
+    }
+
+    private void confirmClearHistory() {
+        if (JOptionPane.showConfirmDialog(
+                this,
+                "Xóa toàn bộ lịch sử trò chuyện này chỉ với bạn?\nThao tác xem trước trên bộ nhớ (Phiên bản 1, chưa lưu lên máy chủ).",
+                "Xác nhận xóa lịch sử",
+                JOptionPane.OK_CANCEL_OPTION
+        ) == JOptionPane.OK_OPTION) {
+            messages.hideAllInCurrentConversation();
         }
     }
 }

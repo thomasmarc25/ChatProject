@@ -14,7 +14,7 @@ final class PeoplePanel extends JPanel {
     final JTextField search = Ui.input("Tìm tên hoặc tên đăng nhập");
     final JComboBox<String> status = new JComboBox<>(new String[]{"Tất cả", "Trực tuyến", "Ngoại tuyến"});
 
-    PeoplePanel(String kind, Consumer<String> openChatForTarget, Runnable createGroup) {
+    PeoplePanel(String kind, Consumer<String> openChatForTarget, Consumer<String> createGroupWithTarget) {
         super(new BorderLayout());
         boolean friends = kind.equals("Bạn bè"), requests = kind.equals("Yêu cầu kết bạn");
         JPanel p = Ui.page(kind, friends ? "Giữ liên lạc với những người bạn của bạn"
@@ -31,17 +31,11 @@ final class PeoplePanel extends JPanel {
         body.add(toolbar, BorderLayout.NORTH);
         body.add(new JScrollPane(table), BorderLayout.CENTER);
         JPanel actions = Ui.row();
-        Runnable openSelectedChat = () -> {
-            String target = "";
-            int viewRow = table.getSelectedRow();
-            if (viewRow >= 0) {
-                int modelRow = table.convertRowIndexToModel(viewRow);
-                target = table.getModel().getValueAt(modelRow, 0).toString();
-            }
-            openChatForTarget.accept(target);
-        };
+        Runnable openSelectedChat = () -> openChatForTarget.accept(selectedUsername());
+        Runnable openCreateGroup = () -> createGroupWithTarget.accept(selectedUsername());
         if (friends) {
             actions.add(Ui.button("Chat", openSelectedChat));
+            actions.add(Ui.button("Tạo nhóm", openCreateGroup));
             actions.add(Ui.button("Hủy kết bạn", () -> confirm("Hủy kết bạn")));
             actions.add(Ui.button("Chặn người dùng", () -> confirm("Chặn người dùng")));
         } else if (requests) {
@@ -50,7 +44,7 @@ final class PeoplePanel extends JPanel {
         } else {
             actions.add(Ui.button("Kết bạn", () -> confirm("Gửi yêu cầu kết bạn")));
             actions.add(Ui.button("Chat", openSelectedChat));
-            actions.add(Ui.button("Tạo nhóm", createGroup));
+            actions.add(Ui.button("Tạo nhóm", openCreateGroup));
         }
         body.add(actions, BorderLayout.SOUTH);
         p.add(body);
@@ -61,6 +55,14 @@ final class PeoplePanel extends JPanel {
             public void changedUpdate(DocumentEvent e) { filter(friends); }
         });
         status.addActionListener(e -> filter(friends));
+    }
+
+    /** Returns the selected row's normalized username via model index conversion (safe under filtering/sorting). */
+    String selectedUsername() {
+        int viewRow = table.getSelectedRow();
+        if (viewRow < 0) return "";
+        int modelRow = table.convertRowIndexToModel(viewRow);
+        return table.getModel().getValueAt(modelRow, 0).toString().strip().replace("@", "");
     }
 
     private void filter(boolean friends) {
@@ -76,11 +78,13 @@ final class PeoplePanel extends JPanel {
     }
 
     private void confirm(String action) {
-        if (table.getSelectedRow() < 0) {
+        int viewRow = table.getSelectedRow();
+        if (viewRow < 0) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn một người dùng.");
             return;
         }
-        String name = table.getValueAt(table.getSelectedRow(), 1).toString();
+        int modelRow = table.convertRowIndexToModel(viewRow);
+        String name = table.getModel().getValueAt(modelRow, 1).toString();
         if (JOptionPane.showConfirmDialog(this, action + " với " + name + "?\nThao tác minh họa, không lưu thay đổi.", action, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
             Ui.demo(this);
         }

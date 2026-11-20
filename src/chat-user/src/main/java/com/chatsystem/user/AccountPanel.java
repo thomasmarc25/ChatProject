@@ -22,7 +22,7 @@ final class AccountPanel extends JPanel {
         if (!signedInSettingsOnly) {
             tabs.addTab("Đăng nhập", login(openChat, openAdmin));
             tabs.addTab("Đăng ký", fields(new String[]{"Tên đăng nhập", "Họ và tên", "Email", "Mật khẩu", "Xác nhận mật khẩu"}, new String[]{"", "", "", "", ""}, "Tạo tài khoản"));
-            tabs.addTab("Quên mật khẩu", fields(new String[]{"Email khôi phục"}, new String[]{""}, "Gửi liên kết khôi phục"));
+            tabs.addTab("Quên mật khẩu", forgotPassword());
         }
 
         JPanel profile = fields(
@@ -43,6 +43,30 @@ final class AccountPanel extends JPanel {
         tabs.addTab("Đổi mật khẩu", fields(new String[]{"Mật khẩu hiện tại", "Mật khẩu mới", "Xác nhận mật khẩu mới"}, new String[]{"", "", ""}, "Đổi mật khẩu"));
         page.add(tabs, BorderLayout.CENTER);
         add(page);
+    }
+
+    private JPanel forgotPassword() {
+        JPanel p = Ui.form();
+        JTextField emailField = Ui.input("Nhập địa chỉ email đã đăng ký");
+        Ui.field(p, 0, "Email khôi phục", emailField);
+        JLabel hint = new JLabel(
+            "<html>Hệ thống sẽ tạo mật khẩu mới ngẫu nhiên và gửi đến địa chỉ email đã đăng ký của bạn.</html>"
+        );
+        hint.setForeground(Ui.MUTED);
+        Ui.field(p, 1, "Lưu ý", hint);
+        JButton sendBtn = Ui.primaryButton("Gửi mật khẩu mới qua email", () -> {
+            String email = emailField.getText().strip();
+            String target = email.isEmpty() ? "email đã đăng ký" : "email " + email;
+            JOptionPane.showMessageDialog(
+                this,
+                "Mô phỏng Phiên bản 1 (giao diện mẫu): Hệ thống sẽ tạo mật khẩu mới ngẫu nhiên và gửi tới "
+                    + target + ".\nChưa kết nối máy chủ gửi email thật ở phiên bản này.",
+                "Phiên bản 1 — Mô phỏng khôi phục mật khẩu",
+                JOptionPane.INFORMATION_MESSAGE
+            );
+        });
+        Ui.field(p, 2, "", sendBtn);
+        return p;
     }
 
     private JPanel login(Runnable openChat, Runnable openAdmin) {

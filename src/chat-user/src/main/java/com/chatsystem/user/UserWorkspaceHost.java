@@ -45,9 +45,9 @@ public final class UserWorkspaceHost extends JPanel {
         this.onNavigationChanged = onNavigationChanged;
 
         this.chat = new ChatPanel(session);
-        this.friends = new PeoplePanel("Bạn bè", this::openChatForTarget, () -> chat.openDialog("create"));
-        this.requests = new PeoplePanel("Yêu cầu kết bạn", this::openChatForTarget, () -> chat.openDialog("create"));
-        this.people = new PeoplePanel("Tìm người", this::openChatForTarget, () -> chat.openDialog("create"));
+        this.friends = new PeoplePanel("Bạn bè", this::openChatForTarget, chat::openCreateGroupDialog);
+        this.requests = new PeoplePanel("Yêu cầu kết bạn", this::openChatForTarget, chat::openCreateGroupDialog);
+        this.people = new PeoplePanel("Tìm người", this::openChatForTarget, chat::openCreateGroupDialog);
         this.account = new AccountPanel(
                 session,
                 signedInSettingsOnly,
@@ -117,6 +117,61 @@ public final class UserWorkspaceHost extends JPanel {
 
     public JDialog createChatDialog(String type) {
         return chat.createDialog(type);
+    }
+
+    public JDialog createGroupDialog(String initialMemberUsername) {
+        return chat.createGroupDialog(initialMemberUsername);
+    }
+
+    public String getSelectedFriendUsername() {
+        return friends.selectedUsername();
+    }
+
+    public JTextField getChatSearchField() {
+        return chat.search;
+    }
+
+    public JComboBox<String> getChatSearchScopeCombo() {
+        return chat.scope;
+    }
+
+    public void runChatSearch(String query, boolean allHistory) {
+        chat.showSearch(true);
+        chat.scope.setSelectedIndex(allHistory ? 1 : 0);
+        chat.search.setText(query);
+        chat.searchMessages();
+    }
+
+    public int getVisibleMessageCount() {
+        return chat.messages.visibleCount();
+    }
+
+    public int getSelectedMessageCount() {
+        return chat.messages.selectedCount();
+    }
+
+    public void toggleMessageSelection(String messageId) {
+        chat.messages.toggleSelection(messageId);
+    }
+
+    public String getSelectionStatusText() {
+        return chat.selectionLabel.getText();
+    }
+
+    public String getHideConfirmationMessage() {
+        return chat.buildHideConfirmationMessage();
+    }
+
+    public int hideSelectedMessagesInMemory() {
+        return chat.messages.hideSelectedMessages();
+    }
+
+    public String getHighlightedMessageId() {
+        return chat.messages.highlightedMessageId();
+    }
+
+    public JScrollPane getMessageListScrollPane() {
+        return chat.messages;
     }
 
     public JTextField getFriendsSearchField() {

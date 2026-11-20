@@ -1942,3 +1942,93 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
      - Visually inspected `docs/screenshots/admin/00_admin_integrated_chat.png`.
    - **Standalone User Application Verification (`com.chatsystem.user.PreviewCapture`):**
      - **PASS (`STANDALONE_USER_EXIT_CODE: 0`)** — `PASS: rendered 17 windows; friend filters, local/global/empty message search, conversation search and group filter verified`.
+
+
+---
+
+## Entry 21 — Four Targeted Version 1 Swing UI Fixes (`integration/version1`: Req 3, Req 8, Req 11e–g, Req 12e)
+
+1. **AI tool name, version/model, and platform:**
+   - Tool: Google Antigravity IDE
+   - Version/Model: Google Antigravity `2.29.0` (`ProductVersion 2.29.0.0`, Language Server `hub-2.29.0`, Electron `44.5.1`); Agent Model: `Gemini 4 Neon (High)`
+   - Platform: Desktop IDE on Microsoft Windows 11 Home Single Language 26H2 (OS Build `10.0.26300.9711`, x64) / PowerShell
+2. **Access date and time (with time zone):**
+   - Prompt received: `2026-11-20 18:29:11 UTC+07:00 (Asia/Ho_Chi_Minh)`
+3. **Prompt(s) used:**
+   - Source observation: Observed directly as a chat prompt sent to the agent in the Antigravity session.
+   - **Verbatim:**
+     ```markdown
+     Work on the existing integration/version1 branch. Implement the four Version 1 Swing UI fixes below, then verify them. Use the existing Vietnamese UI style, JDK 21, Maven modules, and mock data. Keep Markdown content in English and write your final chat summary in Vietnamese.
+
+     1. User requirement 3 — Forgot password
+        In AccountPanel.java, change the button “Gửi liên kết khôi phục” to “Gửi mật khẩu mới qua email”. Add a short Vietnamese hint explaining that the user will receive a randomly generated password at their registered email address. If the button shows a preview message, make it clear that this is a Version 1 simulation. Keep this flow local to the UI.
+
+     2. User requirement 8 — Create a group from online friends
+        In PeoplePanel.java, add “Tạo nhóm” next to “Chat” on the “Bạn bè” page. It must be available when the “Trực tuyến” filter is active. Reuse the existing group-creation dialog. When a friend is selected in the filtered table, open the dialog with that friend included as an initial member. Use the selected friend’s username so filtering or sorting cannot select the wrong person. Preserve the existing create-group action on the “Tìm kiếm” page.
+
+     3. User requirements 11e–g — Select multiple messages and jump to a search result
+        In MessageListPanel.java, ChatPanel.java, and related components as needed:
+        - Make it clear how to select one or several messages in the current conversation. Give selected messages a visible state and show the selection count. The existing delete/hide action should show a confirmation for the correct count. Clear the selection when switching conversations. Keep changes in memory for this preview.
+        - Add a visible “Đi tới tin nhắn” action for results in both search scopes: “Cuộc trò chuyện này” and “Toàn bộ lịch sử”.
+        - Activating a result must open the original conversation, restore its full transcript, scroll to the exact message, and highlight it so its surrounding context is visible. Identify the result by its source conversation and message ID or stable fixture index. Two messages with the same text must still lead to the correct occurrence.
+
+     4. User requirement 12e — Only a group admin can remove a member
+        In the existing group-management dialog, determine the active account’s role in the group being viewed. Enable “Xóa thành viên” only for an admin of that specific group. For an ordinary member, disable it and add the tooltip “Chỉ quản trị viên nhóm mới có thể xóa thành viên”.
+        Apply the same rule inside the integrated Admin window. A system ADMIN account only gets this action if it is also an admin of the selected chat group. Use the existing session and membership data. If the fixtures need a role field, make the smallest change needed to represent it reliably.
+
+     Verification
+     - Build chat-user first, then chat-admin using the actual POM paths in the repository. Verify the shared UI through both the standalone User workspace and the personal section inside the Admin window wherever applicable.
+     - Check these cases explicitly: forgot-password wording, group creation from a filtered friend row, selecting two messages, jumping to a result within the current chat, jumping to a result in another chat, and opening group management as both a group admin and an ordinary member.
+     - Keep this change scoped to the four UI fixes. The existing PostgreSQL schema, backend, submission archive, and report are outside this task. Leave the changes available for me to review before committing.
+     - After finishing, post a summary in Vietnamese in this chat. List the changed files, the build results, which cases you actually tested, and the exact menu or buttons I should click to check each fix on Windows. Mark any case you could not run.
+     ```
+4. **Purpose:**
+   - Implement four scoped Version 1 Swing UI fixes in `src/chat-user/` (shared by both standalone `UserApp` and integrated `AdminMainFrame`):
+     1. Requirement 3: Update forgot-password wording (`Gửi mật khẩu mới qua email`), add Vietnamese hint about receiving a randomly generated password by email, and show a clear Version 1 simulation notice.
+     2. Requirement 8: Add `Tạo nhóm` next to `Chat` on the `Bạn bè` page (available under `Trực tuyến` filter), passing the selected row's model username (`convertRowIndexToModel`) to pre-populate the reused group-creation dialog while preserving `Tạo nhóm` on `Tìm kiếm`.
+     3. Requirements 11e–g: Support selecting multiple messages with visible selection state, selection count banner, accurate multi-message in-memory hide/delete confirmation, and clear-on-switch; add a visible `Đi tới tin nhắn` button for search results in both scopes (`Cuộc trò chuyện này` and `Toàn bộ lịch sử`) identified by `(conversationUsername, messageId, fixtureIndex)` that restores the full transcript, scrolls to the exact occurrence (even when two messages share identical text), and highlights it in context.
+     4. Requirement 12e: Represent typed group membership roles (`GroupMember` with `ADMIN` / `MEMBER`) in `ChatData.java` and enable `Xóa thành viên` strictly when the active session account is a group admin of that specific group (disabling with tooltip `Chỉ quản trị viên nhóm mới có thể xóa thành viên` for ordinary members and system ADMIN accounts who are not group admins of that group).
+5. **AI-generated content:**
+   - **Updated `src/chat-user/src/main/java/com/chatsystem/user/AccountPanel.java` (Req 3):**
+     - Replaced the forgot-password submit button label `"Gửi liên kết khôi phục"` with `"Gửi mật khẩu mới qua email"`.
+     - Added a wrapped Vietnamese hint (`"Hệ thống sẽ tạo mật khẩu mới ngẫu nhiên và gửi đến địa chỉ email đã đăng ký của bạn."`) below the email input.
+     - Updated the button handler to display a clear local UI-only Version 1 simulation notice stating that no real email is sent.
+   - **Updated `src/chat-user/src/main/java/com/chatsystem/user/ChatData.java` (Req 11e–g & Req 12e):**
+     - Added deterministic message IDs (`<conversationUsername>-m<n>`), `MessageTarget(conversationUsername, messageId, fixtureIndex)`, and `DUPLICATE_TEXT_SAMPLE = "Đã xác nhận lịch họp!"` appearing twice in `Cộng đồng Java Việt Nam` (`group1-m3` at `09:36` and `group1-m7` at `10:30`) to verify exact-occurrence search jumping.
+     - Added typed `GroupMember(username, fullName, groupRole)` (`ADMIN` / `MEMBER`) and `Conversation.isGroupAdmin(accountUsername)` / `roleDescriptionFor(accountUsername)` aligned with `script/02_seed.sql` (`@nguyenvanan` is `ADMIN` in `group1` and `group2`, `MEMBER` in `group3`; system `@admin` is not a group admin in any of the three groups).
+   - **Updated `src/chat-user/src/main/java/com/chatsystem/user/PeoplePanel.java` (Req 8):**
+     - Added `"Tạo nhóm"` next to `"Chat"` on the `"Bạn bè"` page (always available, including when `"Trực tuyến"` filter is active) while preserving `"Tạo nhóm"` on the `"Tìm kiếm"` page.
+     - Added `selectedUsername()` using `table.convertRowIndexToModel(viewRow)` (and updated `confirm()` to convert view row index to model index) so filtering or sorting never passes the wrong user to the group-creation dialog.
+   - **Updated `src/chat-user/src/main/java/com/chatsystem/user/MessageBubble.java` (Req 11e–g):**
+     - Added visible selected state (`Ui.BLUE` border, `Ui.SOFT_BLUE` background, `[Đã chọn]` tag), search-jump highlight state (`Ui.WARNING` border, `#FFFBEB` background, `[Kết quả tìm kiếm]` tag), and a visible `"Đi tới tin nhắn"` action button (`putClientProperty("messageTarget", target)`) on search-result cards.
+   - **Updated `src/chat-user/src/main/java/com/chatsystem/user/MessageListPanel.java` (Req 11e–g):**
+     - Implemented multi-message selection (`Set<String> selectedMessageIds`), per-conversation in-memory message hiding (`hiddenByConversation`), automatic selection reset on conversation switch, synchronous + deferred `highlightAndScrollTo(messageId)`, and `"Đi tới tin nhắn"` callbacks for both `"Cuộc trò chuyện này"` and `"Toàn bộ lịch sử"` search scopes.
+   - **Updated `src/chat-user/src/main/java/com/chatsystem/user/ChatPanel.java` (Req 8, Req 11e–g, Req 12e):**
+     - Added the compact `selectionBar` banner displaying either the click-to-select hint or `"Đã chọn N tin nhắn trong cuộc trò chuyện hiện tại"` with `"Ẩn/Xóa (N)"` and `"Bỏ chọn"` buttons; updated the hide/delete confirmation dialog to display the exact selected count and hide messages in memory upon confirmation.
+     - Implemented `jumpToMessage(MessageTarget)` to clear the search filter, open the source conversation, restore its full transcript, highlight the exact message occurrence, and scroll it into view.
+     - Added `openCreateGroupDialog(String initialMemberUsername)` / `createGroupDialog(String)` to reuse the existing group-creation dialog pre-populated with the selected friend by username.
+     - Updated `createDialog("group")` so `"Xóa thành viên"` is enabled strictly when `current.isGroupAdmin(session.username())` (or in create mode), and disabled with tooltip `"Chỉ quản trị viên nhóm mới có thể xóa thành viên"` for ordinary group members and for system `ADMIN` accounts (`@admin`) who are not admins of that specific chat group.
+   - **Updated `src/chat-user/src/main/java/com/chatsystem/user/UserApp.java` & `UserWorkspaceHost.java`:**
+     - Wired `chat::openCreateGroupDialog` into all `PeoplePanel` instances (`Bạn bè` and `Tìm kiếm`) in both standalone `UserApp` and embedded `UserWorkspaceHost` (used by `AdminMainFrame`), and exposed clean read-only verification accessors on `UserWorkspaceHost`.
+   - **Updated `AI-LOG.md` (`Entry 21`).**
+6. **Student's independent work and edits/validation:**
+   - Student specified the four Version 1 UI fixes (Req 3, Req 8, Req 11e–g, Req 12e) and the explicit verification cases across both standalone `chat-user` and integrated `chat-admin`.
+   - Additional student review/validation: `STUDENT TO COMPLETE`
+7. **Screenshots or chat history:**
+   - `evidence/chat_history/chatgpt.png`
+   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+8. **Verification and outcomes:**
+   - **Maven Build — `src/chat-user/pom.xml` (`mvn -f src/chat-user/pom.xml "-DskipTests" clean install` on JDK 21.0.13):**
+     - Outcome: **PASS (`BUILD SUCCESS` in `4.567 s`, exit code `0`)** — compiled 17 Java source files with `release 21` and installed `com.chatsystem:chat-user:1.0.0-SNAPSHOT` to local `.m2`.
+   - **Maven Build — `chat-admin/pom.xml` (`mvn -f chat-admin/pom.xml "-DskipTests" clean package` on JDK 21.0.13):**
+     - Outcome: **PASS (`BUILD SUCCESS` in `6.383 s`, exit code `0`)** — compiled 34 Java source files with `release 21` and packaged `chat-admin/target/chat-admin-1.0.0-SNAPSHOT.jar`.
+   - **Automated + Visual Swing Verification Across Standalone `UserApp` AND Integrated `AdminMainFrame` (`task-1342` on JDK 21.0.13):**
+     - Outcome: **PASS (`VERIFY_FOUR_FIXES_EXIT_CODE: 0`)** — verified live on the Swing EDT and visually inspected all 6 rendered PNG captures (`01_forgot_password.png`..`06_group_member_disabled_remove.png`):
+       1. Forgot-password button wording (`"Gửi mật khẩu mới qua email"`) and Vietnamese random-password email hint.
+       2. Creating a group from `"Bạn bè"` with `"Trực tuyến"` filter active and table sorted descending (confirmed model username `@hoangquocviet` pre-populated cleanly), plus `"Tạo nhóm"` preserved on `"Tìm kiếm"`.
+       3. Selecting 2 messages (`tranthibich-m1`, `tranthibich-m3`), selection bar count (`2`), confirmation count wording, clear-on-switch, and in-memory hiding.
+       4. Jumping to a local search result (`"Cuộc trò chuyện này"`) for BOTH occurrences of identical-text messages (`"Đã xác nhận lịch họp!"` → `group1-m7` at `10:30` and `group1-m3` at `09:36`) in `Cộng đồng Java Việt Nam`, restoring full transcript, scrolling into view, and highlighting the exact occurrence.
+       5. Jumping to a global search result (`"Toàn bộ lịch sử"`, query `"14:00"`) into another conversation (`Phạm Minh Châu` / `phamminhchau-m3` in standalone `UserApp` and `Lê Hoàng Nam` / `lehoangnam-m3` in integrated `AdminMainFrame`).
+       6. Group management `"Xóa thành viên"` enabled for `@nguyenvanan` in `Cộng đồng Java Việt Nam` (group `ADMIN`), disabled with exact tooltip `"Chỉ quản trị viên nhóm mới có thể xóa thành viên"` for `@nguyenvanan` in `CLB Thuật Toán & AI` (ordinary `MEMBER`), and disabled with the exact same tooltip for system `ADMIN` (`@admin`) inside integrated `AdminMainFrame` when viewing `Cộng đồng Java Việt Nam` (not a group admin of that group).
+   - **Existing User UI Smoke Suite (`com.chatsystem.user.PreviewCapture`, `task-1342`):**
+     - Outcome: **PASS (`PREVIEW_CAPTURE_EXIT_CODE: 0`)** — `PASS: rendered 17 windows; friend filters, local/global/empty message search, conversation search and group filter verified`.
