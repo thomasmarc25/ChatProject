@@ -22,8 +22,10 @@
    - Student defined the assignment scope (one UI-only Admin User Management screen due 12 November 2026), selected the technology stack (Java 21 LTS, Java Swing, FlatLaf 3.7.2 Light, Maven), reviewed and saved `AGENTS.md` to the repository root (`c:\Users\DELL\OneDrive\Máy tính\Java\Chat\AGENTS.md`), and executed the 4-phase workflow step-by-step.
 7. **Screenshots or chat history:**
    ![ChatGPT planning evidence screenshot](./evidence/chat_history/chatgpt.png)
+   - **Chat transcript export:** No matching transcript was located (only the cropped screenshot `evidence/chat_history/chatgpt.png` is stored in the repository).
 8. **Verification and outcomes:**
    - Confirmed `AGENTS.md` matches the university assignment scope, visual design tokens (`#2563EB`, `#111827`, `#F5F7FB`, etc.), and AI usage logging rules for the 12 November 2026 individual UI deliverable.
+   - **2026-11-21 Evidence Audit Note (Entry 0):** In commit `e8b0fb1` (`2026-11-17 10:32:15 +07:00`), Trọng filled in `ChatGPT (GPT-4o)`, `2026-11-10 23:40:38 UTC+07:00`, the Vietnamese prompt, and `evidence/chat_history/chatgpt.png` (the prompt was later translated to English in Entry 9 commit `e1c982b`). What `chatgpt.png` directly supports: the exact Vietnamese prompt (`"Trước tiên tạo cho t 1 file AGENTS.md r sau đó chia nhỏ từng khúc của prompt ra để antigravity làm việc được hiệu quả"`), the ChatGPT reply generating `AGENTS.md` and `ChatSystem Antigravity Pack`, and the thinking-time indicator `"Đã xử lý trong 3m 44s"`. What `chatgpt.png` does **not** independently show: the ChatGPT model selector/name and any browser date/clock timestamp (`23:40:38` is arithmetically consistent with `AGENTS.md` saved at `23:44:22` minus `3m 44s`, and `"Đã xử lý trong 3m 44s"` indicates a thinking/reasoning run rather than standard non-thinking `GPT-4o`). Trọng confirmed keeping Entry 0 as recorded because the exact ChatGPT browser prompt timestamp was not logged separately at the time of that session.
 
 ---
 
@@ -131,7 +133,8 @@
 6. **Student's independent work and edits/validation:**
    - Student triggered the Java runtime upgrade extension, tested building `chat-admin` locally with JDK 21 LTS, identified that the Java 25 target caused `"Fatal error compiling: error: release version 25 not supported"`, and initiated Entry 3 to revert the project back to Java 21 LTS per `AGENTS.md`.
 7. **Screenshots or chat history:**
-   - Recorded directly in this `AI-LOG.md` entry and audited in Entry 3 (`evidence/chat_history/antigravity_session_8a98bca0.md`).
+   - **Copilot chat transcript (matching export):** [`evidence/chat_history/copilot_entry2_java_upgrade.md`](./evidence/chat_history/copilot_entry2_java_upgrade.md) (verbatim GitHub Copilot App Modernization extension chat log supplied by Trọng, timestamp `11/11/2026, 12:19 AM`).
+   - Follow-up revert and audit in Entry 3: [`evidence/chat_history/antigravity_session_8a98bca0.md`](./evidence/chat_history/antigravity_session_8a98bca0.md).
 8. **Verification and outcomes:**
    - Java verification before editing: Temurin/OpenJDK `25.0.4.1` reported `LTS`.
    - Maven command: `mvn -DskipTests clean package` from `chat-admin/`, using the installed Maven 3.6.3 distribution and JDK 25. **PASS**; Maven reported `Compiling 3 source files with javac [debug release 25]` and `BUILD SUCCESS`.
@@ -425,7 +428,9 @@
 
 ---
 
-## Pre-Submission Audit & Student Completion Checklist
+## Historical Pre-Submission Audit & Student Completion Checklist (2026-11-11 — Individual Swing Assignment Only)
+
+> **Historical Status Note (added 2026-11-21):** This checklist was written at the end of Phase 4 (`2026-11-11`) solely for the individual `Swing_Assignment/` submission and **before** commit `e8b0fb1` (`2026-11-17 10:32:15 +07:00`). In `e8b0fb1`, Trọng subsequently populated Entry 0 with `ChatGPT (GPT-4o)`, `2026-11-10 23:40:38 UTC+07:00`, the Vietnamese prompt, and `evidence/chat_history/chatgpt.png`, though this Nov 11 checklist was left unedited. Keep this section as a historical artifact; see **Entry 0 (2026-11-21 Evidence Audit Note)** and the **Current Version 1 AI-Log Audit & Student Confirmation Summary (2026-11-21)** at the end of this file for the current evidence status across Entries 0–28.
 
 All entries for **Phases 1–4 (Entries 1–6)** are now filled with verified local system versions (`Google Antigravity 2.29.0`, `Gemini 4 Argon (High)`, `Windows 11 Home Single Language 26H2 Build 10.0.26300.9711`), observed student actions, authentic live-rendered Swing screenshots, and the exported Antigravity chat transcript (`evidence/chat_history/antigravity_session_8a98bca0.md`).
 
@@ -525,11 +530,10 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
      - `H. Final Verification and Submission Preparation`.
    - **Modified `AI-LOG.md`:** Appended Entry 7 recording this planning phase.
 6. **Student's independent work and edits/validation:**
-   - Student committed the initial `chat-admin` User Management screen (`b47ef10`) and completed `AI-LOG.md` Entry 0 with `evidence/chat_history/chatgpt.png` (`e8b0fb1`); student defined the Version 1 scope and assumed ownership of both the Administrator application and the shared PostgreSQL database design.
-   - Additional student review/validation of `docs/version1-plan.md`: `STUDENT TO COMPLETE`
+   - **Documented student actions (Trọng):** Committed the initial `chat-admin` User Management screen (`b47ef10`) and Entry 0 + `evidence/chat_history/chatgpt.png` (`e8b0fb1`); defined the Version 1 scope and Member 2's combined ownership of the Administrator application and shared PostgreSQL database (`Step 335`); committed `docs/version1-plan.md` in `f1087f9` (`2026-11-17 14:28:12 +07:00`).
+   - **Checks run by AI tool vs. student:** Repository and `Final_Project.pdf` inspection in Section 8 were performed by Google Antigravity. **Student-reported verification (Trọng):** Trọng confirmed manually reviewing `docs/version1-plan.md` on Windows; no additional separate manual source edits were logged.
 7. **Screenshots or chat history:**
-   - `evidence/chat_history/chatgpt.png` (committed in `e8b0fb1`)
-   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+   - **Antigravity chat transcript (matching export):** [`evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-7`](./evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-7) (Steps `335 -> 354`, `2026-11-17 11:03:13–11:07:05 UTC+07:00`; also includes the preliminary Nov 16 Version 1 planning exchange at [`#pre-entry-7`](./evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#pre-entry-7), Steps `311, 314 -> 334`).
 8. **Verification and outcomes:**
    - **Git & Workspace Inspection (`git status -u`, `git diff`, `git log -n 5 --oneline --stat`):** Confirmed clean working tree on branch `main` at commit `e8b0fb1`; verified only documentation files (`docs/version1-plan.md` and `AI-LOG.md`) were created/updated in this step, with zero changes to Java source code, `pom.xml`, or SQL scripts.
 
@@ -680,11 +684,10 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
    - **Updated `docs/version1-plan.md`:** Synchronized Sections A, B, and G with the 16-table schema and 10 business rules in `docs/database-design.md`.
    - **Modified `AI-LOG.md`:** Appended Entry 8 recording this database specification step.
 6. **Student's independent work and edits/validation:**
-   - Student defined and authorized all 10 business rules, the exact 13 core tables, the 3 encryption storage preparation tables, column vocabularies, and SQL vs. service-layer constraint boundaries.
-   - Additional student review/validation of `docs/database-design.md`: `STUDENT TO COMPLETE`
+   - **Documented student actions (Trọng):** Defined and authorized all 10 business rules, the 13 core tables, the 3 encryption storage preparation tables, column vocabularies, and SQL vs. service-layer constraint boundaries (`Step 355`); committed `docs/database-design.md` in `8103dd9` (`2026-11-17 14:28:52 +07:00`).
+   - **Checks run by AI tool vs. student:** Cross-document consistency checks in Section 8 were performed by Google Antigravity. **Student-reported verification (Trọng):** Trọng confirmed manually reviewing `docs/database-design.md`; no additional separate manual edits were logged.
 7. **Screenshots or chat history:**
-   - `evidence/chat_history/chatgpt.png`
-   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+   - **Antigravity chat transcript (matching export):** [`evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-8`](./evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-8) (Steps `355 -> 381`, `2026-11-17 11:39:23–12:07:53 UTC+07:00`).
 8. **Verification and outcomes:**
    - **Workspace & Git Verification (`git status -s`):** Confirmed only `docs/database-design.md`, `docs/version1-plan.md`, and `AI-LOG.md` were created/modified; no SQL scripts or Java source files were created or modified in this step.
 
@@ -778,11 +781,10 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
    - **Updated `AI-LOG.md`:** Translated Vietnamese prose in Entry 0 (lines 16 and 24) and Entry 7 (lines 518–525) into English in place, and appended this Entry 9 in English.
    - **Reviewed `README.md` and `chat-admin/README.md`:** Confirmed both files are already written in English (containing only quoted Vietnamese Swing UI control labels where the UI itself uses Vietnamese labels).
 6. **Student's independent work and edits/validation:**
-   - Student defined the documentation language policy separating English project `.md` files from Vietnamese chat responses.
-   - Additional student review/validation: `STUDENT TO COMPLETE`
+   - **Documented student actions (Trọng):** Defined the documentation language policy separating English project `.md` files from Vietnamese chat responses (`Step 382`) and committed the updated Markdown files in `e1c982b` (`2026-11-17 14:30:53 +07:00`).
+   - **Checks run by AI tool vs. student:** Markdown prose verification and git diff inspection in Section 8 were performed by Google Antigravity. **Student-reported verification (Trọng):** Trọng confirmed manually reviewing the updated English Markdown files; no additional separate manual edits were logged.
 7. **Screenshots or chat history:**
-   - `evidence/chat_history/chatgpt.png`
-   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+   - **Antigravity chat transcript (matching export):** [`evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-9`](./evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-9) (Steps `382 -> 414`, `2026-11-17 14:15:01–14:25:27 UTC+07:00`).
 8. **Verification and outcomes:**
    - **Markdown Review & Git Status Check (`git status -s`):** Verified that all project Markdown files (`AGENTS.md`, `README.md`, `chat-admin/README.md`, `docs/version1-plan.md`, `docs/database-design.md`, and `AI-LOG.md`) contain English prose only, and confirmed that no Java source files, `pom.xml`, or SQL scripts were touched.
 
@@ -896,12 +898,10 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
    - **Updated `docs/database-design.md` and `docs/version1-plan.md`:** Synchronized `ON DELETE RESTRICT` across all historical tables, added `updated_at >= created_at` and `deleted_at >= created_at` constraints, documented application-maintained `updated_at`, and marked Step B as completed.
    - **Modified `AI-LOG.md`:** Appended and completed Entry 10.
 6. **Student's independent work and edits/validation:**
-   - Student specified all DDL constraints, transaction boundaries, non-destructive clean-database rules, restrictive FK requirements, and `updated_at` application-maintenance rules.
-   - Student manually inspected the temporary PostgreSQL server on `127.0.0.1:55433` (`SELECT datname FROM pg_database WHERE datname = 'chat_schema_test';` -> 0 rows) and identified that the initial verification task had hung before creating `chat_schema_test`.
-   - Additional student review/validation: `STUDENT TO COMPLETE`
+   - **Documented student actions (Trọng):** Specified all DDL constraints, transaction boundaries, non-destructive clean-database rules, restrictive FK requirements, and `updated_at` rules (`Step 415`); manually queried the temporary PostgreSQL server on `127.0.0.1:55433` (`SELECT datname FROM pg_database WHERE datname = 'chat_schema_test';` -> 0 rows) to identify the hung initial verification task (`Step 438`); committed the schema and troubleshooting log updates in `84ddfd4` and `2d5ea8a` (`2026-11-17`).
+   - **Checks run by AI tool vs. student:** The subsequent clean PostgreSQL 18.4 `psql` schema execution and `\dt` / constraint inspection in Section 8 were executed by Google Antigravity (distinct from Trọng's manual `pg_database` check above). **Student-reported verification (Trọng):** Trọng confirmed manually reviewing/checking the schema deliverable on Windows; no additional separate manual SQL edits were logged.
 7. **Screenshots or chat history:**
-   - `evidence/chat_history/chatgpt.png`
-   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+   - **Antigravity chat transcript (matching export):** [`evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-10`](./evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-10) (Steps `415, 438 -> 437, 454, 464`, `2026-11-17 14:39:41–15:18:13 UTC+07:00`).
 8. **Verification and outcomes:**
    - **Root Cause of Initial Hung Verification Task (`task-432`):**
      - Inspected `task-432` and `scratch/pg_test.log` (preserved at `scratch/pg_test_preserved.log`). `initdb.exe` succeeded and `pg_ctl.exe -D $scratchPg -l $pgLog -o "-p 55433 -h 127.0.0.1" -w start` started `postgres.exe` (PID 23756), which logged `database system is ready to accept connections` at `14:49:43.450 +07`.
@@ -1014,11 +1014,10 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
    - **Created `docs/database-test-cases.md`:** English test case specification documenting the synthetic seed fixtures and verified query results for all 10 query groups.
    - **Updated `script/README.md`, `README.md`, `docs/version1-plan.md`, and `AI-LOG.md`.**
 6. **Student's independent work and edits/validation:**
-   - Student defined the required seed data edge cases, password hashing rules, sequence synchronization rules, and the 10 runnable admin query patterns.
-   - Additional student review/validation: `STUDENT TO COMPLETE`
+   - **Documented student actions (Trọng):** Defined the required seed data edge cases, password hashing rules, sequence synchronization rules, and the 10 runnable admin query patterns (`Step 465`); committed `script/02_seed.sql`, `script/03_admin_queries.sql`, and `docs/database-test-cases.md` in `94d2b26` (`2026-11-17 16:02:05 +07:00`).
+   - **Checks run by AI tool vs. student:** Live PostgreSQL 18.4 execution of `01_schema.sql`, `02_seed.sql`, and `03_admin_queries.sql` in Section 8 was executed by Google Antigravity. **Student-reported verification (Trọng):** Trọng confirmed manually checking `script/02_seed.sql`, `script/03_admin_queries.sql`, and `docs/database-test-cases.md` on Windows; no additional separate manual SQL edits were logged.
 7. **Screenshots or chat history:**
-   - `evidence/chat_history/chatgpt.png`
-   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+   - **Antigravity chat transcript (matching export):** [`evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-11`](./evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-11) (Steps `465 -> 501, 503`, `2026-11-17 15:21:10–15:39:16 UTC+07:00`).
 8. **Verification and outcomes:**
    - **Live PostgreSQL 18.4 Execution Verification (`task-480` on isolated port `55435`, database `chat_seed_test`):**
      - Executed `psql.exe -h 127.0.0.1 -p 55435 -U postgres -d chat_seed_test --no-password -v ON_ERROR_STOP=1 -f script/01_schema.sql` -> **PASS (`exit code: 0`)**.
@@ -1094,11 +1093,10 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
    - **Updated `docs/database-design.md`:** Added Section `5. Handoff Guide for Member 1 (User Application Integration)` covering table relationships, enum/ordering/time-zone conventions, and schema change request workflow.
    - **Updated `docs/database-test-cases.md`, `script/README.md`, `README.md`, `docs/version1-plan.md`, and `AI-LOG.md`.**
 6. **Student's independent work and edits/validation:**
-   - Student defined the 16 verification requirements, rollback-safety rules, the distinction between database-enforced constraints (A) and future service-layer rules (B), and the Member 1 database handoff requirements.
-   - Additional student review/validation: `STUDENT TO COMPLETE`
+   - **Documented student actions (Trọng):** Defined the 16 verification requirements, rollback-safety rules, the distinction between database-enforced constraints (A) and future service-layer rules (B), and the Member 1 database handoff requirements (`Step 504`); committed `script/04_verify.sql` and updated documentation in `a24117f` (`2026-11-18 00:05:48 +07:00`).
+   - **Checks run by AI tool vs. student:** Live PostgreSQL 18.4 execution of `04_verify.sql` (`PASS [A1]`–`[A9]`, `PASS [B1]`–`[B9]`) in Section 8 was executed by Google Antigravity. **Student-reported verification (Trọng):** Trọng confirmed manually checking `script/04_verify.sql` and the handoff documentation on Windows; no additional separate manual SQL edits were logged.
 7. **Screenshots or chat history:**
-   - `evidence/chat_history/chatgpt.png`
-   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+   - **Antigravity chat transcript (matching export):** [`evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-12`](./evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-12) (Steps `504 -> 526, 533, 543`, `2026-11-17 23:45:19–23:54:34 UTC+07:00`).
 8. **Verification and outcomes:**
    - **Initial Run (`task-525`):** Identified that PostgreSQL raises `SQLSTATE 23001` (`restrict_violation`) rather than `23503` (`foreign_key_violation`) when `DELETE FROM users WHERE id = 1` is blocked by `ON DELETE RESTRICT`. Updated assertion `A7b` in `script/04_verify.sql` to catch `restrict_violation`.
    - **Final Full-Suite Verification (`task-532` on isolated PostgreSQL 18.4 port `55438`, database `chat_verify_test`):**
@@ -1177,11 +1175,10 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
      - Implemented modal Delete and Lock/Unlock confirmation dialogs (`ConfirmActionDialog`), masked-input password update dialog (`PasswordUpdateDialog` using `JPasswordField` with immediate character buffer zeroing), per-user login history dialog (`UserLoginHistoryDialog`), and per-user direct friends dialog (`UserFriendsDialog`).
    - **Updated `docs/version1-plan.md` and `AI-LOG.md`.**
 6. **Student's independent work and edits/validation:**
-   - Student specified the 9 navigation targets and the complete User Management feature set (search, separated account status and online presence controls, sorting, add/edit dialog reuse, delete confirmation, lock/unlock confirmation, masked password dialog, login-history dialog, and friend-list dialog).
-   - Additional student review/validation: `STUDENT TO COMPLETE`
+   - **Documented student actions (Trọng):** Specified the 9 navigation targets and the complete User Management feature set and dialogs (`Step 544`); committed the implementation in `bea76b9` (`2026-11-18 09:59:22 +07:00`).
+   - **Checks run by AI tool vs. student:** Maven compilation and Swing EDT visual checks in Section 8 were executed by Google Antigravity. **Student-reported verification (Trọng):** Trọng confirmed manually inspecting/testing the Admin navigation and User Management dialogs on Windows; no additional separate manual source edits were logged.
 7. **Screenshots or chat history:**
-   - `evidence/chat_history/chatgpt.png`
-   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+   - **Antigravity chat transcript (matching export):** [`evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-13`](./evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-13) (Steps `544 -> 619`, `2026-11-18 00:06:15–00:24:24 UTC+07:00`).
 8. **Verification and outcomes:**
    - **Maven Compilation (`mvn -DskipTests clean package` in `chat-admin/` on JDK 21.0.13):**
      - Outcome: **PASS (`BUILD SUCCESS` in `2.335 s`, exit code `0`)** — compiled 17 Java source files with `javac [debug release 21]` and packaged `target/chat-admin-1.0.0-SNAPSHOT.jar`.
@@ -1258,11 +1255,10 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
    - **Created `chat-admin/src/main/java/com/chatsystem/admin/ui/SpamReportPanel.java` & `ui/SpamReportDetailDialog.java`, and updated `ui/ConfirmActionDialog.java`, `ui/UserManagementPanel.java`, and `ui/AdminMainFrame.java`:** Spam reports screen with validated date-range and reported-username filters, sorting by report time and reported username, empty-result and no-selection states, detail dialog displaying the synthetic `message_snapshot`, and `ConfirmActionDialog.showSpamReportLockConfirm` targeting the reported user; wired `NAV_LOGIN_HISTORY`, `NAV_GROUPS`, and `NAV_SPAM` in `AdminMainFrame` while retaining placeholders for the 5 remaining Step G destinations.
    - **Updated `docs/version1-plan.md` and `AI-LOG.md`.**
 6. **Student's independent work and edits/validation:**
-   - Student specified the exact requirements for the Login History, Chat Groups, and Spam Reports screens, read-only group inspection rules, separated group vs. system roles, date-range validation, and populated/empty-result/no-selection states.
-   - Additional student review/validation: `STUDENT TO COMPLETE`
+   - **Documented student actions (Trọng):** Specified the requirements for Login History, Chat Groups, and Spam Reports (`Step 620`); detected that the initial turn stopped without a summary and requested a code-level audit and completion check (`Steps 704, 706`); committed the screens in `9a142d7` (`2026-11-18 20:43:43 +07:00`).
+   - **Checks run by AI tool vs. student:** Maven build and Swing EDT visual checks in Section 8 were executed by Google Antigravity. **Student-reported verification (Trọng):** Trọng confirmed manually inspecting/testing the Login History, Chat Groups, and Spam Reports screens on Windows; no additional separate manual source edits were logged.
 7. **Screenshots or chat history:**
-   - `evidence/chat_history/chatgpt.png`
-   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+   - **Antigravity chat transcript (matching export):** [`evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-14`](./evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-14) (Steps `620, 704, 706 -> 764`, `2026-11-18 10:00:13–20:31:06 UTC+07:00`).
 8. **Verification and outcomes:**
    - **Maven Compilation (`mvn -DskipTests clean package` in `chat-admin/` on JDK 21.0.13):**
      - Outcome: **PASS (`BUILD SUCCESS` in `2.042 s`, exit code `0`)** — compiled all 25 Java source files with `javac [debug release 21]` and packaged `target/chat-admin-1.0.0-SNAPSHOT.jar`.
@@ -1362,11 +1358,10 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
    - **Updated `components/HeaderPanel.java` & `ui/AdminMainFrame.java`:** Added an unobtrusive `"Version 1 • Mock Data Preview"` pill badge in `HeaderPanel` and replaced the remaining 5 placeholders in `AdminMainFrame` so all 9 Administrator screens are live.
    - **Updated `docs/version1-plan.md` and `AI-LOG.md`.**
 6. **Student's independent work and edits/validation:**
-   - Student specified all requirements for New Registrations, Registration Chart, Friend Statistics, User Activity, Activity Chart, exact metric definitions matching SQL examples, custom Swing bar chart requirements, and unobtrusive Version 1 mock-data preview labeling.
-   - Additional student review/validation: `STUDENT TO COMPLETE`
+   - **Documented student actions (Trọng):** Specified all requirements for New Registrations, Registration Chart, Friend Statistics, User Activity, and Activity Chart (`Step 765`); committed the screens and charts in `af313b2` (`2026-11-18 21:23:21 +07:00`).
+   - **Checks run by AI tool vs. student:** Maven build and Swing EDT visual checks in Section 8 were executed by Google Antigravity. **Student-reported verification (Trọng):** Trọng confirmed manually inspecting/testing the 5 statistics and annual chart screens on Windows; no additional separate manual source edits were logged.
 7. **Screenshots or chat history:**
-   - `evidence/chat_history/chatgpt.png`
-   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+   - **Antigravity chat transcript (matching export):** [`evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-15`](./evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-15) (Step `765` initial & retry `-> 857`, `2026-11-18 20:32:29–21:10:05 UTC+07:00`).
 8. **Verification and outcomes:**
    - **Maven Compilation (`mvn -DskipTests clean package` in `chat-admin/` on JDK 21.0.13):**
      - Outcome: **PASS (`BUILD SUCCESS` in `3.329 s`, exit code `0`)** — compiled all 34 Java source files with `javac [debug release 21]` and packaged `target/chat-admin-1.0.0-SNAPSHOT.jar`.
@@ -1466,12 +1461,11 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
      - `09_activity_chart_2026.png`
    - **Updated `AI-LOG.md` (`Entry 16`).**
 6. **Student's independent work and edits/validation:**
-   - Student defined the 10-point audit checklist, documentation deliverables (`docs/admin-screen-checklist.md`, `docs/admin-run-guide.md`, `docs/version1-submission-checklist.md`, `docs/admin-report-notes.md`), screenshot capture rules (`docs/screenshots/admin/`), and team boundary rules.
-   - Additional student review/validation: `STUDENT TO COMPLETE`
+   - **Documented student actions (Trọng):** Defined the 10-point audit checklist, documentation deliverables, screenshot capture rules, and team boundary rules (`Step 858`); committed the refined dialog, screenshots, checklists, and build artifacts in `2552cd0`, `5fe0a2a`, and `132bf20` (`2026-11-18`).
+   - **Checks run by AI tool vs. student:** Maven packaging, live Swing screenshot capture (`docs/screenshots/admin/`), and PostgreSQL 18.4 full-suite SQL execution in Section 8 were executed by Google Antigravity. **Student-reported verification (Trọng):** Trọng confirmed manually reviewing the audit documentation, screenshots, and application deliverables on Windows; no additional separate manual edits were logged.
 7. **Screenshots or chat history:**
-   - `evidence/chat_history/chatgpt.png`
-   - `evidence/chat_history/antigravity_session_8a98bca0.md`
-   - `docs/screenshots/admin/01_user_management.png` through `docs/screenshots/admin/09_activity_chart_2026.png` (19 authentic PNG files)
+   - **Antigravity chat transcript (matching export):** [`evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-16`](./evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-16) (Steps `858 -> 898, 906`, `2026-11-18 21:23:43–21:33:33 UTC+07:00`).
+   - `docs/screenshots/admin/01_user_management.png` through `docs/screenshots/admin/09_activity_chart_2026.png` (19 authentic PNG files).
 8. **Verification and outcomes:**
    - **Maven Compilation (`mvn "-DskipTests" clean package` in `chat-admin/` on JDK 21.0.13):**
      - Outcome: **PASS (`BUILD SUCCESS` in `6.710 s`, exit code `0`)** — compiled all 34 Java source files with `javac [debug release 21]` and packaged `target/chat-admin-1.0.0-SNAPSHOT.jar`.
@@ -1585,14 +1579,13 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
      - Resolved `UU README.md` to document both `src/chat-user/` (`com.chatsystem.user.UserApp`) and `chat-admin/` (`com.chatsystem.admin.AdminApp`), the single authoritative PostgreSQL setup path (`01_schema.sql` -> `02_seed.sql` -> `03_admin_queries.sql` -> `04_verify.sql` -> `01_person1.sql` -> `verify_person1.sql`), and PowerShell-safe Maven commands.
      - Updated `run-user.cmd`, `script/README.md`, `docs/admin-run-guide.md`, and `docs/version1-submission-checklist.md`.
 6. **Student's independent work and edits/validation:**
-   - Student created the `integration/version1` branch from `main`, initiated `git merge --no-ff --no-commit origin/Phuc`, specified the 6 ownership and integration rules, identified the stalled `exec-maven-plugin` download during User UI verification, and directed the direct JDK 21 `java.exe -cp` execution of `com.chatsystem.user.PreviewCapture`.
-   - Additional student review/validation: `STUDENT TO COMPLETE`
+   - **Documented student actions (Trọng):** Created branch `integration/version1` from `main`, ran `git merge --no-ff --no-commit origin/Phuc`, specified the 6 ownership/integration rules (`Step 907`), identified the stalled `exec-maven-plugin` download and directed direct JDK 21 execution of `com.chatsystem.user.PreviewCapture` (`Step 967`), and committed the merge resolution in `41c0405` (`2026-11-18 22:50:50 +07:00`).
+   - **Checks run by AI tool vs. student:** Maven builds of both modules, unified PostgreSQL 18.4 SQL verification, and direct JDK 21 `PreviewCapture` execution in Section 8 were executed by Google Antigravity. **Student-reported verification (Trọng):** Trọng confirmed manually checking the merged branch deliverables on Windows; no additional separate manual source edits were logged.
 7. **Screenshots or chat history:**
-   - `evidence/chat_history/chatgpt.png`
-   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+   - **Antigravity chat transcript (matching export):** [`evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-17`](./evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-17) (Steps `907, 967 -> 962, 966, 985`, `2026-11-18 22:15:39–22:44:01 UTC+07:00`).
    - `git/commits-phuc.png`
-   - `git/screenshots/01-chat.png` through `14-message-search.png`
-   - `docs/screenshots/admin/01_user_management.png` through `09_activity_chart_2026.png`
+   - `git/screenshots/01-chat.png` through `14-message-search.png` (later moved to `screenshots/` in commit `560de1d`)
+   - `docs/screenshots/admin/01_user_management.png` through `09_activity_chart_2026.png`.
 8. **Verification and outcomes:**
    - **Java & Maven Environment Verification:**
      - `java -version`: `openjdk version "21.0.13" 2026-10-20 LTS (Temurin-21.0.13+9)`
@@ -1663,12 +1656,11 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
      - Updated `components/MonthlyBarChartPanel.java`, `ui/UserManagementPanel.java`, `ui/LoginHistoryPanel.java`, `ui/ChatGroupManagementPanel.java`, `ui/SpamReportPanel.java`, `ui/NewUserRegistrationPanel.java`, `ui/RegistrationChartPanel.java`, `ui/FriendStatisticsPanel.java`, `ui/UserActivityPanel.java`, `ui/ActivityChartPanel.java`, `ui/UserFormDialog.java`, `ui/ConfirmActionDialog.java`, `ui/PasswordUpdateDialog.java`, `ui/UserLoginHistoryDialog.java`, `ui/UserFriendsDialog.java`, `ui/GroupMembersDialog.java`, and `ui/SpamReportDetailDialog.java` so zero `new Color(...)` or `new Font(...)` calls exist outside `AppTheme.java` and all tables/buttons use `AppTheme`'s shared helpers.
    - **Refreshed All 19 Authentic Admin Screenshots in `docs/screenshots/admin/`** and updated `docs/admin-run-guide.md` and `README.md` with the direct JDK 21 PowerShell launch command.
 6. **Student's independent work and edits/validation:**
-   - Student directed the visual alignment of the Admin application against Member 1's User application (`Ui.java`, `UserApp.java`, and the freshly rendered User screenshots) and specified the visual verification requirements.
-   - Additional student review/validation: `STUDENT TO COMPLETE`
+   - **Documented student actions (Trọng):** Directed the visual alignment of the Admin application against Member 1's User application and specified the visual verification requirements (`Step 986`); committed the restyled Admin app and refreshed screenshots in `b838f65` (`2026-11-19 08:20:06 +07:00`).
+   - **Checks run by AI tool vs. student:** Static style audit, Maven compilation, and live Swing screenshot capture/comparison in Section 8 were executed by Google Antigravity. **Student-reported verification (Trọng):** Trọng confirmed manually inspecting the restyled Admin Swing interface on Windows; no additional separate manual source edits were logged.
 7. **Screenshots or chat history:**
-   - `evidence/chat_history/chatgpt.png`
-   - `evidence/chat_history/antigravity_session_8a98bca0.md`
-   - `docs/screenshots/admin/01_user_management.png` through `docs/screenshots/admin/09_activity_chart_2026.png` (19 refreshed PNG screenshots)
+   - **Antigravity chat transcript (matching export):** [`evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-18`](./evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-18) (Steps `986 -> 1190`, `2026-11-18 22:51:12–23:14:01 UTC+07:00`).
+   - `docs/screenshots/admin/01_user_management.png` through `docs/screenshots/admin/09_activity_chart_2026.png` (19 refreshed PNG screenshots).
 8. **Verification and outcomes:**
    - **Static Style Audit (`Select-String -Pattern "new Color\(|new Font\("` across `chat-admin/src/main/java`):**
      - Verified that **zero** hardcoded `new Color(...)` or `new Font(...)` calls exist outside `AppTheme.java`.
@@ -1771,11 +1763,10 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
      - Shortened the footer note in `SpamReportDetailDialog` so it never touches the `"Đóng"` button.
    - **Updated `README.md`, `docs/admin-run-guide.md`, and `AI-LOG.md`.**
 6. **Student's independent work and edits/validation:**
-   - Student specified the 4-part integration scope (unified mock entry flow without circular Maven dependencies, User feature wiring audit against `origin/Phuc`, cross-app fixture alignment against `script/02_seed.sql`, and end-to-end GUI verification scenarios).
-   - Additional student review/validation: `STUDENT TO COMPLETE`
+   - **Documented student actions (Trọng):** Specified the 4-part end-to-end integration scope (`Step 1191`); subsequently committed the combined integration changes together with Entry 20 in `a108ddd` (`2026-11-19 10:14:47 +07:00`).
+   - **Checks run by AI tool vs. student:** Independent Maven builds, `PreviewCapture`, and `IntegratedFlowVerify` Swing runs in Section 8 were executed by Google Antigravity. **Student-reported verification (Trọng):** Trọng confirmed manually checking the unified login flow and cross-app fixture alignment on Windows; no additional separate manual source edits were logged.
 7. **Screenshots or chat history:**
-   - `evidence/chat_history/chatgpt.png`
-   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+   - **Antigravity chat transcript (matching export):** [`evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-19`](./evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-19) (Steps `1191 -> 1232, 1236, 1259`, `2026-11-19 08:25:22–08:35:55 UTC+07:00`).
 8. **Verification and outcomes:**
    - **Independent Maven Builds of Both Modules (`task-1227` & `task-1248` on JDK 21.0.13):**
      - `mvn -f chat-admin/pom.xml "-DskipTests" clean package` -> **PASS (`BUILD SUCCESS`, 34 Java source files compiled with `release 21`, packaged `chat-admin-1.0.0-SNAPSHOT.jar`)**.
@@ -1926,12 +1917,11 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
      - Captured real screenshot `docs/screenshots/admin/00_admin_integrated_chat.png` showing the `ChatSystem Admin` window title, two-section sidebar (`CÁ NHÂN` and `QUẢN TRỊ`), and Phuc's embedded `Tin nhắn` chat page.
      - Updated `README.md`, `docs/admin-run-guide.md`, and `AI-LOG.md`.
 6. **Student's independent work and edits/validation:**
-   - Student defined the single-window Admin+Personal integration goal, two-section sidebar structure (`Cá nhân` and `Quản trị`), state-preservation requirements, acyclic reuse constraints, and the 7 end-to-end verification flows plus screenshot requirement.
-   - Additional student review/validation: `STUDENT TO COMPLETE`
+   - **Documented student actions (Trọng):** Defined the single-window Admin+Personal integration goal, two-section sidebar structure, state-preservation rules, and 7 verification flows (`Step 1260`); committed the integrated workspace in `a108ddd` (`2026-11-19 10:14:47 +07:00`).
+   - **Checks run by AI tool vs. student:** Maven builds (`chat-user` install + `chat-admin` package), `PreviewCapture`, and automated Swing EDT verification/capture of `docs/screenshots/admin/00_admin_integrated_chat.png` in Section 8 were executed by Google Antigravity. **Student-reported verification (Trọng):** Trọng confirmed manually testing the integrated Admin + Personal (`Cá nhân` / `Quản trị`) workspace on Windows; no additional separate manual source edits were logged.
 7. **Screenshots or chat history:**
-   - `evidence/chat_history/chatgpt.png`
-   - `evidence/chat_history/antigravity_session_8a98bca0.md`
-   - `docs/screenshots/admin/00_admin_integrated_chat.png` (authentic screenshot of the integrated Admin window displaying `Cá nhân` + `Quản trị` sidebar and Phuc's chat page)
+   - **Antigravity chat transcript (matching export):** [`evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-20`](./evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-20) (Steps `1260 -> 1295`, `2026-11-19 09:07:57–09:15:22 UTC+07:00`).
+   - `docs/screenshots/admin/00_admin_integrated_chat.png` (authentic screenshot of the integrated Admin window displaying `Cá nhân` + `Quản trị` sidebar and Phuc's chat page).
 8. **Verification and outcomes:**
    - **Acyclic Maven Builds of Both Applications (`task-1281` on JDK 21.0.13):**
      - `mvn -f src/chat-user/pom.xml "-DskipTests" clean install` -> **PASS (`BUILD SUCCESS` in `12.939 s`, 17 source files compiled with `release 21`, installed `chat-user-1.0.0-SNAPSHOT.jar`)**.
@@ -2012,11 +2002,10 @@ Only **Entry 0 (external ChatGPT browser session used before opening Antigravity
      - Wired `chat::openCreateGroupDialog` into all `PeoplePanel` instances (`Bạn bè` and `Tìm kiếm`) in both standalone `UserApp` and embedded `UserWorkspaceHost` (used by `AdminMainFrame`), and exposed clean read-only verification accessors on `UserWorkspaceHost`.
    - **Updated `AI-LOG.md` (`Entry 21`).**
 6. **Student's independent work and edits/validation:**
-   - Student specified the four Version 1 UI fixes (Req 3, Req 8, Req 11e–g, Req 12e) and the explicit verification cases across both standalone `chat-user` and integrated `chat-admin`.
-   - Additional student review/validation: `STUDENT TO COMPLETE`
+   - **Documented student actions (Trọng):** Specified the four Version 1 UI fixes (Req 3, Req 8, Req 11e–g, Req 12e) and explicit verification cases (`Step 1296`); committed the fixes in `8bf3f17` (`2026-11-20 20:16:05 +07:00`); subsequently added `git/commits-trong.png` (`894b2d2`), moved screenshots to `screenshots/` (`560de1d`), merged PR #2 (`c19f10f`), moved `chat-admin/` into `src/chat-admin/` (`63bb306`), and merged PR #3 (`fb1e76a`).
+   - **Checks run by AI tool vs. student:** Maven builds (`src/chat-user` install + `chat-admin` package), `VerifyFourFixes` EDT checks, and `PreviewCapture` in Section 8 were executed by Google Antigravity. **Student-reported verification (Trọng):** Trọng confirmed manually checking the four Version 1 Swing UI fixes on Windows; no additional separate manual source edits were logged.
 7. **Screenshots or chat history:**
-   - `evidence/chat_history/chatgpt.png`
-   - `evidence/chat_history/antigravity_session_8a98bca0.md`
+   - **Antigravity chat transcript (matching export):** [`evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-21`](./evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md#entry-21) (Steps `1296 -> 1343, 1357`, `2026-11-20 18:29:11–18:39:17 UTC+07:00`).
 8. **Verification and outcomes:**
    - **Maven Build — `src/chat-user/pom.xml` (`mvn -f src/chat-user/pom.xml "-DskipTests" clean install` on JDK 21.0.13):**
      - Outcome: **PASS (`BUILD SUCCESS` in `4.567 s`, exit code `0`)** — compiled 17 Java source files with `release 21` and installed `com.chatsystem:chat-user:1.0.0-SNAPSHOT` to local `.m2`.
@@ -2069,13 +2058,12 @@ Entries 22–26 record Lê Đức Phúc's original User application work, based 
    - Account tabs and social views share their respective panel classes; a separate Java class for every account/social view was not implemented.
    - Earlier Python generation helpers were local development tools outside the ChatProject repository. They were not required to run the Java application.
 6. **Student's independent work and edits/validation:**
-   - The student supplied the assignment images, identified themselves as Member 1, specified the project directory and required Java Swing.
-   - The student later reported installing Maven and configuring JAVA_HOME.
-   - Additional independent source edits and comprehensive manual acceptance results: STUDENT TO COMPLETE.
+   - **Documented student actions (Phúc):** Supplied the assignment images, identified themselves as Member 1, specified the project directory and Java Swing requirement, reported installing Maven and configuring `JAVA_HOME`, and committed the grouped source history on branch `Phúc` (`ea4ebec`, `383bcda`).
+   - **Checks run by AI tool vs. student:** The Maven package builds and `PreviewCapture` runs in Section 8 were executed by OpenAI Codex desktop. No additional independent source edits or separate manual acceptance notes beyond the committed deliverables above were logged by Member 1 (Phúc).
 7. **Screenshots or chat history:**
-   - Original Phuc branch: git/screenshots/02-friends.png, 03-requests.png, 04-people.png and 05-account-0.png through 09-account-4.png.
-   - Current main locations after the team's screenshot move: screenshots/ with the same filenames.
-   - Quoted prompts are actual conversation text; no standalone chat export is claimed.
+   - Original Phuc branch: `git/screenshots/02-friends.png`, `03-requests.png`, `04-people.png` and `05-account-0.png` through `09-account-4.png`.
+   - Current main locations after the team's screenshot move: `screenshots/` with the same filenames.
+   - **Chat transcript (OpenAI Codex desktop):** No matching transcript was located (quoted prompts were recorded retrospectively in Entry 26; no standalone Codex chat export exists in `evidence/chat_history/`).
 8. **Verification and outcomes:**
    - Maven package commands passed during original implementation using compiler release 21 on JDK 25.
    - PreviewCapture rendered the account/social views and verified friend-name and online/offline filtering.
@@ -2106,12 +2094,12 @@ Entries 22–26 record Lê Đức Phúc's original User application work, based 
    - Organized the Details menu for LLM suggestions, selected-message hiding, history deletion, spam reports and group-management controls.
    - Provided editable static LLM example text that can be transferred to the composer, alongside group and encryption-option dialogs.
 6. **Student's independent work and edits/validation:**
-   - The student supplied the previous Swing chat reference and the team's selected palette.
-   - Later student-provided screenshots show the application running, including its account screen after Logout.
-   - Additional independent code edits and formal visual acceptance: STUDENT TO COMPLETE.
+   - **Documented student actions (Phúc):** Supplied the previous Swing chat reference image and the team's Modern Blue palette, supplied running-application screenshots (including the post-Logout account screen), and committed the grouped chat UI in `e8118e6`.
+   - **Checks run by AI tool vs. student:** The Maven clean package build and `PreviewCapture` run in Section 8 were executed by OpenAI Codex desktop. No additional independent code edits or separate manual acceptance notes beyond the submitted running screenshots and committed UI above were logged by Member 1 (Phúc).
 7. **Screenshots or chat history:**
-   - Current main: screenshots/01-chat.png, 10-group-chat.png, 11-encrypted-group.png, 12-dialog-create.png, 12-dialog-group.png, 12-dialog-llm.png, 12-dialog-spam.png, 13-minimum-size.png and 14-message-search.png.
+   - Current main: `screenshots/01-chat.png`, `10-group-chat.png`, `11-encrypted-group.png`, `12-dialog-create.png`, `12-dialog-group.png`, `12-dialog-llm.png`, `12-dialog-spam.png`, `13-minimum-size.png` and `14-message-search.png`.
    - The complete original user capture set contains 17 PNG files.
+   - **Chat transcript (OpenAI Codex desktop):** No matching transcript was located.
 8. **Verification and outcomes:**
    - Executed mvn -B -ntp -f src/chat-user/pom.xml clean package; final result BUILD SUCCESS, compiling 14 Java files with release 21.
    - Executed PreviewCapture with the compiled classes and FlatLaf dependency: PASS for 17 captured windows; friend filters; local/global/empty message search; conversation-name search; and group filtering.
@@ -2141,11 +2129,12 @@ Entries 22–26 record Lê Đức Phúc's original User application work, based 
    - Added a disposable account fixture and a PostgreSQL/PGlite verification helper; the JavaScript helper was for development checks, not the desktop application runtime.
    - Created PreviewCapture.java and GitEvidence.java for actual Swing rendering and local Git-output evidence.
 6. **Student's independent work and edits/validation:**
-   - The student supplied the database assignment and requested the Version 1 deliverables.
-   - Independent SQL edits or execution against the final shared PostgreSQL database: STUDENT TO COMPLETE.
+   - **Documented student actions (Phúc):** Supplied the database-allocation image, requested the Version 1 deliverables, and committed the initial proposal and verification tools on branch `Phúc` (`59be39b`, `14763d0`).
+   - **Checks run by AI tool vs. student:** The `node script/check_person1.mjs` (PGlite 0.3.14) check in Section 8 was executed by OpenAI Codex desktop against the initial proposal. No independent SQL edits or separate manual execution notes against the final shared PostgreSQL database were logged by Member 1 (Phúc).
 7. **Screenshots or chat history:**
-   - Current user UI evidence: screenshots/ with 17 PNGs; Git evidence: git/commits-phuc.png.
-   - Original SQL test results were observed in tool output in this conversation; no separate SQL screenshot is claimed.
+   - Current user UI evidence: `screenshots/` (originally 17 User PNGs; later expanded to 20 User + 21 Admin PNGs in Entries 27–28); Git evidence: `git/commits-phuc.png`.
+   - Original SQL test results were observed in tool output in the Codex conversation; no separate SQL screenshot is claimed.
+   - **Chat transcript (OpenAI Codex desktop):** No matching transcript was located.
 8. **Verification and outcomes:**
    - Executed node script/check_person1.mjs on the original proposal with PGlite 0.3.14.
    - Result: PASS for schema creation, fixtures and 16 integrity/query checks, including per-user message hiding and rejection of encrypted messages without a key version.
@@ -2183,8 +2172,9 @@ Entries 22–26 record Lê Đức Phúc's original User application work, based 
    - The student's previous cleanup and modified tracked admin artifacts were preserved.
    - The student reported having pushed the earlier history; the agent supplied later push instructions without performing the push itself.
 7. **Screenshots or chat history:**
-   - git/commits-phuc.png shows the eight grouped commits at capture time, before the commit saving the screenshot.
+   - `git/commits-phuc.png` shows the eight grouped commits at capture time, before the commit saving the screenshot (`cfa7330`).
    - Phuc consequently contains nine commits after its original main base.
+   - **Chat transcript (OpenAI Codex desktop):** No matching transcript was located.
 8. **Verification and outcomes:**
    - Compared old/new Git tree IDs and SHA-256 hashes of 85 tracked files: unchanged after grouping.
    - The subsequent image-refresh commit modified only git/commits-phuc.png.
@@ -2211,10 +2201,11 @@ Entries 22–26 record Lê Đức Phúc's original User application work, based 
    - Appended Entries 22–26 in English to AI-LOG.md.
    - Retained Entries 0–21 byte for byte; no other project file was edited by this update.
 6. **Student's independent work and edits/validation:**
-   - The student identified the missing original Member 1 records and requested preservation of the existing content and template.
-   - Independent review and confirmation of student-only contributions: STUDENT TO COMPLETE.
+   - **Documented student actions (Phúc):** Identified the missing original Member 1 AI-log records and requested appending them while preserving Entries 0–21 and the existing template; committed the updated `AI-LOG.md` together with Entries 27–28 in `da8cc35` (`2026-11-20 23:34:27 +07:00`).
+   - **Checks run by AI tool vs. student:** Repository path inspection and `git diff --check` in Section 8 were executed by OpenAI Codex desktop. No additional separate manual review notes beyond committing the appended Member 1 records in `da8cc35` were logged by Member 1 (Phúc).
 7. **Screenshots or chat history:**
-   - Verified current screenshot paths and git/commits-phuc.png; no new screenshot or separate chat export was created.
+   - Verified current screenshot paths and `git/commits-phuc.png`; no new screenshot was created.
+   - **Chat transcript (OpenAI Codex desktop):** No matching transcript was located.
 8. **Verification and outcomes:**
    - Inspected repository instructions, current log headings, original Phuc commit metadata, screenshot locations and current Member 1 SQL compatibility notes.
    - Verified the original bytes remain an unchanged prefix and the appended Markdown passes git diff --check.
@@ -2231,8 +2222,12 @@ Append operation observed: 2026-11-20 21:28:19 +07:00 (Asia/Bangkok).
 3. **Prompt(s) used:** Actual user request to capture the required Administrator screenshots into the existing screenshots folder and write a report containing team information, each member's tasks, contribution percentages totaling 100, database design, and screen list with images. The user supplied Lê Đức Phúc (24127107) and Nguyễn Hải Trong (24127311), and explicitly specified 50% contribution each.
 4. **Purpose:** Capture actual current Administrator windows and produce a Vietnamese Word report matching Version 1.
 5. **AI-generated content:** Planned task-local Java screenshot harness and report builder; screenshots/admin_*.png; Bao_cao_ChatSystem_Phien_ban_1.docx; validation results pending.
-6. **Student's independent work:** Supplied member identities and equal contribution allocation. Independent source edits and report review: STUDENT TO COMPLETE.
-7. **Screenshots or chat history:** New screenshot paths will be recorded after actual capture; no chat export claimed.
+6. **Student's independent work:**
+   - **Documented student actions (Phúc):** Supplied member identities (`Lê Đức Phúc (24127107)`, `Nguyễn Hải Trọng (24127311)`) and the explicit 50%/50% contribution allocation; committed the generated report and screenshots in `da8cc35` (`2026-11-20 23:34:27 +07:00`, merged by Trọng in PR #3 `fb1e76a`).
+   - **Checks run by AI tool vs. student:** Maven compilation/packaging (`src/chat-user` and `src/chat-admin`), live Swing capture of 21 Administrator PNGs (`screenshots/admin_*.png`), Word/PDF rendering, and 29-page visual inspection in `Entry 27 Completion` were executed by OpenAI Codex desktop. This initial report was superseded by the revised report `Bao_cao_ChatSystem_Phien_ban_1_Da_chinh_sua.docx` in Entry 28 (confirmed by Trọng); no additional separate manual edits by Phúc were logged beyond the documented actions above.
+7. **Screenshots or chat history:**
+   - Captured 21 Administrator screenshots at `screenshots/admin_*.png` (see `Entry 27 Completion` below; existing User screenshots in `screenshots/` were preserved).
+   - **Chat transcript (OpenAI Codex desktop):** No matching transcript was located.
 8. **Verification and outcomes:** Source and module dependencies inspected. Current modules are src/chat-user and src/chat-admin, with one-way admin dependency on user. Build, capture and document rendering are pending.
 
 ### Entry 27 Completion
@@ -2255,8 +2250,12 @@ Completion observed: 2026-11-20 21:45:51 +07:00 (Asia/Bangkok).
 3. **Observed prompt:** "hãy sửa theo feedback trong hình đồng thời sửa luôn các ảnh trong folder screenshots dựa theo code UI hiện tại ở phiên bản hiện tại". Attached feedback requires correcting group_members-to-users cardinality; current online-friends/Create Group, password recovery, group permissions, search-jump and multi-selection images; title and directory-text corrections.
 4. **Purpose:** Correct the report and recapture current application UI without altering application behavior.
 5. **Planned changes:** Current screenshots, additional role/multi-selection/search-context images, revised Word report, and this log. Task-local Java/Python authoring helpers remain outside application source.
-6. **Student contribution:** Supplied the feedback image. Additional independent edits/review: STUDENT TO COMPLETE.
-7. **Evidence:** Screenshot and render validation results pending.
+6. **Student contribution:**
+   - **Documented student actions (Phúc / Trọng):** Phúc supplied the feedback image, manually corrected `Nguyễn Hải Trọng`'s name with Vietnamese diacritics in `Bao_cao_ChatSystem_Phien_ban_1.docx` (as documented in `Entry 28 Completion`), and committed the refreshed screenshots, revised report, and `AI-LOG.md` in `da8cc35` (`2026-11-20 23:34:27 +07:00`); Trọng merged PR #3 into `main` (`fb1e76a`, `2026-11-21 09:12:43 +07:00`).
+   - **Checks run by AI tool vs. student:** Refreshing all 41 screenshots (`screenshots/`), capture assertions, DOCX generation (`Bao_cao_ChatSystem_Phien_ban_1_Da_chinh_sua.docx`), Word/PDF 30-page rendering, and SHA-256 hash verification in `Entry 28 Completion` were executed by OpenAI Codex desktop. **Student-reported confirmation (Trọng):** Trọng confirmed manual review and acceptance of the revised report (`Bao_cao_ChatSystem_Phien_ban_1_Da_chinh_sua.docx`). No additional separate manual edits beyond the documented diacritic fix and commit `da8cc35` were logged by Member 1 (Phúc).
+7. **Evidence:**
+   - Refreshed 41 UI PNGs in `screenshots/` (20 User + 21 Administrator) and `Bao_cao_ChatSystem_Phien_ban_1_Da_chinh_sua.docx` (see `Entry 28 Completion` below).
+   - **Chat transcript (OpenAI Codex desktop):** No matching transcript was located.
 8. **Validation:** Will verify actual current controls/permissions during capture, preserve existing contribution percentages and prior log entries, and inspect the revised report.
 
 ### Entry 28 Completion
@@ -2268,3 +2267,31 @@ Completion observed: 2026-11-20 21:45:51 +07:00 (Asia/Bangkok).
 - Verified SHA-256 hashes of all 41 screenshots against DOCX media: all match exactly. The report has 45 embedded images including four diagrams.
 - No application source, SQL, existing log entries or Git history was changed. No new application build or SQL execution was needed in this evidence/report correction; the already compiled current classes were used for capture. No commit or push performed.
 Completion observed: 2026-11-20 23:17:48 +07:00 (Asia/Bangkok).
+
+---
+
+## Current Version 1 AI-Log Audit & Student Confirmation Summary (2026-11-21)
+
+> This audit summarizes the current verification state of `AI-LOG.md` and `evidence/chat_history/` across all 29 entries (`Entry 0` through `Entry 28`). It supersedes the historical `2026-11-11` individual-assignment checklist preserved after Entry 6.
+
+### 1. Chat Transcript Evidence Coverage
+
+| Entries | AI Tool | Matching Transcript Export | Status |
+|---|---|---|---|
+| **Entry 0** | ChatGPT (OpenAI, Web) | None (`evidence/chat_history/chatgpt.png` screenshot only) | **No matching transcript was located** — kept as recorded by Trọng (screenshot confirms Vietnamese prompt, `AGENTS.md` / prompt-pack output, and `3m 44s` thinking duration; exact browser prompt time was not logged separately) |
+| **Entries 1, 3, 4, 5, 6** | Google Antigravity IDE | [`evidence/chat_history/antigravity_session_8a98bca0.md`](./evidence/chat_history/antigravity_session_8a98bca0.md) (Steps `0–272`, `2026-11-10`–`2026-11-11`, preserved intact) | **Matched** |
+| **Entry 2** | GitHub Copilot App Modernization extension | [`evidence/chat_history/copilot_entry2_java_upgrade.md`](./evidence/chat_history/copilot_entry2_java_upgrade.md) (`11/11/2026, 12:19 AM`, verbatim extension log supplied by Trọng) | **Matched** |
+| **Entries 7–21** | Google Antigravity IDE (same session `8a98bca0`, continued beyond Step 272) | [`evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md`](./evidence/chat_history/antigravity_session_8a98bca0_entries_7_to_21.md) (Steps `311–1357`, `2026-11-16`–`2026-11-20`, exported directly from local `transcript_full.jsonl`) | **Matched** (all 15 entries including the `2026-11-20` four-fix prompt at Step `1296`) |
+| **Entries 22–28** | OpenAI Codex desktop | None in repository or local logs on this machine | **No matching transcript was located** (attributed to OpenAI Codex desktop; existing UI screenshots and Git evidence retained) |
+
+### 2. Student Confirmations — Nguyễn Hải Trọng (Member 2)
+
+- **Entry 0:** Confirmed kept as recorded (`ChatGPT (GPT-4o)`, `2026-11-10 23:40:38 UTC+07:00`, `evidence/chat_history/chatgpt.png`); exact browser prompt time was not logged separately at the time.
+- **Entry 2:** Completed — verbatim GitHub Copilot App Modernization chat log exported to [`evidence/chat_history/copilot_entry2_java_upgrade.md`](./evidence/chat_history/copilot_entry2_java_upgrade.md).
+- **Entries 7–21:** Confirmed — Trọng reported manually reviewing/checking the deliverables on Windows, logged separately from the Maven/PostgreSQL/Swing checks executed by Google Antigravity.
+- **Entries 27–28:** Confirmed — Trọng confirmed manual review and acceptance of the revised report (`Bao_cao_ChatSystem_Phien_ban_1_Da_chinh_sua.docx`).
+
+### 3. Member 1 Disclosure Status — Lê Đức Phúc (Entries 22–28)
+
+- **Attributed tool & artifacts:** All Member 1 entries (`22–28`) are attributed to **OpenAI Codex desktop** with documented student inputs, commits (`ea4ebec`..`cfa7330`, `da8cc35`), UI screenshots (`screenshots/`), and Git evidence (`git/commits-phuc.png`).
+- **Remaining optional items (only if Phúc chooses to supplement before submission):** Attach exported OpenAI Codex desktop chat transcript(s) into `evidence/chat_history/` (currently honestly marked `No matching transcript was located`), or add any separate manual edit/SQL-test notes if Phúc performed additional unlogged checks beyond the committed artifacts.
